@@ -265,10 +265,28 @@ function initChordLogo() {
 
 // Large Chord Diagram for Contact Section
 function initContactChord() {
-    const svg = d3.select("#chord-contact");
-    const width = 500;
-    const height = 500;
-    const radius = Math.min(width, height) / 2 - 20;
+    const svgElement = d3.select("#chord-contact");
+    
+    // Function to calculate responsive dimensions
+    function getResponsiveDimensions() {
+        const screenWidth = window.innerWidth;
+        const maxWidth = Math.min(screenWidth - 40, 500); // 20px margin on each side, max 500px
+        const size = Math.max(maxWidth, 280); // Minimum size of 280px
+        
+        return {
+            width: size,
+            height: size,
+            radius: Math.min(size, size) / 2 - 20
+        };
+    }
+    
+    let dimensions = getResponsiveDimensions();
+    let { width, height, radius } = dimensions;
+    
+    // Set initial SVG dimensions
+    svgElement
+        .attr('width', width)
+        .attr('height', height);
     
     // Updated color palette with warm tones
     const colors = [
@@ -277,7 +295,7 @@ function initContactChord() {
         '#f26223', '#ffdd89', '#9ca3af', '#ffffff'
     ];
     
-    const g = svg.append('g')
+    const g = svgElement.append('g')
         .attr('transform', `translate(${width/2}, ${height/2})`);
     
     // Generate random matrix data with more complexity
@@ -304,11 +322,11 @@ function initContactChord() {
         .padAngle(0.03)
         .sortSubgroups(d3.descending);
     
-    const arc = d3.arc()
+    let arc = d3.arc()
         .innerRadius(radius - 35)
         .outerRadius(radius - 12);
     
-    const ribbon = d3.ribbon()
+    let ribbon = d3.ribbon()
         .radius(radius - 35);
     
     function updateChord(data) {
@@ -362,6 +380,44 @@ function initContactChord() {
             .attr('fill', d => colors[d.source.index % colors.length])
             .attr('opacity', 0.7);
     }
+    
+    // Function to resize the chord diagram
+    function resizeChord() {
+        const newDimensions = getResponsiveDimensions();
+        
+        // Only update if dimensions actually changed
+        if (newDimensions.width !== width || newDimensions.height !== height) {
+            width = newDimensions.width;
+            height = newDimensions.height;
+            radius = newDimensions.radius;
+            
+            // Update SVG dimensions
+            svgElement
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Update group transform
+            g.attr('transform', `translate(${width/2}, ${height/2})`);
+            
+            // Update arc and ribbon generators
+            arc = d3.arc()
+                .innerRadius(radius - 35)
+                .outerRadius(radius - 12);
+            
+            ribbon = d3.ribbon()
+                .radius(radius - 35);
+            
+            // Re-render with current data
+            updateChord(currentData);
+        }
+    }
+    
+    // Add resize event listener
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeChord, 150); // Debounce resize
+    });
     
     // Initial render
     updateChord(currentData);
