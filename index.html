@@ -65,7 +65,7 @@
     
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 glass-dark">
-        <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="w-full sm:max-w-7xl mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <div class="relative">
                     <svg id="chord-logo" width="45" height="45" class="animate-spin-slow">
@@ -87,7 +87,7 @@
     <!-- Hero Section -->
     <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-cyan-900/20"></div>
-        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+        <div class="relative z-10 text-center w-full sm:max-w-4xl mx-auto px-6">
             <div class="animate-float mb-8 relative">
                 <!-- Particle Effect SVG -->
                 <svg id="particle-container" class="absolute inset-0 w-80 h-80 mx-auto pointer-events-none" style="top: -2rem; left: 50%; transform: translateX(-50%);">
@@ -118,7 +118,7 @@
 
     <!-- About Section -->
     <section id="about" class="min-h-screen py-20 relative flex items-center">
-        <div class="max-w-6xl mx-auto px-6">
+        <div class="w-full sm:max-w-6xl mx-auto px-6">
             <!-- Center Title with Wave Effect -->
             <div class="relative text-center mb-16 animate-on-scroll">
                 <svg class="title-wave absolute inset-0 w-full h-20 pointer-events-none" style="top: -10px;">
@@ -130,7 +130,7 @@
             
             <!-- Center Content -->
             <div class="text-center mb-16 animate-slide-up">
-                <div class="max-w-3xl mx-auto mb-8">
+                <div class="w-full sm:max-w-3xl mx-auto mb-8">
                     <p class="text-lg text-gray-300 leading-relaxed mb-6">
                         I'm a passionate frontend developer who transforms complex ideas into intuitive, 
                         seamless user experiences. With expertise in modern web technologies, I bridge 
@@ -191,7 +191,7 @@
 
     <!-- Experience Section -->
     <section id="experience" class="min-h-screen py-20 bg-gray-900/50 flex items-center">
-        <div class="max-w-6xl mx-auto px-6">
+        <div class="w-full sm:max-w-6xl mx-auto px-6">
             <div class="relative text-center mb-16 animate-on-scroll">
                 <svg class="title-wave absolute inset-0 w-full h-20 pointer-events-none" style="top: -10px;">
                 </svg>
@@ -325,7 +325,7 @@
 
     <!-- Projects Section -->
     <section id="projects" class="min-h-screen py-20 flex items-center">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="w-full sm:max-w-7xl mx-auto px-6">
             <div class="relative text-center mb-16 animate-on-scroll">
                 <svg class="title-wave absolute inset-0 w-full h-20 pointer-events-none" style="top: -10px;">
                 </svg>
@@ -405,7 +405,7 @@
 
     <!-- Skills Section -->
     <section id="skills" class="min-h-screen py-20 bg-gray-900/50 flex items-center">
-        <div class="max-w-6xl mx-auto px-6">
+        <div class="w-full sm:max-w-6xl mx-auto px-6">
             <div class="relative text-center mb-16 animate-on-scroll">
                 <svg class="title-wave absolute inset-0 w-full h-20 pointer-events-none" style="top: -10px;">
                 </svg>
@@ -413,51 +413,51 @@
                     Technical <span class="gradient-text font-bold">Skills</span>
                 </h2>
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="animate-slide-left">
                     <h3 class="text-lg font-semibold mb-4 text-blue-400">Frontend</h3>
-                    <div class="space-y-3">
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">TypeScript/JavaScript</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">React</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">HTML/CSS</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Vite</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">CloudScape/TailwindCSS</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Webpack</span>
+                    <div class="flex flex-wrap gap-2 sm:space-y-3 sm:block">
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">TypeScript/JavaScript</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">React</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">HTML/CSS</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Vite</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">CloudScape/TailwindCSS</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Webpack</span>
                     </div>
                 </div>
                 
                 <div class="animate-slide-right">
                     <h3 class="text-lg font-semibold mb-4 text-purple-400">Backend</h3>
-                    <div class="space-y-3">
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Node.js</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Express.js</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Python</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Java/Ruby</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">AWS Services</span>
+                    <div class="flex flex-wrap gap-2 sm:space-y-3 sm:block">
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Node.js</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Express.js</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Python</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Java/Ruby</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">AWS Services</span>
                     </div>
                 </div>
                 
                 <div class="animate-slide-left">
                     <h3 class="text-lg font-semibold mb-4 text-cyan-400">Tools</h3>
-                    <div class="space-y-3">
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Git</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Figma</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Jest</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Puppeteer</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Cline</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Cursor Vibe</span>
+                    <div class="flex flex-wrap gap-2 sm:space-y-3 sm:block">
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Git</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Figma</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Jest</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Puppeteer</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Cline</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Cursor Vibe</span>
                     </div>
                 </div>
                 
                 <div class="animate-scale">
                     <h3 class="text-lg font-semibold mb-4 text-orange-400">AI/ML</h3>
-                    <div class="space-y-3">
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">Bedrock</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">SageMaker</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">MCP</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">YOLO</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">UNet-CNN</span>
-                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm block text-center">CLIP</span>
+                    <div class="flex flex-wrap gap-2 sm:space-y-3 sm:block">
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">Bedrock</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">SageMaker</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">MCP</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">YOLO</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">UNet-CNN</span>
+                        <span class="skill-tag glass rounded-full px-4 py-2 text-sm inline-block sm:block text-center sm:w-full">CLIP</span>
                     </div>
                 </div>
             </div>
@@ -466,7 +466,7 @@
 
     <!-- Contact Section -->
     <section id="contact" class="min-h-screen py-20 flex items-center">
-        <div class="max-w-4xl mx-auto px-6">
+        <div class="w-full sm:max-w-4xl mx-auto px-6">
             <!-- Large Chord Diagram -->
             <div class="flex justify-center mb-8 animate-on-scroll">
                 <svg id="chord-contact" width="500" height="500" class="animate-spin-slow">
@@ -546,7 +546,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 py-8">
-        <div class="max-w-6xl mx-auto px-6 text-center">
+        <div class="w-full sm:max-w-6xl mx-auto px-6 text-center">
             <p class="text-gray-400">
                 © 2025 Dipak Chandran Parambil. Crafted with passion and precision.
             </p>
