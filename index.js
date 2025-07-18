@@ -17,20 +17,6 @@ document.querySelectorAll('.animate-on-scroll, .animate-slide-left, .animate-sli
     observer.observe(el);
 });
 
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
 // Particle Effect using D3.js
 function initParticleEffect() {
     const svg = d3.select("#particle-container");
@@ -123,11 +109,431 @@ function initParticleEffect() {
     setInterval(createShootingStar, 3000 + Math.random() * 2000);
 }
 
-// Initialize particle effect when page loads
+// Animated Chord Diagram Logo
+function initChordLogo() {
+    const svg = d3.select("#chord-logo");
+    const width = 45;
+    const height = 45;
+    const radius = Math.min(width, height) / 2 - 2;
+    
+    // Updated color palette with warm tones - same as contact section
+    const colors = [
+        '#f26223', '#ffdd89', '#9ca3af', '#ffffff', 
+        '#f26223', '#ffdd89', '#6b7280', '#f3f4f6'
+    ];
+    
+    const g = svg.append('g')
+        .attr('transform', `translate(${width/2}, ${height/2})`);
+    
+    // Generate random matrix data
+    function generateRandomData() {
+        const size = 6;
+        const matrix = [];
+        for (let i = 0; i < size; i++) {
+            matrix[i] = [];
+            for (let j = 0; j < size; j++) {
+                if (i === j) {
+                    matrix[i][j] = 0;
+                } else {
+                    matrix[i][j] = Math.random() * 15 + 5;
+                }
+            }
+        }
+        return matrix;
+    }
+    
+    let currentData = generateRandomData();
+    
+    // Create chord layout
+    const chord = d3.chord()
+        .padAngle(0.05)
+        .sortSubgroups(d3.descending);
+    
+    const arc = d3.arc()
+        .innerRadius(radius - 8)
+        .outerRadius(radius - 3);
+    
+    const ribbon = d3.ribbon()
+        .radius(radius - 8);
+    
+    function updateChord(data) {
+        const chords = chord(data);
+        
+        // Update groups (outer arcs)
+        const groups = g.selectAll('.group')
+            .data(chords.groups, d => d.index);
+        
+        groups.exit().remove();
+        
+        const groupsEnter = groups.enter()
+            .append('g')
+            .attr('class', 'group');
+        
+        groupsEnter.append('path')
+            .attr('class', 'group-arc');
+        
+        const groupsUpdate = groupsEnter.merge(groups);
+        
+        groupsUpdate.select('.group-arc')
+            .transition()
+            .duration(1500)
+            .ease(d3.easeQuadInOut)
+            .attr('d', arc)
+            .attr('fill', (d, i) => colors[i % colors.length])
+            .attr('opacity', 0.8);
+        
+        // Update ribbons (connections)
+        const ribbons = g.selectAll('.ribbon')
+            .data(chords, d => `${d.source.index}-${d.target.index}`);
+        
+        ribbons.exit()
+            .transition()
+            .duration(500)
+            .attr('opacity', 0)
+            .remove();
+        
+        const ribbonsEnter = ribbons.enter()
+            .append('path')
+            .attr('class', 'ribbon')
+            .attr('opacity', 0);
+        
+        const ribbonsUpdate = ribbonsEnter.merge(ribbons);
+        
+        ribbonsUpdate
+            .transition()
+            .duration(1500)
+            .ease(d3.easeQuadInOut)
+            .attr('d', ribbon)
+            .attr('fill', d => colors[d.source.index % colors.length])
+            .attr('opacity', 0.6);
+    }
+    
+    // Initial render
+    updateChord(currentData);
+    
+    // Animate data changes
+    function animateData() {
+        // Generate new data with smooth transitions
+        const newData = generateRandomData();
+        
+        // Smooth transition between old and new data
+        const transitionSteps = 30;
+        let step = 0;
+        
+        const animateStep = () => {
+            if (step >= transitionSteps) {
+                currentData = newData;
+                // Schedule next animation
+                setTimeout(animateData, 3000 + Math.random() * 2000);
+                return;
+            }
+            
+            const t = step / transitionSteps;
+            const interpolatedData = currentData.map((row, i) => 
+                row.map((value, j) => {
+                    const newValue = newData[i][j];
+                    return value + (newValue - value) * t;
+                })
+            );
+            
+            updateChord(interpolatedData);
+            step++;
+            
+            setTimeout(animateStep, 50);
+        };
+        
+        animateStep();
+    }
+    
+    // Start animation cycle
+    setTimeout(animateData, 2000);
+    
+    // Add subtle pulsing effect
+    const pulseAnimation = () => {
+        g.transition()
+            .duration(2000)
+            .attr('transform', `translate(${width/2}, ${height/2}) scale(1.05)`)
+            .transition()
+            .duration(2000)
+            .attr('transform', `translate(${width/2}, ${height/2}) scale(1)`)
+            .on('end', pulseAnimation);
+    };
+    
+    // Start pulse after a delay
+    setTimeout(pulseAnimation, 5000);
+}
+
+// Large Chord Diagram for Contact Section
+function initContactChord() {
+    const svg = d3.select("#chord-contact");
+    const width = 500;
+    const height = 500;
+    const radius = Math.min(width, height) / 2 - 20;
+    
+    // Updated color palette with warm tones
+    const colors = [
+        '#f26223', '#ffdd89', '#9ca3af', '#ffffff', 
+        '#f26223', '#ffdd89', '#6b7280', '#f3f4f6',
+        '#f26223', '#ffdd89', '#9ca3af', '#ffffff'
+    ];
+    
+    const g = svg.append('g')
+        .attr('transform', `translate(${width/2}, ${height/2})`);
+    
+    // Generate random matrix data with more complexity
+    function generateRandomData() {
+        const size = 8; // Increased size for more complexity
+        const matrix = [];
+        for (let i = 0; i < size; i++) {
+            matrix[i] = [];
+            for (let j = 0; j < size; j++) {
+                if (i === j) {
+                    matrix[i][j] = 0;
+                } else {
+                    matrix[i][j] = Math.random() * 25 + 10;
+                }
+            }
+        }
+        return matrix;
+    }
+    
+    let currentData = generateRandomData();
+    
+    // Create chord layout
+    const chord = d3.chord()
+        .padAngle(0.03)
+        .sortSubgroups(d3.descending);
+    
+    const arc = d3.arc()
+        .innerRadius(radius - 35)
+        .outerRadius(radius - 12);
+    
+    const ribbon = d3.ribbon()
+        .radius(radius - 35);
+    
+    function updateChord(data) {
+        const chords = chord(data);
+        
+        // Update groups (outer arcs)
+        const groups = g.selectAll('.contact-group')
+            .data(chords.groups, d => d.index);
+        
+        groups.exit().remove();
+        
+        const groupsEnter = groups.enter()
+            .append('g')
+            .attr('class', 'contact-group');
+        
+        groupsEnter.append('path')
+            .attr('class', 'contact-group-arc');
+        
+        const groupsUpdate = groupsEnter.merge(groups);
+        
+        groupsUpdate.select('.contact-group-arc')
+            .transition()
+            .duration(2000)
+            .ease(d3.easeQuadInOut)
+            .attr('d', arc)
+            .attr('fill', (d, i) => colors[i % colors.length])
+            .attr('opacity', 0.85);
+        
+        // Update ribbons (connections)
+        const ribbons = g.selectAll('.contact-ribbon')
+            .data(chords, d => `${d.source.index}-${d.target.index}`);
+        
+        ribbons.exit()
+            .transition()
+            .duration(800)
+            .attr('opacity', 0)
+            .remove();
+        
+        const ribbonsEnter = ribbons.enter()
+            .append('path')
+            .attr('class', 'contact-ribbon')
+            .attr('opacity', 0);
+        
+        const ribbonsUpdate = ribbonsEnter.merge(ribbons);
+        
+        ribbonsUpdate
+            .transition()
+            .duration(2000)
+            .ease(d3.easeQuadInOut)
+            .attr('d', ribbon)
+            .attr('fill', d => colors[d.source.index % colors.length])
+            .attr('opacity', 0.7);
+    }
+    
+    // Initial render
+    updateChord(currentData);
+    
+    // Animate data changes with longer intervals
+    function animateData() {
+        const newData = generateRandomData();
+        
+        // Smooth transition between old and new data
+        const transitionSteps = 40;
+        let step = 0;
+        
+        const animateStep = () => {
+            if (step >= transitionSteps) {
+                currentData = newData;
+                // Schedule next animation with longer delay
+                setTimeout(animateData, 4000 + Math.random() * 3000);
+                return;
+            }
+            
+            const t = step / transitionSteps;
+            const interpolatedData = currentData.map((row, i) => 
+                row.map((value, j) => {
+                    const newValue = newData[i][j];
+                    return value + (newValue - value) * t;
+                })
+            );
+            
+            updateChord(interpolatedData);
+            step++;
+            
+            setTimeout(animateStep, 60);
+        };
+        
+        animateStep();
+    }
+    
+    // Start animation cycle
+    setTimeout(animateData, 3000);
+}
+
+// Navigation Scroll Spy and Active Indicator
+class NavigationScrollSpy {
+    constructor() {
+        this.sections = [];
+        this.navLinks = [];
+        this.navIndicator = null;
+        this.currentActive = null;
+        this.isScrolling = false;
+        
+        this.init();
+    }
+    
+    init() {
+        // Get all navigation links and sections
+        this.navLinks = document.querySelectorAll('.nav-link');
+        this.navIndicator = document.querySelector('.nav-indicator');
+        
+        // Get all sections
+        this.navLinks.forEach(link => {
+            const sectionId = link.getAttribute('data-section');
+            const section = document.getElementById(sectionId);
+            if (section) {
+                this.sections.push({
+                    id: sectionId,
+                    element: section,
+                    link: link
+                });
+            }
+        });
+        
+        // Set up intersection observer for scroll spy
+        this.setupScrollSpy();
+        
+        // Set up click handlers
+        this.setupClickHandlers();
+        
+        // Set initial active state
+        this.setActiveSection('home');
+    }
+    
+    setupScrollSpy() {
+        const options = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            if (this.isScrolling) return;
+            
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    this.setActiveSection(sectionId);
+                }
+            });
+        }, options);
+        
+        // Observe all sections
+        this.sections.forEach(section => {
+            observer.observe(section.element);
+        });
+    }
+    
+    setupClickHandlers() {
+        this.navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                const section = document.getElementById(sectionId);
+                
+                if (section) {
+                    this.isScrolling = true;
+                    this.setActiveSection(sectionId);
+                    
+                    // Smooth scroll to section
+                    section.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Re-enable scroll spy after scrolling is complete
+                    setTimeout(() => {
+                        this.isScrolling = false;
+                    }, 1000);
+                }
+            });
+        });
+    }
+    
+    setActiveSection(sectionId) {
+        if (this.currentActive === sectionId) return;
+        
+        this.currentActive = sectionId;
+        
+        // Remove active class from all links
+        this.navLinks.forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Add active class to current link
+        const activeLink = document.querySelector(`[data-section="${sectionId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+            this.positionIndicator(activeLink);
+        }
+    }
+    
+    positionIndicator(activeLink) {
+        if (!this.navIndicator || !activeLink) return;
+        
+        const linkRect = activeLink.getBoundingClientRect();
+        const containerRect = activeLink.parentElement.getBoundingClientRect();
+        
+        const left = linkRect.left - containerRect.left;
+        const width = linkRect.width;
+        
+        this.navIndicator.style.left = `${left}px`;
+        this.navIndicator.style.width = `${width}px`;
+        this.navIndicator.classList.add('active');
+    }
+}
+
+// Initialize navigation scroll spy when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    new NavigationScrollSpy();
     // Small delay to ensure D3 is loaded
     setTimeout(initParticleEffect, 100);
     setTimeout(initTitleWaves, 200);
+    setTimeout(initChordLogo, 300);
+    setTimeout(initContactChord, 400);
 });
 
 // Title Wave Effects using D3.js
