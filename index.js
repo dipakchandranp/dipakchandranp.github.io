@@ -526,9 +526,223 @@ class NavigationScrollSpy {
     }
 }
 
+// Cursor Particle Effect for Hero Section
+class CursorParticles {
+    constructor() {
+        this.heroSection = document.getElementById('home');
+        this.particles = [];
+        this.isInHeroSection = false;
+        this.lastMousePosition = { x: 0, y: 0 };
+        this.animationFrameId = null;
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.heroSection) return;
+        
+        // Track mouse movement
+        document.addEventListener('mousemove', (e) => {
+            this.handleMouseMove(e);
+        });
+        
+        // Track when mouse enters/leaves hero section
+        this.heroSection.addEventListener('mouseenter', () => {
+            this.isInHeroSection = true;
+        });
+        
+        this.heroSection.addEventListener('mouseleave', () => {
+            this.isInHeroSection = false;
+        });
+        
+        // Start animation loop
+        this.animate();
+    }
+    
+    handleMouseMove(e) {
+        if (!this.isInHeroSection) return;
+        
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        // Calculate mouse velocity
+        const dx = mouseX - this.lastMousePosition.x;
+        const dy = mouseY - this.lastMousePosition.y;
+        const velocity = Math.sqrt(dx * dx + dy * dy);
+        
+        // Create particles based on mouse movement
+        if (velocity > 2) {
+            this.createParticle(mouseX, mouseY, velocity);
+        }
+        
+        // Create trail particles
+        if (Math.random() < 0.3) {
+            this.createTrailParticle(mouseX, mouseY);
+        }
+        
+        this.lastMousePosition = { x: mouseX, y: mouseY };
+    }
+    
+    createParticle(x, y, velocity) {
+        const particle = document.createElement('div');
+        particle.className = velocity > 15 ? 'cursor-particle large' : 'cursor-particle';
+        
+        // Random offset for natural spread
+        const offsetX = (Math.random() - 0.5) * 20;
+        const offsetY = (Math.random() - 0.5) * 20;
+        
+        particle.style.left = (x + offsetX) + 'px';
+        particle.style.top = (y + offsetY) + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Add to particles array
+        this.particles.push({
+            element: particle,
+            createdAt: Date.now()
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+            this.particles = this.particles.filter(p => p.element !== particle);
+        }, velocity > 15 ? 2000 : 1500);
+    }
+    
+    createTrailParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.className = 'cursor-particle trail';
+        
+        // Random offset for natural spread
+        const offsetX = (Math.random() - 0.5) * 15;
+        const offsetY = (Math.random() - 0.5) * 15;
+        
+        particle.style.left = (x + offsetX) + 'px';
+        particle.style.top = (y + offsetY) + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 1000);
+    }
+    
+    animate() {
+        // Clean up old particles
+        const now = Date.now();
+        this.particles = this.particles.filter(particle => {
+            if (now - particle.createdAt > 3000) {
+                if (particle.element.parentNode) {
+                    particle.element.parentNode.removeChild(particle.element);
+                }
+                return false;
+            }
+            return true;
+        });
+        
+        this.animationFrameId = requestAnimationFrame(() => this.animate());
+    }
+    
+    destroy() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+        }
+        
+        // Clean up remaining particles
+        this.particles.forEach(particle => {
+            if (particle.element.parentNode) {
+                particle.element.parentNode.removeChild(particle.element);
+            }
+        });
+    }
+}
+
+// Hero Intro Typing Animation
+class HeroIntroAnimation {
+    constructor() {
+        this.textElement = document.getElementById('hero-intro-text');
+        this.containerElement = document.getElementById('hero-intro-container');
+        
+        this.messages = [
+            { hello: "Hello,", normal: " I'm ", highlight: "Dipak" },
+            { hello: "Hello,", normal: " I'm from ", highlight: "Dublin" },
+            { hello: "Hello,", normal: " I work at ", highlight: "AWS" }
+        ];
+        
+        this.currentIndex = 0;
+        this.isAnimating = false;
+        this.pauseDelay = 2000;
+        this.flipDelay = 600;
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.textElement) return;
+        
+        // Start the animation sequence
+        this.startSequence();
+    }
+    
+    startSequence() {
+        this.typeMessage(this.messages[this.currentIndex]);
+    }
+    
+    typeMessage(message) {
+        this.isAnimating = true;
+        this.textElement.className = 'hero-intro-text flip-in';
+        
+        // Create the full text with proper styling - Hello bold, normal text, and highlighted text
+        const fullText = `<span class="intro-hello">${message.hello}</span><span class="intro-normal">${message.normal}</span><span class="intro-highlight">${message.highlight}</span>`;
+        
+        // Set the text content immediately
+        this.textElement.innerHTML = fullText;
+        
+        // Animation complete
+        this.isAnimating = false;
+        setTimeout(() => {
+            this.flipAndNext();
+        }, this.pauseDelay);
+    }
+    
+    flipAndNext() {
+        // Use flip-out animation
+        this.textElement.className = 'hero-intro-text flip-out';
+        
+        // Move to next message after flip out
+        setTimeout(() => {
+            // Reset styles
+            this.textElement.style.transform = '';
+            this.textElement.style.opacity = '';
+            
+            // Move to next message
+            this.currentIndex = (this.currentIndex + 1) % this.messages.length;
+            
+            // Start next message
+            setTimeout(() => {
+                this.startSequence();
+            }, 200);
+        }, this.flipDelay);
+    }
+    
+    destroy() {
+        // Clean up if needed
+        if (this.textElement) {
+            this.textElement.innerHTML = '';
+        }
+    }
+}
+
 // Initialize navigation scroll spy when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new NavigationScrollSpy();
+    new CursorParticles();
+    new HeroIntroAnimation();
     // Small delay to ensure D3 is loaded
     setTimeout(initParticleEffect, 100);
     setTimeout(initTitleWaves, 200);
