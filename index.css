@@ -1,3 +1,30 @@
+/* Global box-sizing and overflow prevention */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* Prevent any child elements from causing horizontal overflow */
+section, div, nav, header, footer, main, article, aside {
+    max-width: 100%;
+}
+
+/* Ensure images don't cause overflow */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Prevent long words from causing overflow */
+p, h1, h2, h3, h4, h5, h6, span, a {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 .glass {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -8,6 +35,26 @@
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-mobile-menu {
+    background: rgba(0, 0, 0, 0.80);
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    position: relative;
+}
+
+.glass-mobile-menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.03) 0%, 
+        rgba(255, 255, 255, 0.01) 50%, 
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    pointer-events: none;
 }
 
 .animate-on-scroll {
@@ -119,6 +166,20 @@ body {
 
 .timeline-item:last-child::before {
     background: linear-gradient(to bottom, #3b82f6, transparent);
+}
+
+/* Mobile-friendly timeline adjustments */
+@media (max-width: 640px) {
+    .timeline-item::before {
+        left: -17px;
+    }
+    
+    .timeline-item::after {
+        left: -21px;
+        width: 8px;
+        height: 8px;
+        top: 16px;
+    }
 }
 
 /* Custom Scrollbar Styling */
@@ -303,6 +364,79 @@ html {
         border-radius: 0.5rem;
     }
 }
+
+/* Hamburger Menu Styles */
+.hamburger-line {
+    transform-origin: center;
+}
+
+/* Hamburger Menu Open State */
+.hamburger-open .hamburger-line:first-child {
+    transform: rotate(45deg) translate(2px, 2px);
+}
+
+.hamburger-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-open .hamburger-line:last-child {
+    transform: rotate(-45deg) translate(2px, -2px);
+}
+
+/* Mobile Menu Styles */
+#mobile-menu.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.mobile-nav-link:hover::before {
+    left: 100%;
+}
+
+.mobile-nav-link.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Mobile Menu Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mobile-nav-link {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.mobile-nav-link:nth-child(1) { animation-delay: 0.1s; }
+.mobile-nav-link:nth-child(2) { animation-delay: 0.2s; }
+.mobile-nav-link:nth-child(3) { animation-delay: 0.3s; }
+.mobile-nav-link:nth-child(4) { animation-delay: 0.4s; }
+.mobile-nav-link:nth-child(5) { animation-delay: 0.5s; }
+.mobile-nav-link:nth-child(6) { animation-delay: 0.6s; }
 
 /* Chord Logo Animation */
 .animate-spin-slow {
