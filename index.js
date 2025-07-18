@@ -18,20 +18,32 @@ document.querySelectorAll('.animate-on-scroll, .animate-slide-left, .animate-sli
 });
 
 // Particle Effect using D3.js
+let particleEffectInitialized = false;
+
 function initParticleEffect() {
     const svg = d3.select("#particle-container");
-    const width = 320;
-    const height = 320;
+    
+    // Clear existing content
+    svg.selectAll('*').remove();
+    
+    // Calculate responsive dimensions
+    const viewportWidth = window.innerWidth;
+    const containerSize = viewportWidth < 640 ? 288 : 320; // 72*4 for mobile, 80*4 for larger screens
+    const width = containerSize;
+    const height = containerSize;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = 160; // Radius around the profile image
+    const radius = Math.min(width, height) / 2; // Radius around the profile image
+
+    // Update SVG size
+    svg.attr('width', width).attr('height', height);
 
     // Create particles data
-    const numParticles = 50;
+    const numParticles = viewportWidth < 640 ? 35 : 50; // Fewer particles on mobile
     const particles = d3.range(numParticles).map(d => ({
         id: d,
         angle: Math.random() * 2 * Math.PI,
-        distance: 80 + Math.random() * 80, // Distance from center
+        distance: 60 + Math.random() * 60, // Adjusted distance for mobile
         speed: 0.005 + Math.random() * 0.01,
         size: 2 + Math.random() * 4,
         opacity: 0.3 + Math.random() * 0.7,
@@ -80,12 +92,12 @@ function initParticleEffect() {
     // Add some shooting stars effect
     function createShootingStar() {
         const startAngle = Math.random() * 2 * Math.PI;
-        const startDistance = 120 + Math.random() * 40;
+        const startDistance = 100 + Math.random() * 30; // Adjusted for mobile
         const startX = centerX + Math.cos(startAngle) * startDistance;
         const startY = centerY + Math.sin(startAngle) * startDistance;
         
         const endAngle = startAngle + (Math.random() - 0.5) * Math.PI;
-        const endDistance = 40 + Math.random() * 40;
+        const endDistance = 30 + Math.random() * 30; // Adjusted for mobile
         const endX = centerX + Math.cos(endAngle) * endDistance;
         const endY = centerY + Math.sin(endAngle) * endDistance;
 
@@ -107,6 +119,18 @@ function initParticleEffect() {
 
     // Create shooting stars periodically
     setInterval(createShootingStar, 3000 + Math.random() * 2000);
+    
+    // Add resize listener only once
+    if (!particleEffectInitialized) {
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                initParticleEffect();
+            }, 300);
+        });
+        particleEffectInitialized = true;
+    }
 }
 
 // Animated Chord Diagram Logo
@@ -464,6 +488,7 @@ class NavigationScrollSpy {
     constructor() {
         this.sections = [];
         this.navLinks = [];
+        this.mobileNavLinks = [];
         this.navIndicator = null;
         this.currentActive = null;
         this.isScrolling = false;
@@ -474,6 +499,7 @@ class NavigationScrollSpy {
     init() {
         // Get all navigation links and sections
         this.navLinks = document.querySelectorAll('.nav-link');
+        this.mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
         this.navIndicator = document.querySelector('.nav-indicator');
         
         // Get all sections
@@ -492,7 +518,7 @@ class NavigationScrollSpy {
         // Set up intersection observer for scroll spy
         this.setupScrollSpy();
         
-        // Set up click handlers
+        // Set up click handlers for both desktop and mobile
         this.setupClickHandlers();
         
         // Set initial active state
@@ -524,29 +550,58 @@ class NavigationScrollSpy {
     }
     
     setupClickHandlers() {
+        // Desktop navigation
         this.navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const sectionId = link.getAttribute('data-section');
-                const section = document.getElementById(sectionId);
-                
-                if (section) {
-                    this.isScrolling = true;
-                    this.setActiveSection(sectionId);
-                    
-                    // Smooth scroll to section
-                    section.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    
-                    // Re-enable scroll spy after scrolling is complete
-                    setTimeout(() => {
-                        this.isScrolling = false;
-                    }, 1000);
-                }
+                this.handleNavigation(sectionId);
             });
         });
+        
+        // Mobile navigation
+        this.mobileNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                this.handleNavigation(sectionId);
+                // Close mobile menu
+                this.closeMobileMenu();
+            });
+        });
+    }
+    
+    handleNavigation(sectionId) {
+        const section = document.getElementById(sectionId);
+        
+        if (section) {
+            this.isScrolling = true;
+            this.setActiveSection(sectionId);
+            
+            // Smooth scroll to section
+            section.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            // Re-enable scroll spy after scrolling is complete
+            setTimeout(() => {
+                this.isScrolling = false;
+            }, 1000);
+        }
+    }
+    
+    closeMobileMenu() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerButton = document.getElementById('mobile-menu-button');
+        
+        if (mobileMenu) {
+            mobileMenu.classList.remove('show');
+        }
+        
+        if (hamburgerButton) {
+            hamburgerButton.classList.remove('hamburger-open');
+        }
     }
     
     setActiveSection(sectionId) {
@@ -554,16 +609,26 @@ class NavigationScrollSpy {
         
         this.currentActive = sectionId;
         
-        // Remove active class from all links
+        // Remove active class from all links (desktop and mobile)
         this.navLinks.forEach(link => {
             link.classList.remove('active');
         });
         
-        // Add active class to current link
-        const activeLink = document.querySelector(`[data-section="${sectionId}"]`);
-        if (activeLink) {
-            activeLink.classList.add('active');
-            this.positionIndicator(activeLink);
+        this.mobileNavLinks.forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Add active class to current links
+        const activeDesktopLink = document.querySelector(`[data-section="${sectionId}"].nav-link`);
+        const activeMobileLink = document.querySelector(`[data-section="${sectionId}"].mobile-nav-link`);
+        
+        if (activeDesktopLink) {
+            activeDesktopLink.classList.add('active');
+            this.positionIndicator(activeDesktopLink);
+        }
+        
+        if (activeMobileLink) {
+            activeMobileLink.classList.add('active');
         }
     }
     
@@ -582,33 +647,87 @@ class NavigationScrollSpy {
     }
 }
 
-// Cursor Particle Effect for Hero Section
-class CursorParticles {
+// Mobile Menu Handler
+class MobileMenuHandler {
     constructor() {
-        this.heroSection = document.getElementById('home');
-        this.particles = [];
-        this.isInHeroSection = false;
-        this.lastMousePosition = { x: 0, y: 0 };
-        this.animationFrameId = null;
+        this.mobileMenuButton = document.getElementById('mobile-menu-button');
+        this.mobileMenu = document.getElementById('mobile-menu');
+        this.isOpen = false;
         
         this.init();
     }
     
     init() {
-        if (!this.heroSection) return;
+        if (!this.mobileMenuButton || !this.mobileMenu) return;
         
-        // Track mouse movement
+        // Handle hamburger button click
+        this.mobileMenuButton.addEventListener('click', () => {
+            this.toggleMenu();
+        });
+        
+        // Handle backdrop click (clicking outside the menu)
+        this.mobileMenu.addEventListener('click', (e) => {
+            if (e.target === this.mobileMenu) {
+                this.closeMenu();
+            }
+        });
+        
+        // Handle escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) {
+                this.closeMenu();
+            }
+        });
+    }
+    
+    toggleMenu() {
+        if (this.isOpen) {
+            this.closeMenu();
+        } else {
+            this.openMenu();
+        }
+    }
+    
+    openMenu() {
+        this.mobileMenu.classList.add('show');
+        this.mobileMenuButton.classList.add('hamburger-open');
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+        this.isOpen = true;
+    }
+    
+    closeMenu() {
+        this.mobileMenu.classList.remove('show');
+        this.mobileMenuButton.classList.remove('hamburger-open');
+        document.body.style.overflow = ''; // Restore background scroll
+        this.isOpen = false;
+    }
+}
+
+// Cursor Particle Effect for Full Page
+class CursorParticles {
+    constructor() {
+        this.particles = [];
+        this.lastMousePosition = { x: 0, y: 0 };
+        this.animationFrameId = null;
+        this.themeColors = [
+            '#3b82f6', // Blue
+            '#8b5cf6', // Purple
+            '#06b6d4', // Cyan
+            '#10b981', // Green
+            '#f59e0b', // Amber
+            '#ef4444', // Red
+            '#f26223', // Orange
+            '#ffdd89', // Light yellow
+            '#ffffff'  // White
+        ];
+        
+        this.init();
+    }
+    
+    init() {
+        // Track mouse movement on entire page
         document.addEventListener('mousemove', (e) => {
             this.handleMouseMove(e);
-        });
-        
-        // Track when mouse enters/leaves hero section
-        this.heroSection.addEventListener('mouseenter', () => {
-            this.isInHeroSection = true;
-        });
-        
-        this.heroSection.addEventListener('mouseleave', () => {
-            this.isInHeroSection = false;
         });
         
         // Start animation loop
@@ -616,8 +735,6 @@ class CursorParticles {
     }
     
     handleMouseMove(e) {
-        if (!this.isInHeroSection) return;
-        
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         
@@ -626,13 +743,14 @@ class CursorParticles {
         const dy = mouseY - this.lastMousePosition.y;
         const velocity = Math.sqrt(dx * dx + dy * dy);
         
-        // Create particles based on mouse movement
-        if (velocity > 2) {
+        // Reduced generation frequency but increased limit
+        // Create particles based on mouse movement (less frequent generation)
+        if (velocity > 4) {
             this.createParticle(mouseX, mouseY, velocity);
         }
         
-        // Create trail particles
-        if (Math.random() < 0.3) {
+        // Create trail particles less frequently
+        if (Math.random() < 0.25) {
             this.createTrailParticle(mouseX, mouseY);
         }
         
@@ -640,66 +758,179 @@ class CursorParticles {
     }
     
     createParticle(x, y, velocity) {
+        const size = velocity > 20 ? 8 + Math.random() * 8 : 4 + Math.random() * 6; // Bigger particles
+        const color = this.themeColors[Math.floor(Math.random() * this.themeColors.length)];
+        
         const particle = document.createElement('div');
-        particle.className = velocity > 15 ? 'cursor-particle large' : 'cursor-particle';
+        particle.className = 'cursor-particle-physics';
+        
+        // Random offset for natural spread
+        const offsetX = (Math.random() - 0.5) * 30;
+        const offsetY = (Math.random() - 0.5) * 30;
+        
+        // Physics properties
+        const particleData = {
+            element: particle,
+            x: x + offsetX,
+            y: y + offsetY,
+            vx: (Math.random() - 0.5) * 4, // Horizontal velocity
+            vy: (Math.random() - 0.5) * 2 - 2, // Initial upward velocity
+            size: size,
+            color: color,
+            gravity: 0.15 + (size * 0.01), // Larger particles fall faster
+            bounce: 0.7,
+            life: 8000, // 8 seconds - increased from 5
+            createdAt: Date.now(),
+            opacity: 1,
+            lastMoveTime: Date.now(), // Track when particle last moved
+            stableCount: 0 // Count how many frames particle has been stable
+        };
+        
+        // Set initial styles
+        particle.style.position = 'fixed';
+        particle.style.left = particleData.x + 'px';
+        particle.style.top = particleData.y + 'px';
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.background = `radial-gradient(circle, ${color} 0%, ${color}80 70%, transparent 100%)`;
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '9999';
+        particle.style.filter = 'blur(0.5px)';
+        particle.style.boxShadow = `0 0 ${size}px ${color}40`;
+        
+        document.body.appendChild(particle);
+        this.particles.push(particleData);
+    }
+    
+    createTrailParticle(x, y) {
+        const size = 2 + Math.random() * 3;
+        const color = this.themeColors[Math.floor(Math.random() * this.themeColors.length)];
+        
+        const particle = document.createElement('div');
+        particle.className = 'cursor-particle-trail';
         
         // Random offset for natural spread
         const offsetX = (Math.random() - 0.5) * 20;
         const offsetY = (Math.random() - 0.5) * 20;
         
-        particle.style.left = (x + offsetX) + 'px';
-        particle.style.top = (y + offsetY) + 'px';
-        
-        document.body.appendChild(particle);
-        
-        // Add to particles array
-        this.particles.push({
+        // Physics properties
+        const particleData = {
             element: particle,
-            createdAt: Date.now()
-        });
+            x: x + offsetX,
+            y: y + offsetY,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 1 - 1,
+            size: size,
+            color: color,
+            gravity: 0.08 + (size * 0.005),
+            bounce: 0.5,
+            life: 6000, // 6 seconds - increased from 3
+            createdAt: Date.now(),
+            opacity: 0.8,
+            lastMoveTime: Date.now(), // Track when particle last moved
+            stableCount: 0 // Count how many frames particle has been stable
+        };
         
-        // Remove particle after animation
-        setTimeout(() => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-            this.particles = this.particles.filter(p => p.element !== particle);
-        }, velocity > 15 ? 2000 : 1500);
-    }
-    
-    createTrailParticle(x, y) {
-        const particle = document.createElement('div');
-        particle.className = 'cursor-particle trail';
-        
-        // Random offset for natural spread
-        const offsetX = (Math.random() - 0.5) * 15;
-        const offsetY = (Math.random() - 0.5) * 15;
-        
-        particle.style.left = (x + offsetX) + 'px';
-        particle.style.top = (y + offsetY) + 'px';
+        // Set initial styles
+        particle.style.position = 'fixed';
+        particle.style.left = particleData.x + 'px';
+        particle.style.top = particleData.y + 'px';
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.background = color;
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '9999';
+        particle.style.opacity = particleData.opacity;
         
         document.body.appendChild(particle);
-        
-        // Remove particle after animation
-        setTimeout(() => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        }, 1000);
+        this.particles.push(particleData);
     }
     
     animate() {
-        // Clean up old particles
         const now = Date.now();
-        this.particles = this.particles.filter(particle => {
-            if (now - particle.createdAt > 3000) {
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        
+        // Update each particle
+        this.particles.forEach((particle, index) => {
+            // Check if particle should be removed
+            const age = now - particle.createdAt;
+            if (age > particle.life) {
                 if (particle.element.parentNode) {
                     particle.element.parentNode.removeChild(particle.element);
                 }
-                return false;
+                this.particles.splice(index, 1);
+                return;
             }
-            return true;
+            
+            // Store previous position for stability check
+            const prevX = particle.x;
+            const prevY = particle.y;
+            
+            // Apply gravity (positive for down)
+            particle.vy += particle.gravity;
+            
+            // Update position
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            
+            // Bounce off edges
+            if (particle.x <= 0 || particle.x >= windowWidth - particle.size) {
+                particle.vx *= -particle.bounce;
+                particle.x = Math.max(0, Math.min(windowWidth - particle.size, particle.x));
+            }
+            
+            // Bounce off the bottom
+            if (particle.y >= windowHeight - particle.size) {
+                particle.vy *= -particle.bounce;
+                particle.y = windowHeight - particle.size;
+                particle.vx *= 0.95; // Friction on ground
+            }
+            
+            // Check if particle is stable (not moving much)
+            const moveThreshold = 0.1; // Very small movement threshold
+            const deltaX = Math.abs(particle.x - prevX);
+            const deltaY = Math.abs(particle.y - prevY);
+            const velocityMagnitude = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy);
+            
+            if (deltaX < moveThreshold && deltaY < moveThreshold && velocityMagnitude < 0.5) {
+                particle.stableCount++;
+                
+                // If particle has been stable for 60 frames (about 1 second at 60fps), remove it
+                if (particle.stableCount > 60) {
+                    if (particle.element.parentNode) {
+                        particle.element.parentNode.removeChild(particle.element);
+                    }
+                    this.particles.splice(index, 1);
+                    return;
+                }
+            } else {
+                // Reset stable count if particle starts moving again
+                particle.stableCount = 0;
+                particle.lastMoveTime = now;
+            }
+            
+            // Fade out over time
+            const lifeProgress = age / particle.life;
+            particle.opacity = Math.max(0, 1 - lifeProgress);
+            
+            // Update DOM element
+            particle.element.style.left = particle.x + 'px';
+            particle.element.style.top = particle.y + 'px';
+            particle.element.style.opacity = particle.opacity;
         });
+        
+        // Increased particle limit for better effect (was 100, now 200)
+        if (this.particles.length > 200) {
+            const oldestParticles = this.particles.splice(0, 30);
+            oldestParticles.forEach(particle => {
+                if (particle.element.parentNode) {
+                    particle.element.parentNode.removeChild(particle.element);
+                }
+            });
+        }
         
         this.animationFrameId = requestAnimationFrame(() => this.animate());
     }
@@ -715,6 +946,7 @@ class CursorParticles {
                 particle.element.parentNode.removeChild(particle.element);
             }
         });
+        this.particles = [];
     }
 }
 
@@ -797,6 +1029,7 @@ class HeroIntroAnimation {
 // Initialize navigation scroll spy when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new NavigationScrollSpy();
+    new MobileMenuHandler();
     new CursorParticles();
     new HeroIntroAnimation();
     // Small delay to ensure D3 is loaded
