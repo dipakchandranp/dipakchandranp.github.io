@@ -3,9 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dipak Chandran Parambil - Frontend Developer</title>
+    <meta name="description" content="Dipak Chandran Parambil - Frontend Developer with AI Engineering Expertise. 13+ years building intelligent web applications with React, TypeScript, AWS AI services, machine learning integration, and AI-driven user experiences. Currently architecting AI solutions at AWS CloudWatch.">
+    <title>Dipak Chandran Parambil - Frontend Developer with AI Engineering Expertise</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicons/favicon-16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicons/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicons/favicon-180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/favicons/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./assets/favicons/favicon-512.png">
+    <link rel="manifest" href="./site.webmanifest">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="msapplication-TileColor" content="#3b82f6">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="./assets/profile_image_512.jpg" as="image">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
     <script>
         tailwind.config = {
             theme: {
@@ -119,7 +137,15 @@
                 <svg id="particle-container" class="absolute inset-0 w-72 h-72 sm:w-80 sm:h-80 mx-auto pointer-events-none" style="top: -2rem; left: 50%; transform: translateX(-50%);">
                 </svg>
                 <div class="w-48 h-48 sm:w-64 sm:h-64 mx-auto rounded-full overflow-hidden border-8 border-black shadow-2xl animate-glow p-4 bg-black relative z-10">
-                    <img src="./assets/profile_image.jpg" alt="Dipak Chandran Parambil" class="w-full h-full object-cover rounded-full">
+                    <img src="./assets/profile_image_256.jpg" 
+                         srcset="./assets/profile_image_256.jpg 256w, ./assets/profile_image_512.jpg 512w"
+                         sizes="(max-width: 640px) 256px, 512px"
+                         width="256" 
+                         height="256"
+                         loading="eager"
+                         decoding="async"
+                         alt="Dipak Chandran Parambil" 
+                         class="w-full h-full object-cover rounded-full">
                 </div>
             </div>
             <h1 class="text-4xl sm:text-5xl md:text-7xl font-light mb-6 animate-fade-in">
@@ -128,8 +154,8 @@
                 </div>
             </h1>
             <p class="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 animate-slide-up leading-relaxed">
-                Frontend Developer crafting intuitive digital experiences<br>
-                <span class="text-blue-400">turning ideas into seamless user journeys</span>
+                Frontend Developer with AI Engineering Expertise<br>
+                <span class="text-blue-400">building intelligent applications and AI-driven user experiences</span>
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center animate-scale">
                 <a href="#about" class="glass px-4 py-3 sm:px-6 sm:py-4 rounded-full hover:bg-blue-500/20 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
@@ -158,14 +184,14 @@
             <div class="text-center mb-16 animate-slide-up">
                 <div class="w-full sm:max-w-3xl mx-auto mb-8">
                     <p class="text-base sm:text-lg text-gray-300 leading-relaxed mb-6">
-                        I'm a passionate frontend developer who transforms complex ideas into intuitive, 
-                        seamless user experiences. With expertise in modern web technologies, I bridge 
-                        the gap between design and functionality.
+                        I'm a passionate frontend developer with AI engineering expertise who transforms complex ideas into intelligent, 
+                        intuitive user experiences. With 13+ years in web development and deep knowledge of machine learning technologies, 
+                        I bridge the gap between cutting-edge AI and seamless user interfaces.
                     </p>
                     <p class="text-base sm:text-lg text-gray-300 leading-relaxed">
-                        When I'm not crafting digital experiences, you'll find me gaming on my PS5 
-                        or exploring the world through my camera lens, capturing moments that inspire 
-                        my creative process.
+                        From building AI-powered applications at AWS to integrating machine learning models into production systems, 
+                        I specialize in creating intelligent digital experiences. When I'm not coding AI solutions or crafting user interfaces, 
+                        you'll find me gaming on my PS5 or exploring the world through my camera lens, capturing moments that inspire my creative process.
                     </p>
                 </div>
             </div>
@@ -207,8 +233,8 @@
                     <!-- Specialization -->
                     <div class="animate-scale">
                         <h3 class="text-lg font-semibold text-cyan-400 mb-1">Specialization</h3>
-                        <p class="text-gray-300 text-sm">AI-powered Data Viz</p>
-                        <p class="text-gray-400 text-xs">Interactive Interfaces</p>
+                        <p class="text-gray-300 text-sm">AI Engineering & Frontend</p>
+                        <p class="text-gray-400 text-xs">Intelligent Applications</p>
                     </div>
                 </div>
             </div>
@@ -362,10 +388,16 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj11.png" alt="AWS AI Operations" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj11_optimized.jpg" 
+                             alt="AWS AI Operations" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-blue-400">AWS AI Operations</h3>
-                    <p class="text-sm sm:text-base text-gray-300 mb-4">Developed AI-driven solutions for operational efficiency and automated monitoring systems.</p>
+                    <p class="text-sm sm:text-base text-gray-300 mb-4">Built AI-powered operational solutions integrating machine learning models for automated monitoring, intelligent alerting, and predictive analytics systems.</p>
                     <a href="https://aws.amazon.com/cloudwatch/" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">
                         View Project →
                     </a>
@@ -373,7 +405,13 @@
 
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj9.png" alt="CloudWatch Metrics Streams" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj9_optimized.jpg" 
+                             alt="CloudWatch Metrics Streams" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-purple-400">CloudWatch Metrics Streams</h3>
                     <p class="text-sm sm:text-base text-gray-300 mb-4">Implemented real-time data streaming features for enterprise monitoring solutions.</p>
@@ -384,7 +422,13 @@
 
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj1.png" alt="Milaap" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj1_optimized.jpg" 
+                             alt="Milaap" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-cyan-400">Milaap Platform</h3>
                     <p class="text-sm sm:text-base text-gray-300 mb-4">Led frontend development for India's largest crowdfunding platform, serving millions.</p>
@@ -395,7 +439,13 @@
 
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj5.png" alt="Extreme Networks" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj5_optimized.jpg" 
+                             alt="Extreme Networks" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-green-400">Network Management Suite</h3>
                     <p class="text-sm sm:text-base text-gray-300 mb-4">Developed comprehensive network management software with advanced UI/UX.</p>
@@ -406,7 +456,13 @@
 
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj4.png" alt="The North Face" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj4_optimized.jpg" 
+                             alt="The North Face" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-orange-400">The North Face</h3>
                     <p class="text-sm sm:text-base text-gray-300 mb-4">Enhanced e-commerce experience for outdoor gear with modern web technologies.</p>
@@ -417,7 +473,13 @@
 
                 <div class="project-card glass rounded-3xl p-4 sm:p-6 animate-scale">
                     <div class="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl p-4 mb-6">
-                        <img src="./projects/prj8.png" alt="Think IIT" class="w-full h-32 object-cover rounded-xl">
+                        <img src="./projects/prj8_optimized.jpg" 
+                             alt="Think IIT" 
+                             class="w-full h-32 object-cover rounded-xl"
+                             width="400" 
+                             height="200"
+                             loading="lazy" 
+                             decoding="async">
                     </div>
                     <h3 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-400">Think IIT Platform</h3>
                     <p class="text-sm sm:text-base text-gray-300 mb-4">Built comprehensive educational platform for IIT aspirants with interactive features.</p>
@@ -579,6 +641,6 @@
         </div>
     </footer>
 
-    <script src="index.js"></script>
+    <script src="index.js" defer></script>
 </body>
 </html> 

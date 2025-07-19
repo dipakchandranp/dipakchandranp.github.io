@@ -467,65 +467,6 @@ html {
     filter: drop-shadow(0 0 60px rgba(242, 98, 35, 0.6));
 }
 
-/* Cursor Particles */
-.cursor-particle {
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    background: radial-gradient(circle, rgba(242, 98, 35, 0.8) 0%, rgba(255, 221, 137, 0.6) 50%, transparent 100%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    animation: particle-fade 1.5s ease-out forwards;
-}
-
-@keyframes particle-fade {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.3);
-    }
-}
-
-.cursor-particle.large {
-    width: 6px;
-    height: 6px;
-    background: radial-gradient(circle, rgba(255, 221, 137, 0.9) 0%, rgba(242, 98, 35, 0.4) 50%, transparent 100%);
-    animation: particle-fade-large 2s ease-out forwards;
-}
-
-@keyframes particle-fade-large {
-    0% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.2) rotate(180deg);
-    }
-}
-
-.cursor-particle.trail {
-    width: 2px;
-    height: 2px;
-    background: rgba(255, 221, 137, 0.6);
-    animation: particle-trail 1s ease-out forwards;
-}
-
-@keyframes particle-trail {
-    0% {
-        opacity: 0.8;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-}
-
 /* Hero Intro Typing Animation */
 .hero-intro-container {
     position: relative;

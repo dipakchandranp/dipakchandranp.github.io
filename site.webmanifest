@@ -1,0 +1,22 @@
+{
+    "name": "Dipak Chandran Parambil - Frontend Developer with AI Engineering Expertise",
+    "short_name": "DCP Portfolio",
+    "description": "Frontend Developer with AI Engineering Expertise building intelligent web applications and AI-driven user experiences",
+    "icons": [
+        {
+            "src": "./assets/favicons/favicon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/favicons/favicon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#3b82f6",
+    "background_color": "#111827",
+    "display": "standalone",
+    "start_url": "./",
+    "scope": "./"
+} 
