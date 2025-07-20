@@ -26,25 +26,25 @@ function initParticleEffect() {
     // Clear existing content
     svg.selectAll('*').remove();
     
-    // Calculate responsive dimensions
+    // Calculate responsive dimensions - increased container size for better particle distribution
     const viewportWidth = window.innerWidth;
-    const containerSize = viewportWidth < 640 ? 288 : 320; // 72*4 for mobile, 80*4 for larger screens
+    const containerSize = viewportWidth < 640 ? 360 : 400; // Increased from 288/320 to 360/400
     const width = containerSize;
     const height = containerSize;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(width, height) / 2; // Radius around the profile image
+    const radius = Math.min(width, height) / 2;
 
     // Update SVG size
     svg.attr('width', width).attr('height', height);
 
-    // Create particles data
-    const numParticles = viewportWidth < 640 ? 35 : 50; // Fewer particles on mobile
+    // Create particles data with better distribution
+    const numParticles = viewportWidth < 640 ? 15 : 45; // Reduced particle count
     const particles = d3.range(numParticles).map(d => ({
         id: d,
-        angle: Math.random() * 2 * Math.PI,
-        distance: 60 + Math.random() * 60, // Adjusted distance for mobile
-        speed: 0.005 + Math.random() * 0.01,
+        angle: (d / numParticles) * 2 * Math.PI + Math.random() * 0.5, // Better initial distribution
+        distance: 100 + Math.random() * 100, // Increased distance range for larger radius area
+        speed: 0.0075 + Math.random() * 0.0125, // Fixed speed (reverted from mouse-based)
         size: 2 + Math.random() * 4,
         opacity: 0.3 + Math.random() * 0.7,
         color: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][Math.floor(Math.random() * 5)]
@@ -66,9 +66,9 @@ function initParticleEffect() {
         particles.forEach(particle => {
             particle.angle += particle.speed;
             
-            // Create orbital motion with some randomness
-            const offsetX = Math.cos(particle.angle + Date.now() * 0.001) * 20;
-            const offsetY = Math.sin(particle.angle + Date.now() * 0.001) * 20;
+            // Create orbital motion with some randomness - reduced offset for better containment
+            const offsetX = Math.cos(particle.angle + Date.now() * 0.002) * 15; // Increased frequency, reduced amplitude
+            const offsetY = Math.sin(particle.angle + Date.now() * 0.002) * 15;
             
             particle.x = centerX + Math.cos(particle.angle) * particle.distance + offsetX;
             particle.y = centerY + Math.sin(particle.angle) * particle.distance + offsetY;
@@ -92,12 +92,12 @@ function initParticleEffect() {
     // Add some shooting stars effect
     function createShootingStar() {
         const startAngle = Math.random() * 2 * Math.PI;
-        const startDistance = 100 + Math.random() * 30; // Adjusted for mobile
+        const startDistance = 150 + Math.random() * 50; // Adjusted for larger particle area
         const startX = centerX + Math.cos(startAngle) * startDistance;
         const startY = centerY + Math.sin(startAngle) * startDistance;
         
         const endAngle = startAngle + (Math.random() - 0.5) * Math.PI;
-        const endDistance = 30 + Math.random() * 30; // Adjusted for mobile
+        const endDistance = 50 + Math.random() * 50; // Adjusted for larger particle area
         const endX = centerX + Math.cos(endAngle) * endDistance;
         const endY = centerY + Math.sin(endAngle) * endDistance;
 
