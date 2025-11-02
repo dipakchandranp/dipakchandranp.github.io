@@ -1,0 +1,27 @@
+# TravelFixture Code Standards
+
+## File Size
+- Maximum 100 lines per file
+- Break into child components if needed
+
+## Structure
+- Use utils/ for helper functions
+- Use hooks/ for custom React hooks
+- Group components by feature
+- Keep components minimal
+
+## Logic
+- Move complex logic to utils
+- Use JS classes for related logic (e.g., TravelDataManager)
+- Keep functions small and focused
+- Each function does ONE thing
+
+## Components
+- Split into small child components
+- Pass props, not complex logic
+- Composition over complexity
+
+## No Tests Required
+- Focus on clean, readable code
+- Self-documenting through simplicity
+
