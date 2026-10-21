@@ -73,12 +73,21 @@ body.entered main,body.entered .chip{animation:none}
 body.leaving main{opacity:0}
 body.leaving .chip{opacity:0}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+#who{position:fixed;z-index:5;top:calc(env(safe-area-inset-top) + 1.25rem + (clamp(1.5rem,5vw,2.25rem)*1.1 - 31px)/2);right:max(18px,calc(50vw - 520px + 18px));max-width:calc(50vw - 82px);min-width:0;height:31px;font-size:.8rem;color:#6e6e73;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .4s}
+#who.on{opacity:1;pointer-events:auto}
+#whoT{color:#f5f5f7;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#whoX{flex:none;color:#a1a1a6;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+#whoX:hover{color:#f5f5f7}
+@media(max-width:360px){#who{font-size:.72rem;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 31px)/2)}}
+body.authed .top .chip{visibility:hidden}
+#who{position:absolute}
+body.leaving #who{opacity:0}
 </style>
 </head>
 <body>
 <header class="top">
   <a class="logo" id="home" href="../../#tiles">zelo/zuno</a>
-  <button class="chip" id="chip"><span id="chipT">Sign in</span></button>
+  <button class="chip" id="chip"><span id="chipT">Sign in</span></button><div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
 </header>
 <main>
   <section class="play">
@@ -145,7 +154,8 @@ async function loadLb(){
 $('chip').onclick=async()=>{const u=zz.currentUser();
   if(!u){try{await zz.signInWithGoogle();}catch(e){console.warn(e);}}
   else if(!zz.currentProfile()?.username)$('modal').classList.add('show');
-  else if(confirm('Sign out?'))await zz.signOut();};
+  };
+$('whoX').onclick=e=>{e.preventDefault();zz.signOut().catch(console.warn);};
 $('note').onclick=()=>{if(!zz.currentUser())$('chip').click();};
 $('ulater').onclick=()=>$('modal').classList.remove('show');
 $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();
@@ -153,7 +163,7 @@ $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim()
   $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');}catch(err){$('uerr').textContent=err.message||'Could not save';}};
 let authSeen=false;
 zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
-  $('chipT').textContent=u?(p?.username||'Set username'):'Sign in';
+  $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
   $('note').style.visibility=u?'hidden':'visible';
   if(uid!==curUid){curUid=uid;gen++;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');}
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');

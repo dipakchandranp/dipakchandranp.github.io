@@ -31,16 +31,18 @@ body.open .card.off{opacity:.35;cursor:default;-webkit-tap-highlight-color:trans
 @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(0,1fr);gap:.75rem;align-content:stretch}.card{border-radius:16px}}
 .card:not(.off):active{transform:scale(.97)}
 body.instant .hero,body.instant h1,body.instant .go{transition:none!important}
-#who{position:fixed;z-index:5;top:calc(env(safe-area-inset-top) + 1.25rem + (clamp(1.5rem,5vw,2.25rem)*1.1 - 31px)/2);right:max(18px,calc(50vw - 520px + 18px));max-width:calc(50vw - 75px);min-width:0;height:31px;background:#111113;border:1px solid #1d1d1f;border-radius:999px;padding:7px 14px;font-size:.8rem;color:#f5f5f7;display:flex;align-items:center;gap:7px;opacity:0;pointer-events:none;transition:opacity .4s}
-#whoT{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-#who.on{opacity:1}
-@media(max-width:360px){#who{padding:6px 9px;font-size:.72rem;height:28px;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 28px)/2)}}
+#who{position:fixed;z-index:5;top:calc(env(safe-area-inset-top) + 1.25rem + (clamp(1.5rem,5vw,2.25rem)*1.1 - 31px)/2);right:max(18px,calc(50vw - 520px + 18px));max-width:calc(50vw - 82px);min-width:0;height:31px;font-size:.8rem;color:#6e6e73;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .4s}
+#who.on{opacity:1;pointer-events:auto}
+#whoT{color:#f5f5f7;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#whoX{flex:none;color:#a1a1a6;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+#whoX:hover{color:#f5f5f7}
+@media(max-width:360px){#who{font-size:.72rem;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 31px)/2)}}
 body.leaving .card{opacity:0!important;transform:scale(.98)!important;transition:opacity .25s ease,transform .25s ease!important;transition-delay:0s!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div id="who" aria-live="polite"><span id="whoT"></span></div>
+<div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
 <div class="hero">
 <h1>zelo/zuno</h1>
 <button class="go" id="go">click here</button>
@@ -79,8 +81,8 @@ document.querySelectorAll('a.card').forEach(function(a){a.addEventListener('clic
 </script>
 <script type="module">
 // signed-in indicator; home keeps working if Firebase fails
-const who=document.getElementById('who'),whoT=document.getElementById('whoT');
-import('./shared/zz.js?v=3').then(zz=>{zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
+const who=document.getElementById('who'),whoT=document.getElementById('whoT');let zzm;document.getElementById('whoX').onclick=function(e){e.preventDefault();e.stopPropagation();if(zzm)zzm.signOut().catch(console.warn)};
+import('./shared/zz.js?v=3').then(zz=>{zzm=zz;zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
 </script>
 </body>
 </html>
