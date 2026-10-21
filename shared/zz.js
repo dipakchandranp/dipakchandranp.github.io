@@ -10,11 +10,6 @@ const newId = () => (globalThis.crypto?.randomUUID?.() || (Date.now().toString(3
 const logErr = (where, e) => console.error(`zz ${where}:`, e?.code || '', e?.message || e, e?.code === 'permission-denied' ? '(check Firestore rules are published)' : '');
 
 
-// one-time cleanup of storage keys written by earlier versions
-export function cleanupLegacyStorage(st = globalThis.localStorage) {
-  try { if (!st) return; const ks = []; for (let i = 0; i < st.length; i++) { const k = st.key(i); if (k && k.startsWith('zz:')) ks.push(k); } ks.forEach(k => st.removeItem(k)); } catch {}
-}
-cleanupLegacyStorage();
 
 export async function init() {
   if (fb) return fb;
