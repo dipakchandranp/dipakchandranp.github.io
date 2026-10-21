@@ -35,12 +35,12 @@ body.open .card{opacity:1;transform:none}
 </div>
 <div class="grid" id="grid">
 <div class="card"><span class="ic">അ</span><span class="t">Item 1</span></div>
-<div class="card"><span class="ic">ആ</span><span class="t">Item 2</span></div>
-<div class="card"><span class="ic">ഇ</span><span class="t">Item 3</span></div>
-<div class="card"><span class="ic">ഉ</span><span class="t">Item 4</span></div>
-<div class="card"><span class="ic">എ</span><span class="t">Item 5</span></div>
-<div class="card"><span class="ic">ഒ</span><span class="t">Item 6</span></div>
-<div class="card"><span class="ic">ക</span><span class="t">Item 7</span></div>
+<div class="card"><span class="ic">മ</span><span class="t">Item 2</span></div>
+<div class="card"><span class="ic">ച</span><span class="t">Item 3</span></div>
+<div class="card"><span class="ic">ല</span><span class="t">Item 4</span></div>
+<div class="card"><span class="ic">ക</span><span class="t">Item 5</span></div>
+<div class="card"><span class="ic">ത</span><span class="t">Item 6</span></div>
+<div class="card"><span class="ic">എ</span><span class="t">Item 7</span></div>
 </div>
 <script>
 document.getElementById('go').onclick=function(){document.body.classList.add('open');document.querySelectorAll('.card').forEach(function(c,i){c.style.transitionDelay=(0.55+i*0.07)+'s'});setTimeout(function(){document.querySelectorAll('.card').forEach(function(c){c.style.transitionDelay='0s'})},1600)};
