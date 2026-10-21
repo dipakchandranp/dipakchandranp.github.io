@@ -4,20 +4,217 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>zelo/zuno</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<title>Dipak Chandran Parambil · Frontend Engineer</title>
+<meta name="description" content="Frontend Engineer · React · TypeScript · Node.js — Dublin, Ireland">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden}
-body{height:100dvh;background:#000;color:#f5f5f7;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;text-align:center;gap:1rem}
-h1{font-weight:600;font-size:clamp(2rem,8vw,4rem);letter-spacing:-.04em}
-p{color:#a1a1a6;font-size:1rem;max-width:32rem;line-height:1.5}
-a{position:absolute;top:calc(env(safe-area-inset-top) + 1.25rem);left:50%;transform:translateX(-50%);color:#f5f5f7;text-decoration:none;font-weight:600;font-size:clamp(1.5rem,5vw,2.25rem);letter-spacing:-.04em}
+:root{--bg:#000;--fg:#f5f5f7;--mu:#a1a1a6;--card:#111113;--bd:#1d1d1f;--r:18px;--ac:#2997ff}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;font-size:15px}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:10;background:rgba(0,0,0,.72);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--bd)}
+.top .in{max-width:960px;margin:0 auto;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-weight:600;letter-spacing:-.03em;font-size:1.05rem;white-space:nowrap}
+.nav{display:flex;gap:1.1rem;overflow-x:auto;scrollbar-width:none;font-size:.82rem;color:var(--mu);min-width:0}
+.nav::-webkit-scrollbar{display:none}
+.nav a{white-space:nowrap;transition:color .2s}.nav a:hover,.nav a.on{color:var(--fg)}
+main{max-width:960px;margin:0 auto;padding:2rem 1.25rem 4rem;display:grid;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;min-width:0;transition:border-color .25s}
+.card:hover{border-color:#2c2c2e}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);font-weight:600;margin-bottom:1rem}
+.hero{display:flex;gap:1.5rem;align-items:center}
+.hero img{width:112px;height:112px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--bd)}
+.hero h1{font-size:clamp(1.6rem,5vw,2.4rem);letter-spacing:-.035em;line-height:1.1;font-weight:700}
+.title{color:var(--fg);font-weight:500;margin-top:.35rem}
+.sum{color:var(--mu);margin-top:.5rem;max-width:40rem}
+.links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.pill{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .8rem;border-radius:999px;border:1px solid var(--bd);background:#000;font-size:.82rem;color:var(--fg);transition:border-color .2s,background .2s;max-width:100%;overflow-wrap:anywhere}
+a.pill:hover{border-color:#3a3a3c;background:#1a1a1c}
+.pill svg{width:14px;height:14px;flex:none;fill:currentColor}
+.cta{background:var(--fg);color:#000;border-color:var(--fg);font-weight:600}
+a.cta:hover{background:#fff;color:#000;border-color:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:1.25rem}
+.stat{border:1px solid var(--bd);border-radius:14px;padding:.7rem .9rem;background:#000;min-width:0}
+.stat b{display:block;font-size:1.25rem;letter-spacing:-.02em}.stat span{font-size:.75rem;color:var(--mu)}
+.sk{display:grid;gap:.9rem}
+.sk h3{font-size:.8rem;color:var(--mu);font-weight:500;margin-bottom:.4rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font-size:.78rem;padding:.3rem .65rem;border-radius:999px;background:#1a1a1c;border:1px solid #232325;transition:transform .2s,border-color .2s}
+.chip:hover{transform:translateY(-1px);border-color:#3a3a3c}
+.tl{list-style:none;position:relative}
+.tl:before{content:"";position:absolute;left:5px;top:.5rem;bottom:.5rem;width:1px;background:var(--bd)}
+.job{position:relative;padding-left:1.6rem;margin-bottom:1rem}
+.job:last-child{margin-bottom:0}
+.job:before{content:"";position:absolute;left:0;top:.45rem;width:11px;height:11px;border-radius:50%;background:#000;border:2px solid #3a3a3c}
+.job.now:before{border-color:var(--ac);box-shadow:0 0 0 4px rgba(41,151,255,.15)}
+.job summary{list-style:none;cursor:pointer;display:block}
+.job summary::-webkit-details-marker{display:none}
+.jh{display:flex;justify-content:space-between;gap:.25rem 1rem;flex-wrap:wrap;align-items:baseline}
+.jh b{font-weight:600}.jh .d{font-size:.8rem;color:var(--mu);white-space:nowrap}
+.co{color:var(--mu);font-size:.88rem}
+.job ul{margin:.45rem 0 0 1rem;color:#d2d2d7;font-size:.88rem}
+.job li{margin-bottom:.25rem}
+.more{font-size:.78rem;color:var(--ac);margin-top:.35rem;display:inline-block}
+.more:after{content:"Show more ›"}
+details[open] .more:after{content:"Show less ‹"}
+.tech{font-size:.78rem;color:var(--mu);margin-top:.4rem}
+.earlier{border-top:1px solid var(--bd);margin-top:1.1rem;padding-top:1rem;font-size:.85rem;color:var(--mu);display:grid;gap:.35rem}
+.earlier b{color:var(--fg);font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.pj{display:block;border:1px solid var(--bd);border-radius:14px;padding:1rem;background:#000;transition:transform .25s,border-color .25s;min-width:0}
+.pj:hover{transform:translateY(-2px);border-color:#3a3a3c}
+.pj b{display:block;font-weight:600;margin-bottom:.25rem}
+.pj p{font-size:.85rem;color:var(--mu)}
+.pj .tech{margin-top:.5rem}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+.ed{display:grid;gap:.75rem;font-size:.9rem}
+.ed span{display:block;color:var(--mu);font-size:.82rem}
+footer{text-align:center;color:var(--mu);font-size:.78rem;padding:0 1.25rem 2.5rem}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.rv.in,.no-js .rv{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+@media (max-width:700px){.grid,.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){
+ main{padding:1.25rem .9rem 3rem;gap:1rem}.card{padding:1.2rem}
+ .hero{flex-direction:column;align-items:flex-start;gap:1rem}.hero img{width:88px;height:88px}
+ .top .in{padding:.65rem .9rem}.nav{gap:.85rem}
+ .stats{gap:.5rem}.stat{padding:.6rem}.stat b{font-size:1.05rem}
+}
+@media (max-width:360px){.nav{display:none}}
 </style>
 </head>
-<body>
-<a href="../">zelo/zuno</a>
-<h1>About me</h1>
-<p>Placeholder. Tell me what you'd like here.</p>
+<body class="no-js">
+<header class="top"><div class="in">
+<a class="brand" href="../">zelo/zuno</a>
+<nav class="nav" aria-label="Sections"><a href="#about">About</a><a href="#skills">Skills</a><a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#education">Education</a></nav>
+</div></header>
+<main>
+<section class="card rv" id="about">
+ <div class="hero">
+  <img src="assets/profile_256.jpg" srcset="assets/profile_256.jpg 256w, assets/profile_512.jpg 512w" sizes="112px" width="112" height="112" alt="Dipak Chandran Parambil">
+  <div style="min-width:0">
+   <h1>Dipak Chandran Parambil</h1>
+   <div class="title">Frontend Engineer · React · TypeScript · Node.js</div>
+   <p class="sum">14+ years building customer-facing web applications &amp; data-rich interfaces, currently on AWS CloudWatch, one of AWS's largest observability services.</p>
+  </div>
+ </div>
+ <div class="links">
+  <a class="pill cta" href="Dipak_Chandran_Parambil_CV.pdf" download><svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5z"/></svg>Download CV</a>
+  <a class="pill" href="mailto:dipakchandranp15@gmail.com"><svg viewBox="0 0 24 24"><path d="M2 5h20v14H2zm2 2v.4l8 5 8-5V7zm16 2.8-8 5-8-5V17h16z"/></svg>dipakchandranp15@gmail.com</a>
+  <a class="pill" href="https://www.linkedin.com/in/dipakchandranp/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 3a2 2 0 110 4 2 2 0 010-4zM2 9h4v12H2zm7 0h4v1.7C13.6 9.7 14.9 9 16.5 9 20 9 21 11.2 21 14.5V21h-4v-5.8c0-1.5-.3-2.7-1.900-2.7-1.6 0-2.1 1.1-2.1 2.7V21H9z"/></svg>LinkedIn</a>
+  <a class="pill" href="https://github.com/dipakchandranp" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.300 1.1 2.900.8.1-.6.4-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.800 1a9.6 9.6 0 015 0c1.900-1.3 2.800-1 2.800-1 .5 1.400.2 2.400.1 2.700.6.7 1 1.600 1 2.700 0 3.900-2.300 4.700-4.600 5 .4.3.7.9.7 1.900V21c0 .3.2.6.7.5A10 10 0 0012 2z"/></svg>GitHub</a>
+  <a class="pill" href="https://stackoverflow.com/users/1823740/dipak" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M17 20v-5h2v7H3v-7h2v5zM7 16h8v2H7zm.3-3.9 7.8 1.6-.4 2-7.8-1.6zm1-3.8 7.2 3.4-.8 1.8-7.2-3.4zm2-3.5 6.1 5.1-1.3 1.5L9 6.3zM14.2 1l4.8 6.4-1.6 1.2-4.8-6.4z"/></svg>Stack Overflow</a>
+  <span class="pill"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z"/></svg>Dublin, Ireland</span>
+ </div>
+ <div class="stats">
+  <div class="stat"><b>14+ yrs</b><span>Web engineering</span></div>
+  <div class="stat"><b>AWS</b><span>CloudWatch since 2022</span></div>
+  <div class="stat"><b>Lead</b><span>Mentored team of 4</span></div>
+ </div>
+</section>
+
+<section class="card rv" id="skills">
+ <h2>Key skills</h2>
+ <div class="sk">
+  <div><h3>Frontend</h3><div class="chips"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">CloudScape</span><span class="chip">HTML5</span><span class="chip">SCSS</span><span class="chip">Zustand</span><span class="chip">Redux</span><span class="chip">D3</span></div></div>
+  <div><h3>Build &amp; Test</h3><div class="chips"><span class="chip">Vite</span><span class="chip">Webpack</span><span class="chip">Jest</span><span class="chip">Vitest</span><span class="chip">Playwright</span><span class="chip">Puppeteer</span><span class="chip">Storybook</span></div></div>
+  <div><h3>Backend, Cloud &amp; AI</h3><div class="chips"><span class="chip">Node.js / Express</span><span class="chip">Python</span><span class="chip">AWS Lambda</span><span class="chip">CloudFormation</span><span class="chip">Data Firehose</span><span class="chip">Amazon Bedrock</span><span class="chip">Step Functions</span><span class="chip">DynamoDB</span></div></div>
+  <div><h3>Ways of working</h3><div class="chips"><span class="chip">Design systems</span><span class="chip">Data visualization</span><span class="chip">A/B experimentation</span><span class="chip">Cross-functional squads</span><span class="chip">Mentoring</span></div></div>
+ </div>
+</section>
+
+<section class="card rv" id="experience">
+ <h2>Experience</h2>
+ <ol class="tl">
+  <li class="job now"><details>
+   <summary><div class="jh"><b>Frontend Engineer</b><span class="d">Jun 2022 – Present</span></div>
+   <div class="co">Amazon Web Services (AWS) · CloudWatch · Dublin</div>
+   <ul><li>Built the front end for an AI-assisted operational investigations console correlating metrics, logs and alarms.</li><li>Built Metric Streams partner integrations and led multiple new AWS regional launches.</li></ul>
+   <span class="more"></span></summary>
+   <div><ul>
+    <li>Self-service metric-onboarding tool, built full-stack end-to-end (React, Node.js/Express, Lambda), replacing a manual config process.</li>
+    <li>Authored two reusable E2E frameworks adopted across teams: an LLM-agent framework (Python, Bedrock, Fargate) and a deterministic Playwright visual-regression suite that resolved chronic flakiness.</li>
+    <li>AI/LLM feedback-triage platform: serverless pipeline (ingest → classify → cluster → attribute → summarize) plus dashboard front end.</li>
+    <li>Designing and leading the build of a save/reuse query API service, owning the API contract, implementation and client.</li>
+    <li>Self-initiated visual drag-and-drop UI builder that exports production-ready React components and unit tests.</li>
+   </ul><div class="tech">React, TypeScript, SCSS, CloudScape, Redux-Saga, Zustand, Vite, Webpack, Playwright, Node.js</div></div>
+  </details></li>
+  <li class="job"><details>
+   <summary><div class="jh"><b>Staff Software Application Engineer</b><span class="d">Oct 2021 – Jun 2022</span></div>
+   <div class="co">Extreme Networks · Bangalore</div>
+   <ul><li>Built network-monitoring UI for ExtremeCloud IQ: device health, alarms and real-time performance.</li></ul>
+   <span class="more"></span></summary>
+   <div><ul><li>Contributed reusable elements to the shared design system used across the suite.</li><li>Delivered data-rich monitoring views for large-scale enterprise deployments with backend and UX teams.</li></ul><div class="tech">React, TypeScript, Redux, SCSS</div></div>
+  </details></li>
+  <li class="job"><details>
+   <summary><div class="jh"><b>Technical Lead</b><span class="d">May 2020 – Sep 2021</span></div>
+   <div class="co">Sourcebits Digital · Bangalore · CloudTV for ActiveVideo</div>
+   <ul><li>Led frontend architecture and technical direction for the CloudTV management UI.</li></ul>
+   <span class="more"></span></summary>
+   <div><ul><li>Owned code reviews, release quality, and mentoring of frontend engineers.</li></ul><div class="tech">React, TypeScript, Redux, Node.js, SCSS, Webpack</div></div>
+  </details></li>
+  <li class="job"><details>
+   <summary><div class="jh"><b>Frontend Lead</b><span class="d">Mar 2018 – Mar 2020</span></div>
+   <div class="co">Milaap · Bangalore</div>
+   <ul><li>Led migration from a legacy stack to React for South Asia's largest crowdfunding platform.</li><li>Managed and mentored a team of 4 frontend engineers.</li></ul>
+   <span class="more"></span></summary>
+   <div><ul><li>Shipped core features across fundraiser creation, donation flows, campaign pages and donor experiences.</li><li>Established frontend best practices for reusability and build tooling.</li></ul><div class="tech">React, Redux, Webpack, Babel, SCSS, Node.js</div></div>
+  </details></li>
+ </ol>
+ <div class="earlier">
+  <div><b>Sr. Interactive Developer</b> · Echidna · 2014 – 2017 · eCommerce storefronts on Kibo (Mozu)</div>
+  <div><b>Sr. Software Engineer</b> · thinkIIT · 2015 – 2016 · EdTech platform, Python &amp; Django</div>
+  <div><b>Software Engineer</b> · Asklepian Technologies · 2012 – 2014 · EHR hospital automation, Java</div>
+ </div>
+</section>
+
+<section class="card rv" id="projects">
+ <h2>Notable projects</h2>
+ <div class="grid">
+  <div class="pj"><b>AI Investigations Console</b><p>AI-assisted operational investigations in CloudWatch with guided onboarding, built with Product, UX and Applied Science.</p><div class="tech">React · TypeScript · CloudScape</div></div>
+  <div class="pj"><b>CloudWatch Metric Streams</b><p>Partner-integration front end for near-real-time metric streaming to third-party monitoring partners.</p><div class="tech">React · TypeScript · Data Firehose</div></div>
+  <div class="pj"><b>Feedback-triage platform</b><p>LLM pipeline that categorizes, clusters and routes product feedback to owning teams, plus dashboard.</p><div class="tech">Bedrock · Step Functions · DynamoDB · D3</div></div>
+  <div class="pj"><b>E2E test frameworks</b><p>LLM-agent natural-language UI testing and byte-stable Playwright visual regression, adopted across teams.</p><div class="tech">Python · Bedrock · Fargate · Playwright</div></div>
+  <div class="pj"><b>Visual UI builder</b><p>Drag-and-drop canvas exporting production-ready React components and unit tests.</p><div class="tech">React · Code generation</div></div>
+  <a class="pj" href="https://milaap.org/" target="_blank" rel="noopener"><b>Milaap ↗</b><p>Crowdfunding platform for personal and healthcare causes serving millions; legacy-to-React migration.</p><div class="tech">React · Redux · Node.js</div></a>
+ </div>
+</section>
+
+<div class="two">
+ <section class="card rv" id="education">
+  <h2>Education</h2>
+  <div class="ed">
+   <div>M.C.A., Computer Applications<span>Cochin University of Science &amp; Technology · 2009 – 2012</span></div>
+   <div>B.Sc., Physics<span>Calicut University · 2005 – 2008</span></div>
+  </div>
+ </section>
+ <section class="card rv">
+  <h2>Awards &amp; languages</h2>
+  <div class="ed">
+   <div>Employee of the Year<span>2016 – 2017</span></div>
+   <div>English<span>Full professional proficiency</span></div>
+  </div>
+ </section>
+</div>
+</main>
+<footer>© Dipak Chandran Parambil · <a href="../">zelo/zuno</a></footer>
+<script>
+(function(){
+ document.body.classList.remove('no-js');
+ var els=[].slice.call(document.querySelectorAll('.rv'));
+ function show(e){e.classList.add('in')}
+ els.forEach(function(e){if(e.getBoundingClientRect().top<innerHeight)show(e)});
+ if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){show(x.target);io.unobserve(x.target)}})},{rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(e){if(!e.classList.contains('in'))io.observe(e)});
+ }else els.forEach(show);
+ setTimeout(function(){els.forEach(show)},2500);
+ var links=[].slice.call(document.querySelectorAll('.nav a'));
+ var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+ addEventListener('scroll',function(){var y=scrollY+120,c=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)c=i});links.forEach(function(a,i){a.classList.toggle('on',i===c)})},{passive:true});
+})();
+</script>
 </body>
 </html>
