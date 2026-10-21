@@ -117,8 +117,8 @@ $('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(
 $('next').onclick=newQ;
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('res').classList.contains('show')&&document.activeElement!==$('next')){e.preventDefault();newQ();}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function refresh(){
-  const h=await zz.getMyHistory(G,6);$('best').textContent=h.best;
+async function refresh(){const uid=zz.currentUser()?.uid;
+  const h=await zz.getMyHistory(G,6);if(zz.currentUser()?.uid!==uid)return;$('best').textContent=h.best;
   $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.a??'?'} + ${p.b??'?'}</span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):'<div class="empty">No plays yet</div>';
   try{const l=await Promise.race([zz.getLeaderboard(G,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):'<div class="empty">No scores yet</div>';}
   catch(e){$('lb').innerHTML='<div class="empty">Leaderboard unavailable</div>';}
@@ -131,13 +131,15 @@ $('note').onclick=()=>{if(!zz.currentUser())$('chip').click();};
 $('ulater').onclick=()=>$('modal').classList.remove('show');
 $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();
   if(!zz.validUsername(n)){$('uerr').textContent='3–16 letters or digits only';return;}
-  $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');await zz.syncLocal(G);refresh();}catch(err){$('uerr').textContent=err.message||'Could not save';}};
-zz.onUser(async(u,p)=>{
+  $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');}catch(err){$('uerr').textContent=err.message||'Could not save';}};
+let gen=0;
+zz.onUser(async(u,p)=>{const my=++gen;
   $('chipT').textContent=u?(p?.username||'Set username'):'Sign in';
   $('note').style.visibility=u?'hidden':'visible';
-  if(u&&!p?.username)$('modal').classList.add('show');
-  if(u){try{await zz.syncLocal(G);}catch(e){console.warn(e);}}
-  refresh();});
+  if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
+  if(!u){$('best').textContent='0';$('hist').innerHTML='<div class="empty">No plays yet</div>';}
+  if(u){try{await zz.syncLocal(G);}catch(e){console.error(e);}}
+  if(my===gen)refresh();});
 newQ();refresh();zz.init();
 </script>
 </body>
