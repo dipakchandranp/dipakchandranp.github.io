@@ -1,8 +1,8 @@
 // zelo/zuno shared module: auth, profile, scores
 // Data model:
 //  - Guest plays: localStorage zz:{g}:plays (only when signed out).
-//  - On first sign-in on this device, guest plays are merged ONCE into that account,
-//    then deleted locally. zz:guestMergedTo records the uid; never merge into a 2nd account.
+//  - On ANY sign-in, current guest plays are merged into that account (idempotent by
+//    play id), then deleted locally, so they can never be merged into a second account.
 //  - Signed in: plays go to Firestore only (doc id = stable play id => idempotent).
 //    Failed writes queue in zz:{g}:pending:{uid} and retry later (never displayed, never guest).
 import { firebaseConfig } from './firebase-config.js';
@@ -12,7 +12,6 @@ const subs = new Set();
 const RE = /^[A-Za-z0-9]{3,16}$/;
 const guestKey = g => `zz:${g}:plays`;
 const pendKey = (g, uid) => `zz:${g}:pending:${uid}`;
-const MERGED = 'zz:guestMergedTo';
 export const validUsername = n => RE.test(n || '');
 const newId = () => (globalThis.crypto?.randomUUID?.() || (Date.now().toString(36) + Math.random().toString(36).slice(2, 12))).replace(/-/g, '');
 const logErr = (where, e) => console.error(`zz ${where}:`, e?.code || '', e?.message || e, e?.code === 'permission-denied' ? '(check Firestore rules are published)' : '');
@@ -120,12 +119,8 @@ export function syncLocal(g) {
   return serial(g, async () => {
     if (!online()) return;
     const uid = user.uid, pk = pendKey(g, uid);
-    const mergedTo = ls.getItem(MERGED);
-    let guest = [];
-    if (!mergedTo || mergedTo === uid) {
-      guest = rd(guestKey(g)).map(p => p.id ? p : { ...p, id: newId() });
-      if (guest.length) { wr(guestKey(g), guest); ls.setItem(MERGED, uid); } // persist ids before writing
-    }
+    const guest = rd(guestKey(g)).map(p => p.id ? p : { ...p, id: newId() });
+    if (guest.length) wr(guestKey(g), guest); // persist ids before writing
     const pend = rd(pk);
     const todo = [...guest, ...pend];
     if (!todo.length) { await syncLeaderboard(g); return; }

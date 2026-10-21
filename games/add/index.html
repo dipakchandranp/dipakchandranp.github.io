@@ -90,7 +90,7 @@ main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;displa
     </div>
   </section>
   <aside class="side">
-    <div class="panel"><h3>My plays <span>best <b id="best">0</b></span></h3><div id="hist"><div class="empty">No plays yet</div></div></div>
+    <div class="panel"><h3>My plays <span>best <b id="best">0</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
     <div class="panel"><h3>Leaderboard</h3><div id="lb"><div class="empty">Loading…</div></div></div>
   </aside>
 </main>
@@ -137,10 +137,9 @@ zz.onUser(async(u,p)=>{const my=++gen;
   $('chipT').textContent=u?(p?.username||'Set username'):'Sign in';
   $('note').style.visibility=u?'hidden':'visible';
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
-  if(!u){$('best').textContent='0';$('hist').innerHTML='<div class="empty">No plays yet</div>';}
-  if(u){try{await zz.syncLocal(G);}catch(e){console.error(e);}}
+  if(u){$('hist').innerHTML='<div class="empty">Loading…</div>';$('best').textContent='–';try{await zz.syncLocal(G);}catch(e){console.error(e);}}
   if(my===gen)refresh();});
-newQ();refresh();zz.init();
+$('hist').innerHTML='<div class="empty">Loading…</div>';newQ();zz.init();setTimeout(()=>{if(gen===0)refresh();},4000);
 </script>
 </body>
 </html>
