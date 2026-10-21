@@ -30,21 +30,16 @@ body.open .card.off{opacity:.35;cursor:default;-webkit-tap-highlight-color:trans
 .card.off .t{color:#6e6e73;font-size:.8rem;letter-spacing:.08em}
 @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(0,1fr);gap:.75rem;align-content:stretch}.card{border-radius:16px}}
 .card:not(.off):active{transform:scale(.97)}
-@view-transition{navigation:auto}
-h1{view-transition-name:zz-title}
-::view-transition-group(zz-title){animation-duration:.6s;animation-timing-function:cubic-bezier(.65,0,.35,1)}
 body.instant .hero,body.instant h1,body.instant .go{transition:none!important}
-body.leaving .card{opacity:0!important;transform:translateY(-8px) scale(.94)!important;transition:opacity .35s,transform .45s cubic-bezier(.65,0,.35,1)!important}
-body.leaving .card.picked{opacity:1!important;transform:scale(1.06)!important;border-color:#3a3a3c;background:#161618;transition:transform .5s cubic-bezier(.65,0,.35,1),opacity .3s .3s!important}
-body.leaving.go2 .card.picked{opacity:0!important;transform:scale(1.12)!important}
-.card .ic{transition:transform .5s cubic-bezier(.65,0,.35,1),text-shadow .5s}
-body.leaving .card.picked .ic{transform:translateY(-6px) scale(1.15);text-shadow:0 0 24px rgba(255,255,255,.35)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+h1 .tt{display:inline-block;transition:transform .45s cubic-bezier(.65,0,.35,1)}
+h1 .tt.nt{transition:none}
+body.leaving .card{opacity:0!important;transform:scale(.98)!important;transition:opacity .25s ease,transform .25s ease!important;transition-delay:0s!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="hero">
-<h1>zelo/zuno</h1>
+<h1><span class="tt" id="tt">zelo/zuno</span></h1>
 <button class="go" id="go">click here</button>
 </div>
 <div class="grid" id="grid">
@@ -63,23 +58,23 @@ document.getElementById('go').onclick=function(){document.body.classList.add('op
 (function(){var n=0,t;document.getElementById('ld').addEventListener('click',function(){n++;clearTimeout(t);t=setTimeout(function(){n=0},1500);if(n>=6){n=0;location.href=atob('bWUv');}});})();
 
 (function(){
-var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,cards=document.querySelectorAll('.card');
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,cards=document.querySelectorAll('.card'),tt=document.getElementById('tt');
+// x offset that puts the title exactly where the game page header renders it
+function dx(){var t=tt.style.transform;tt.classList.add('nt');tt.style.transform='none';var l=tt.getBoundingClientRect().left;tt.style.transform=t;tt.offsetWidth;tt.classList.remove('nt');return (Math.max(0,(innerWidth-1040)/2)+18)-l}
 if(location.hash==='#tiles'||/[?&]open\b/.test(location.search)){
   document.body.classList.add('instant','open');
-  cards.forEach(function(c,i){c.style.transitionDelay=(0.1+i*0.05)+'s'});
-  requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.remove('instant')})});
-  setTimeout(function(){cards.forEach(function(c){c.style.transitionDelay='0s'})},1000);
   history.replaceState(null,'',location.pathname);
+  if(!RM){tt.classList.add('nt');tt.style.transform='translateX('+dx()+'px)';cards.forEach(function(c){c.style.transitionDelay='.15s'})}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.remove('instant');tt.classList.remove('nt');tt.style.transform=''})});
+  setTimeout(function(){cards.forEach(function(c){c.style.transitionDelay='0s'})},800);
 }
-function reset(){document.body.classList.remove('leaving','go2');cards.forEach(function(c){c.classList.remove('picked');c.style.transitionDelay='0s'})}
+function reset(){document.body.classList.remove('leaving');tt.classList.add('nt');tt.style.transform='';tt.offsetWidth;tt.classList.remove('nt');cards.forEach(function(c){c.style.transitionDelay='0s'})}
 window.addEventListener('pageshow',function(e){if(e.persisted){reset();document.body.classList.add('open')}});
 document.querySelectorAll('a.card').forEach(function(a){a.addEventListener('click',function(e){
   if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||RM||!document.body.classList.contains('open'))return;
-  e.preventDefault();var href=a.href,k=0;
-  cards.forEach(function(c){if(c!==a){c.style.transitionDelay=(k++*0.035)+'s'}else c.classList.add('picked')});
-  document.body.classList.add('leaving');
-  setTimeout(function(){document.body.classList.add('go2')},380);
-  setTimeout(function(){location.href=href},600);
+  e.preventDefault();var href=a.href;
+  document.body.classList.add('leaving');tt.style.transform='translateX('+dx()+'px)';
+  setTimeout(function(){location.href=href},470);
 })});
 })();
 </script>
