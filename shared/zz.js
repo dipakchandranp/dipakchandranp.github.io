@@ -1,24 +1,20 @@
 // zelo/zuno shared module: auth, profile, scores
-// Data model:
-//  - Guest plays: localStorage zz:{g}:plays (only when signed out).
-//  - On ANY sign-in, current guest plays are merged into that account (idempotent by
-//    play id), then deleted locally, so they can never be merged into a second account.
-//  - Signed in: plays go to Firestore only (doc id = stable play id => idempotent).
-//    Failed writes queue in zz:{g}:pending:{uid} and retry later (never displayed, never guest).
+// Guests: nothing is saved. Signed in: plays live in Firestore only.
 import { firebaseConfig } from './firebase-config.js';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
 const RE = /^[A-Za-z0-9]{3,16}$/;
-const guestKey = g => `zz:${g}:plays`;
-const pendKey = (g, uid) => `zz:${g}:pending:${uid}`;
 export const validUsername = n => RE.test(n || '');
 const newId = () => (globalThis.crypto?.randomUUID?.() || (Date.now().toString(36) + Math.random().toString(36).slice(2, 12))).replace(/-/g, '');
 const logErr = (where, e) => console.error(`zz ${where}:`, e?.code || '', e?.message || e, e?.code === 'permission-denied' ? '(check Firestore rules are published)' : '');
 
-let ls = globalThis.localStorage;
-const rd = k => { try { return JSON.parse(ls.getItem(k)) || []; } catch { return []; } };
-const wr = (k, a) => { try { a.length ? ls.setItem(k, JSON.stringify(a.slice(-200))) : ls.removeItem(k); } catch {} };
+
+// one-time cleanup of storage keys written by earlier versions
+export function cleanupLegacyStorage(st = globalThis.localStorage) {
+  try { if (!st) return; const ks = []; for (let i = 0; i < st.length; i++) { const k = st.key(i); if (k && k.startsWith('zz:')) ks.push(k); } ks.forEach(k => st.removeItem(k)); } catch {}
+}
+cleanupLegacyStorage();
 
 export async function init() {
   if (fb) return fb;
@@ -36,7 +32,7 @@ export async function init() {
   return fb;
 }
 // test hook
-export function _test(backend, u, p, storage) { fb = backend; user = u; profile = p; if (storage) ls = storage; }
+export function _test(backend, u, p) { fb = backend; user = u; profile = p; }
 
 export function onUser(cb) { subs.add(cb); if (fb) cb(user, profile); return () => subs.delete(cb); }
 export const currentUser = () => user;
@@ -83,10 +79,10 @@ export async function setUsername(name) {
   return profile;
 }
 
-// Write one play idempotently (play doc id = p.id) and update aggregate. Returns new best.
-async function writePlay(g, p) {
+// Write one play (doc id = play id) and update aggregate in one transaction.
+async function writePlay(g, uid, p) {
   const { doc, runTransaction, serverTimestamp, Timestamp } = fb.F;
-  const gref = doc(fb.db, 'users', user.uid, 'games', g), pref = doc(fb.db, 'users', user.uid, 'games', g, 'plays', p.id);
+  const gref = doc(fb.db, 'users', uid, 'games', g), pref = doc(fb.db, 'users', uid, 'games', g, 'plays', p.id);
   return runTransaction(fb.db, async t => {
     const gs = await t.get(gref), ps = await t.get(pref);
     const cur = gs.exists() ? gs.data() : { best: 0, plays: 0 };
@@ -111,49 +107,24 @@ export async function syncLeaderboard(g) {
   } catch (e) { logErr('leaderboard write', e); }
 }
 
-const locks = {};
-const serial = (g, fn) => (locks[g] = (locks[g] || Promise.resolve()).catch(() => {}).then(fn));
-
-// Flush per-uid pending queue + one-time guest merge. Safe to call repeatedly.
-export function syncLocal(g) {
-  return serial(g, async () => {
-    if (!online()) return;
-    const uid = user.uid, pk = pendKey(g, uid);
-    const guest = rd(guestKey(g)).map(p => p.id ? p : { ...p, id: newId() });
-    if (guest.length) wr(guestKey(g), guest); // persist ids before writing
-    const pend = rd(pk);
-    const todo = [...guest, ...pend];
-    if (!todo.length) { await syncLeaderboard(g); return; }
-    const failed = [];
-    for (const p of todo) { try { await writePlay(g, p); } catch (e) { logErr('play write', e); failed.push(p); } }
-    const gIds = new Set(guest.map(p => p.id));
-    if (guest.length) wr(guestKey(g), failed.filter(p => gIds.has(p.id)));
-    wr(pk, failed.filter(p => !gIds.has(p.id)));
-    await syncLeaderboard(g);
-  });
-}
-
+// Saves only when signed in; returns the play, or null for guests.
 export async function saveScore(g, score, extra = {}) {
-  const p = { id: newId(), score, ...extra, at: Date.now() };
-  if (!online()) { const a = rd(guestKey(g)); a.push(p); wr(guestKey(g), a); return p; }
-  const pk = pendKey(g, user.uid), a = rd(pk); a.push(p); wr(pk, a);
-  await syncLocal(g);
+  if (!online()) return null;
+  const uid = user.uid, p = { id: newId(), score, ...extra, at: Date.now() };
+  try { await writePlay(g, uid, p); } catch (e) { logErr('play write', e); throw e; }
+  if (user?.uid === uid) await syncLeaderboard(g);
   return p;
 }
-
+// Firestore only; null when signed out.
 export async function getMyHistory(g, n = 10) {
-  if (online()) {
-    const pend = rd(pendKey(g, user.uid));
-    try {
-      const { doc, getDoc, collection, query, orderBy, limit, getDocs } = fb.F;
-      const gref = doc(fb.db, 'users', user.uid, 'games', g);
-      const [s, q] = await Promise.all([getDoc(gref), getDocs(query(collection(gref, 'plays'), orderBy('at', 'desc'), limit(n)))]);
-      const d = s.exists() ? s.data() : {};
-      return { best: d.best || 0, plays: d.plays || 0, recent: q.docs.map(x => ({ id: x.id, ...x.data(), at: x.data().at?.toMillis?.() })), pending: pend.length };
-    } catch (e) { logErr('history', e); return { best: 0, plays: 0, recent: [], error: true }; }
-  }
-  const a = rd(guestKey(g));
-  return { best: a.reduce((m, p) => Math.max(m, p.score), 0), plays: a.length, recent: a.slice(-n).reverse() };
+  if (!online()) return null;
+  const uid = user.uid, { doc, getDoc, collection, query, orderBy, limit, getDocs } = fb.F;
+  const gref = doc(fb.db, 'users', uid, 'games', g);
+  try {
+    const [s, q] = await Promise.all([getDoc(gref), getDocs(query(collection(gref, 'plays'), orderBy('at', 'desc'), limit(n)))]);
+    const d = s.exists() ? s.data() : {};
+    return { uid, best: d.best || 0, plays: d.plays || 0, recent: q.docs.map(x => ({ id: x.id, ...x.data(), at: x.data().at?.toMillis?.() })) };
+  } catch (e) { logErr('history', e); throw e; }
 }
 export async function getLeaderboard(g, n = 10) {
   await init(); if (fb.offline) return [];

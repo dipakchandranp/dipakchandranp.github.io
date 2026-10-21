@@ -90,7 +90,7 @@ main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;displa
     </div>
   </section>
   <aside class="side">
-    <div class="panel"><h3>My plays <span>best <b id="best">0</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
+    <div class="panel"><h3>My plays <span>best <b id="best">–</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
     <div class="panel"><h3>Leaderboard</h3><div id="lb"><div class="empty">Loading…</div></div></div>
   </aside>
 </main>
@@ -102,7 +102,7 @@ main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;displa
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js';
+import * as zz from '../../shared/zz.js?v=3';
 const G='add',$=id=>document.getElementById(id);
 let a,b,t0,raf,busy=false;
 const pts=()=>Math.max(0,100-5*Math.floor((performance.now()-t0)/1000));
@@ -113,16 +113,26 @@ $('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(
   const timeMs=Math.round(performance.now()-t0),ok=+v===a+b,score=ok?Math.max(0,100-5*Math.floor(timeMs/1000)):0;
   $('in').blur();$('sub').className='sub'+(ok?'':' bad');$('sub').textContent=ok?`${(timeMs/1000).toFixed(1)}s · ${a} + ${b} = ${a+b}`:`Wrong — ${a} + ${b} = ${a+b}`;
   $('res').classList.add('show');countUp(score);setTimeout(()=>$('next').focus({preventScroll:true}),50);
-  await zz.saveScore(G,score,{timeMs,a,b});refresh();};
+  const uid=curUid;if(!uid)return;
+  try{await zz.saveScore(G,score,{timeMs,a,b});}catch(e){console.error(e);}
+  if(uid===curUid){loadMine();loadLb();}};
 $('next').onclick=newQ;
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('res').classList.contains('show')&&document.activeElement!==$('next')){e.preventDefault();newQ();}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function refresh(){const uid=zz.currentUser()?.uid;
-  const h=await zz.getMyHistory(G,6);if(zz.currentUser()?.uid!==uid)return;$('best').textContent=h.best;
-  $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.a??'?'} + ${p.b??'?'}</span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):'<div class="empty">No plays yet</div>';
-  try{const l=await Promise.race([zz.getLeaderboard(G,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):'<div class="empty">No scores yet</div>';}
-  catch(e){$('lb').innerHTML='<div class="empty">Leaderboard unavailable</div>';}
-}
+// ---- auth-scoped state: everything below is keyed to curUid + gen token ----
+let curUid=null,gen=0;
+const empty=t=>`<div class="empty">${t}</div>`;
+function clearMine(msg){$('best').textContent='–';$('hist').innerHTML=empty(msg);}
+async function loadMine(){const my=++gen,uid=curUid;
+  if(!uid){clearMine('Sign in to save your plays');return;}
+  let h;try{h=await zz.getMyHistory(G,6);}catch(e){h=undefined;}
+  if(my!==gen||uid!==curUid||zz.currentUser()?.uid!==uid)return; // stale
+  if(!h||h.uid!==uid){clearMine('Could not load plays');return;}
+  $('best').textContent=h.best;
+  $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.a??'?'} + ${p.b??'?'}</span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):empty('No plays yet');}
+async function loadLb(){
+  try{const l=await Promise.race([zz.getLeaderboard(G,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):empty('No scores yet');}
+  catch(e){$('lb').innerHTML=empty('Leaderboard unavailable');}}
 $('chip').onclick=async()=>{const u=zz.currentUser();
   if(!u){try{await zz.signInWithGoogle();}catch(e){console.warn(e);}}
   else if(!zz.currentProfile()?.username)$('modal').classList.add('show');
@@ -132,14 +142,15 @@ $('ulater').onclick=()=>$('modal').classList.remove('show');
 $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();
   if(!zz.validUsername(n)){$('uerr').textContent='3–16 letters or digits only';return;}
   $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');}catch(err){$('uerr').textContent=err.message||'Could not save';}};
-let gen=0;
-zz.onUser(async(u,p)=>{const my=++gen;
+let authSeen=false;
+zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
   $('chipT').textContent=u?(p?.username||'Set username'):'Sign in';
   $('note').style.visibility=u?'hidden':'visible';
+  if(uid!==curUid){curUid=uid;gen++;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');}
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
-  if(u){$('hist').innerHTML='<div class="empty">Loading…</div>';$('best').textContent='–';try{await zz.syncLocal(G);}catch(e){console.error(e);}}
-  if(my===gen)refresh();});
-$('hist').innerHTML='<div class="empty">Loading…</div>';newQ();zz.init();setTimeout(()=>{if(gen===0)refresh();},4000);
+  loadMine();loadLb();});
+$('best').textContent='–';$('hist').innerHTML=empty('Loading…');newQ();zz.init();
+setTimeout(()=>{if(!authSeen){clearMine('Sign in to save your plays');loadLb();}},4000);
 </script>
 </body>
 </html>
