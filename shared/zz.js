@@ -1,6 +1,6 @@
 // zelo/zuno shared module: auth, profile, scores
 // Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
-import { firebaseConfig, workerUrl } from './firebase-config.js?v=7';
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=8';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
@@ -65,6 +65,11 @@ const FRIENDLY = {
   round_expired: 'That round took too long. Start a new one.',
   round_used: 'That round was already counted.',
   round_gone: 'That round is no longer available. Start a new one.',
+  day_locked: 'That day is not open yet.',
+  date_out_of_range: 'That day is outside the daily calendar.',
+  bad_clock: 'Your device date looks wrong. Check it and try again.',
+  bad_timezone: 'Your device timezone looks wrong. Check it and try again.',
+  busy: 'Busy right now. Try again.',
 };
 async function api(path, body) {
   if (!online()) throw new ZZError('Sign in to save scores', 0, 'signed_out');
@@ -102,6 +107,39 @@ export async function matchStart(level, exclude = [], last = []) {
   if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
   return { ...j, token: j.roundToken, uid };
 }
+// Daily challenge round: `date` is the day being played, `today` the device's own local date and `tzOffset` its UTC offset in minutes east of UTC.
+// The Worker re-derives the player's local date from its own clock + that offset, so the device date alone never unlocks a day.
+// ---- "now" comes from the server, not the device clock ----
+// GET /time returns the Worker's UTC clock. We keep one in-memory anchor (server time + performance.now() at that moment), so later device-clock
+// changes cannot move it. The player's local date = that instant seen in the device's IANA timezone. Nothing is stored. If the fetch fails
+// (offline, blocked) we fall back to the device clock, and `timeSource()` says which one is in use.
+let anchor = null;
+export const timeSource = () => anchor ? 'server' : 'device';
+export const nowMs = () => anchor ? anchor.server + (performance.now() - anchor.perf) : Date.now();
+export const tzName = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { return 'UTC'; } };
+export async function syncTime(timeoutMs = 4000) {
+  const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null, to = ctl && setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const t0 = performance.now(), r = await fetch(workerUrl + '/time', { cache: 'no-store', signal: ctl?.signal });
+    const j = r.ok ? await r.json() : null, t1 = performance.now();
+    if (j && Number.isFinite(j.now)) anchor = { server: j.now + (t1 - t0) / 2, perf: t1 };   // assume the reply took half the round trip
+  } catch (e) { /* keep the previous anchor, or the device clock */ }
+  finally { if (to) clearTimeout(to); }
+  return timeSource();
+}
+const pad2 = n => String(n).padStart(2, '0');
+export function localISO(ms = nowMs()) {
+  try {
+    const o = {}; for (const p of new Intl.DateTimeFormat('en-US', { timeZone: tzName(), year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ms)) o[p.type] = p.value;
+    if (o.year && o.month && o.day) return `${o.year}-${o.month}-${o.day}`;
+  } catch { /* fall through to the device's own local date */ }
+  const d = new Date(ms); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+export async function matchDailyStart(date, round) {
+  const uid = user?.uid, j = await api('/start', { gameId: 'match', date, round, tz: tzName() });   // the Worker checks the date against ITS clock + this zone
+  if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
+  return { ...j, token: j.roundToken, uid };
+}
 export const matchGuess = (token, pick) => api('/guess', { roundToken: token, pick });
 // Submit the answer; the Worker computes time + score and writes the play and leaderboard.
 export async function submitAnswer(g, token, answer) { return api('/answer', { roundToken: token, answer: String(answer) }); }
@@ -124,4 +162,21 @@ export async function getLeaderboard(g, n = 10) {
     const q = await getDocs(query(collection(fb.db, 'leaderboard', g, 'entries'), orderBy('best', 'desc'), limit(n)));
     return q.docs.map(d => ({ username: d.data().username, best: d.data().best }));
   } catch (e) { logErr('leaderboard read', e); throw e; }
+}
+
+// Daily calendar: per-day bests (users/{uid}/games/match/days/{YYYY-MM-DD}: r1..r4), read-only. Null when signed out.
+export async function getMyDays(from, to) {
+  if (!online()) return null;
+  const uid = user.uid, { collection, query, where, documentId, getDocs } = fb.F;
+  try {
+    const q = await getDocs(query(collection(fb.db, 'users', uid, 'games', 'match', 'days'), where(documentId(), '>=', from), where(documentId(), '<=', to)));
+    const days = {}; q.docs.forEach(d => { const x = d.data(); days[d.id] = [1, 2, 3, 4].map(i => typeof x['r' + i] === 'number' ? x['r' + i] : null); });
+    return { uid, days };
+  } catch (e) { logErr('days', e); throw e; }
+}
+export async function getMySeason() {
+  if (!online()) return null;
+  const uid = user.uid, { doc, getDoc } = fb.F;
+  try { const s = await getDoc(doc(fb.db, 'users', uid, 'games', 'matchdaily')); const d = s.exists() ? s.data() : {}; return { uid, best: d.best || 0, plays: d.plays || 0 }; }
+  catch (e) { logErr('season', e); throw e; }
 }

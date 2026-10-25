@@ -26,7 +26,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 main{flex:1;min-height:0;width:100%;max-width:560px;margin:0 auto;padding:0 14px calc(env(safe-area-inset-bottom) + 6px);display:flex;flex-direction:column;gap:10px}
 /* HUD */
 .hud{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:36px}
-.pill{background:#111113;border:1px solid #1d1d1f;border-radius:999px;padding:0 12px;height:32px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:#a1a1a6;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{background:#111113;border:1px solid #1d1d1f;border-radius:999px;padding:0 12px;height:38px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:#a1a1a6;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill b{color:#f5f5f7;font-weight:600}
 button.pill{transition:border-color .2s,transform .12s}
 button.pill:active{transform:scale(.95)}
@@ -90,7 +90,6 @@ button.pill:active{transform:scale(.95)}
 .res .tx span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .res .btn{height:48px;padding:0 20px;min-width:0}
 body.done .actions{display:none}body.done .res{display:grid}
-body.idle .actions{visibility:hidden}
 .credit{flex:none;font-size:.66rem;color:#515154;text-align:center;line-height:1.3;padding-bottom:2px}
 .credit a{color:#6e6e73;text-decoration:underline}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translate(-50%,10px);background:#2c2c2e;color:#f5f5f7;border-radius:999px;padding:9px 16px;font-size:.84rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:8;max-width:calc(100vw - 32px);text-align:center}
@@ -138,34 +137,99 @@ body.leaving .chip{opacity:0}
 @media(max-width:360px){#who{font-size:.72rem;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 31px)/2)}}
 body.authed .top .chip{visibility:hidden}
 body.leaving #who{opacity:0}
+
+/* daily: calendar, day box, summary */
+.panel2{position:absolute;inset:0;background:#111113;border:1px solid #1d1d1f;border-radius:20px;display:flex;flex-direction:column;gap:8px;padding:12px 12px 10px;overflow:hidden}
+.calhead{flex:none;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;height:44px}
+.mtitle{text-align:center;font-weight:600;font-size:1.05rem;letter-spacing:-.02em}
+.nav{width:44px;height:44px;border-radius:50%;background:#1a1a1c;border:0;font-size:1.5rem;line-height:1;color:#f5f5f7;display:flex;align-items:center;justify-content:center;padding-bottom:3px;transition:transform .12s,opacity .2s}
+.nav:active{transform:scale(.92)}.nav[disabled]{opacity:.25;pointer-events:none}
+.dow{flex:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;text-align:center}
+.days{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:minmax(36px,1fr);gap:4px}
+.d{position:relative;border:1px solid #1d1d1f;background:#0a0a0b;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;min-height:0;padding:0;font-size:.95rem;color:#f5f5f7;font-variant-numeric:tabular-nums;transition:transform .12s,background .15s,border-color .15s}
+.d b{font-weight:600;line-height:1}
+.d small{font-size:.58rem;line-height:1;height:.7rem;color:#86868b;display:flex;align-items:center;white-space:nowrap}
+.d:active{transform:scale(.93)}
+.d.pad{visibility:hidden;pointer-events:none}
+.d.locked{opacity:.38;background:transparent}
+.d.today{border-color:#0a84ff;box-shadow:inset 0 0 0 1px #0a84ff}
+.d.today b{color:#6cb4ff}
+.d.part small{color:#ffcb78}
+.d.done{background:#0d2a1c;border-color:#1c5a3a}
+.d.done small{color:#5ee19a;font-weight:600}
+.d.sel{background:#f5f5f7;border-color:#f5f5f7;color:#000}
+.d.sel b,.d.sel small,.d.sel.today b{color:#000}
+.d.sel.locked{opacity:.8}
+.daybox{flex:none;background:#0a0a0b;border:1px solid #1d1d1f;border-radius:14px;padding:9px 10px;display:grid;gap:7px}
+.dline{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.dline b{font-size:.98rem;font-weight:600;white-space:nowrap}
+.dline span{font-size:.74rem;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.dact{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.rchips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.rc{background:#111113;border:1px solid #1d1d1f;border-radius:9px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.58rem;color:#6e6e73;line-height:1;font-variant-numeric:tabular-nums}
+.rc b{font-size:.9rem;font-weight:600;color:#5a5a5e}
+.rc.on b{color:#f5f5f7}
+.daybox .btn{height:44px;min-width:104px;padding:0 16px;font-size:.95rem}
+.daybox .btn[disabled]{opacity:.45}
+.calfoot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;margin-top:-4px}
+.link{background:none;border:0;color:#a1a1a6;font-size:.82rem;padding:6px 4px;min-height:34px;text-decoration:underline;text-underline-offset:3px}
+.calfoot .link{min-height:44px;min-width:44px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center}
+.calfoot .stnote{text-align:right;min-height:0;font-size:.72rem}
+.sum{align-items:center;justify-content:center;text-align:center;gap:10px}
+.sum .sdate{font-size:.85rem;color:#86868b}
+.sum .big{font-size:clamp(3.4rem,18vw,5rem);line-height:1;font-weight:700;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#8e8e93);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.sum .of{font-size:.85rem;color:#86868b;margin-top:-4px}
+.srows{width:100%;max-width:340px;text-align:left}
+.srows .row{align-items:baseline}
+.sum .snote{font-size:.78rem;color:#86868b;min-height:1.1em}
+.sbtns{display:flex;gap:10px;width:100%;max-width:340px}
+.sbtns .btn{flex:1;min-width:0;padding:0 10px}
+.btn.alt{background:#1d1d1f;color:#f5f5f7}
+.seg{display:inline-flex;background:#1a1a1c;border-radius:999px;padding:2px;gap:2px}
+.seg button{background:none;border:0;border-radius:999px;padding:4px 11px;font-size:.7rem;font-weight:600;color:#86868b;letter-spacing:.04em;text-transform:uppercase}
+.seg button.on{background:#f5f5f7;color:#000}
+.panel h3{align-items:center}
+button.pill.back{padding-left:9px}
+body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res{display:none}
+body.daily #newp{display:none}
+body.daily .actions{grid-template-columns:1fr 1fr}
+@media(max-width:360px){.pill{padding:0 9px;font-size:.72rem}.hud{gap:5px}.right{gap:5px}.lives{gap:5px}.d{border-radius:9px;font-size:.88rem}.rc{height:40px}.panel2{padding:10px 8px 8px}}
+@media(max-width:360px){main{padding-left:8px;padding-right:8px}.days,.dow{gap:3px}}
+@media(max-height:620px){.dow{display:none}.panel2{gap:6px}.daybox{padding:7px 8px;gap:5px}.rc{height:36px}.daybox .btn{height:40px}.calhead{height:38px}.nav{height:38px;width:38px}.calhead{grid-template-columns:38px 1fr 38px}}
 @media(max-height:520px){.top{padding-top:calc(env(safe-area-inset-top) + .6rem);padding-bottom:4px}.credit{display:none}.hud{height:32px}.actions,.res{height:44px}.rules{display:none}.start{gap:8px}}
 @media(max-width:340px){.card{border-radius:11px}.grid{gap:6px}.act{font-size:.82rem}}
 </style>
 </head>
-<body class="idle">
+<body class="cal">
 <header class="top">
   <a class="logo" id="home" href="../../#tiles">zelo/zuno</a>
   <button class="chip" id="chip"><span id="chipT">Sign in</span></button><div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
 </header>
 <main>
   <div class="hud">
-    <div class="pill" id="lvl">Level <b id="lvlN">1</b></div>
+    <button class="pill back" id="lvl" type="button" aria-label="Back to calendar">‹ <span id="lvlT">Round <b id="lvlN">1</b>/4</span></button>
     <div class="lives" id="lives" aria-label="lives"><i></i><i></i><i></i><i></i></div>
     <div class="right"><div class="pill" id="clock" aria-label="time">0:00</div><button class="pill" id="scoresBtn" type="button">Scores</button></div>
   </div>
   <div class="board" id="board">
     <div class="grid" id="grid" hidden></div>
-    <div class="start" id="start">
-      <div class="big ml">മ</div>
-      <h2>Word match</h2>
-      <ul class="rules">
-        <li>Tap 4 Malayalam words that belong together.</li>
-        <li>Same meaning, or the same kind of thing.</li>
-        <li>A solved group locks in with its English hint. 4 mistakes allowed.</li>
-      </ul>
-      <button class="btn" id="startBtn" type="button">Start</button>
-      <div class="stnote" id="stnote"></div>
-    </div>
+    <section class="panel2" id="cal" aria-label="Daily calendar">
+      <div class="calhead"><button class="nav" id="prevM" type="button" aria-label="Previous month">‹</button><div class="mtitle" id="mtitle"></div><button class="nav" id="nextM" type="button" aria-label="Next month">›</button></div>
+      <div class="dow" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div class="days" id="days"></div>
+      <div class="daybox" id="daybox">
+        <div class="dline"><b id="dlabel"></b><span id="dsub"></span></div>
+        <div class="dact"><div class="rchips" id="rchips"></div><button class="btn" id="playBtn" type="button">Play</button></div>
+      </div>
+      <div class="calfoot"><button class="link" id="practice" type="button">∞ Practice</button><span class="link" style="text-decoration:none"><button class="link" id="calScores" type="button">Scores</button></span><span class="stnote" id="stnote"></span></div>
+    </section>
+    <section class="panel2 sum" id="sum" hidden aria-label="Day summary">
+      <div class="sdate" id="sdate"></div>
+      <div class="big" id="stotal">0</div><div class="of">out of 400</div>
+      <div class="srows" id="srows"></div>
+      <div class="snote" id="snote"></div>
+      <div class="sbtns"><button class="btn" id="replay" type="button">Replay day</button><button class="btn alt" id="toCal" type="button">Calendar</button></div>
+    </section>
   </div>
   <div class="actions" id="actions">
     <button class="act" id="shuf" type="button">⇄ Shuffle</button>
@@ -177,14 +241,14 @@ body.leaving #who{opacity:0}
     <div class="tx"><b id="rt">Solved</b><span id="rs"></span></div>
     <button class="btn" id="next" type="button">Next</button>
   </div>
-  <div class="credit">Word data: <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL)</div>
+  <div class="credit">Word data: <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL) · daily boards built from it and hand-curated lists</div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <div class="sheet" id="sheet"><div class="sbox">
   <div class="shead"><h2>Scores</h2><button class="x" id="sclose" type="button" aria-label="close">✕</button></div>
-  <div class="panel"><h3>My plays <span>best <b id="best">–</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
-  <div class="panel"><h3>Leaderboard</h3><div id="lb"><div class="empty">Loading…</div></div></div>
-  <p class="about">Word match groups Malayalam words by meaning or by kind. Word lists are built from the <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL, © Olam / Kailash Nadh and contributors) plus hand-curated lists. Style inspired by Word Association Solitaire.</p>
+  <div class="panel"><h3>My plays <span>season <b id="best">–</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
+  <div class="panel"><h3>Leaderboard <span class="seg" role="group" aria-label="leaderboard"><button type="button" id="lbD" class="on">Daily</button><button type="button" id="lbP">Practice</button></span></h3><div id="lb"><div class="empty">Loading…</div></div></div>
+  <p class="about">Every day brings 4 new boards of 16 words, and a new day opens at midnight in your own timezone. Past days stay open to play or replay. The daily leaderboard ranks your season total (the sum of your best score on each day). Word match groups Malayalam words by meaning or by kind. Word lists are built from the <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL, © Olam / Kailash Nadh and contributors) plus hand-curated lists. Style inspired by Word Association Solitaire.</p>
 </div></div>
 <div class="modal" id="modal"><form class="mbox" id="uform">
   <h2>Choose a username</h2>
@@ -194,30 +258,45 @@ body.leaving #who{opacity:0}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=7';
-import {buildPuzzle,judge,scoreRound,validPick,LIVES,PER_GROUP,MAX_LEVEL} from './puzzle.js?v=7';
+import * as zz from '../../shared/zz.js?v=8';
+import {buildPuzzle,judge,scoreRound,validPick,LIVES,PER_GROUP,MAX_LEVEL} from './puzzle.js?v=8';
+import {ROUNDS,scoreDaily,DAILY_START,DAILY_END} from './daily.js?v=8';
 const G='match',$=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---- in-memory state only (no localStorage / sessionStorage / cookies / IndexedDB) ----
-let DATA=null,dataP=null;                 // word lists, fetched lazily on Start
+let DATA=null,dataP=null;                 // practice word lists, fetched lazily when Practice starts
+const monthP=new Map();                   // 'YYYY-MM' -> promise of that month's daily boards (guests / fallback), fetched lazily on Play
 let level=1,seen=new Set(),lastIds=[],lastLocal=null;
-let S=null;                               // current round
-let curUid=null,gen=0,seq=0,busy=false,sel=[],timer=null,toastT=null;
+let S=null,D=null;                        // S: current round. D: current daily run {date,round,res[4],day}; null in Practice
+let curUid=null,gen=0,seq=0,busy=false,sel=[],timer=null,toastT=null,view='cal',armT=null;
 const els=new Map();                      // card index -> button
+const bests=new Map();                    // 'YYYY-MM' -> {uid, days:{date:[r1..r4]}}   signed-in bests, read from Firestore
+const guestDays={};                       // date -> [r1..r4] for this visit only (guests; nothing is stored)
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ymOf=d=>d.slice(0,7),pad2=n=>String(n).padStart(2,'0');
+const clampDate=d=>d<DAILY_START?DAILY_START:d>DAILY_END?DAILY_END:d;
+let timeReady=false,selDate=DAILY_START,shownYM=ymOf(DAILY_START);   // 'today' is unknown until the server time arrives (or fails and the device clock is used)
+const fmtDay=d=>new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
 
-function loadData(){ // lazy: only when the player taps Start. Plain fetch (HTTP cache is fine), kept in memory only.
+function loadData(){ // practice only. Plain fetch (HTTP cache is fine), kept in memory only.
   if(DATA)return Promise.resolve(DATA);
-  if(!dataP)dataP=Promise.all(['meaning','category'].map(t=>fetch('data/'+t+'.json?v=7').then(r=>{if(!r.ok)throw new Error('data '+r.status);return r.json();})))
+  if(!dataP)dataP=Promise.all(['meaning','category'].map(t=>fetch('data/'+t+'.json?v=8').then(r=>{if(!r.ok)throw new Error('data '+r.status);return r.json();})))
     .then(([m,c])=>(DATA={meaning:m,category:c})).catch(e=>{dataP=null;throw e;});
   return dataP;
 }
+function loadMonth(ym){ // the 4 boards x ~30 days of one month, ~65 KB, only when a guest taps Play
+  if(!monthP.has(ym))monthP.set(ym,fetch('daily/'+ym+'.json?v=8').then(r=>{if(!r.ok)throw new Error('daily '+r.status);return r.json();}).catch(e=>{monthP.delete(ym);throw e;}));
+  return monthP.get(ym);
+}
 function toast(msg,ms=1500){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
-function setMode(m){document.body.classList.toggle('idle',m==='idle');document.body.classList.toggle('done',m==='done');$('start').hidden=m!=='idle';$('grid').hidden=m==='idle';}
+function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const b=document.body;b.classList.toggle('cal',v==='cal');b.classList.toggle('sumv',v==='sum');b.classList.toggle('daily',!!D);if(v!=='play')b.classList.remove('done');
+  $('cal').hidden=v!=='cal';$('sum').hidden=v!=='sum';$('grid').hidden=v!=='play';}
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function drawLives(lost,pop){[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
 function tickClock(){if(S&&!S.done)$('clock').textContent=fmt(performance.now()-S.t0);}
+function lvlLabel(txt){$('lvlT').innerHTML=txt||(D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
 
 // ---- fit Malayalam text into a card: single line shrinking first, then wrapped ----
 function fit(btn){const w=btn.firstChild,aw=btn.clientWidth-8,ah=btn.clientHeight-8;if(aw<=0)return;
@@ -248,33 +327,81 @@ function buildCards(){els.clear();$('grid').replaceChildren();
     b.innerHTML='<span class="w ml" lang="ml"></span>';b.firstChild.textContent=S.cards[i];b.onclick=()=>tap(i);els.set(i,b);});
   render();requestAnimationFrame(fitAll);}
 
-// ---- starting a round ----
-function showStart(msg,bad){setMode('idle');$('startBtn').disabled=false;$('startBtn').textContent='Start';$('stnote').className='stnote'+(bad?' bad':'');
-  if(msg)$('stnote').textContent=msg;else if(zz.currentUser())$('stnote').textContent='Your scores are saved';else $('stnote').innerHTML='Guest play · <a id="sg">sign in</a> to save scores';
+// ---- calendar ----
+const LOCK='<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path fill="currentColor" d="M3 5V4a3 3 0 016 0v1h.5A1.5 1.5 0 0111 6.5v4A1.5 1.5 0 019.5 12h-7A1.5 1.5 0 011 10.5v-4A1.5 1.5 0 012.5 5H3zm1.5 0h3V4a1.5 1.5 0 00-3 0v1z"/></svg>';
+function dayRes(date){if(curUid){const b=bests.get(ymOf(date));return b&&b.uid===curUid?b.days[date]||null:null;}return guestDays[date]||null;}
+const sumRes=r=>r?r.reduce((a,x)=>a+(x||0),0):0,cntRes=r=>r?r.filter(x=>x!=null).length:0;
+function renderCal(){
+  if(!timeReady){$('days').innerHTML='';renderBox();return;}
+  const today=zz.localISO(),[y,m]=shownYM.split('-').map(Number),lead=(new Date(Date.UTC(y,m-1,1)).getUTCDay()+6)%7,n=new Date(Date.UTC(y,m,0)).getUTCDate();
+  $('mtitle').textContent=MONTHS[m-1]+' '+y;$('prevM').disabled=shownYM<=ymOf(DAILY_START);$('nextM').disabled=shownYM>=ymOf(DAILY_END);
+  let h='<span class="d pad"></span>'.repeat(lead);
+  for(let i=1;i<=n;i++){const date=`${shownYM}-${pad2(i)}`,locked=date>today,r=dayRes(date),c=cntRes(r),done=c===ROUNDS;
+    const cls='d'+(locked?' locked':'')+(date===today?' today':'')+(date===selDate?' sel':'')+(done?' done':c?' part':'');
+    const sub=locked?LOCK:done?'✓ '+sumRes(r):c?c+'/'+ROUNDS:'';
+    h+=`<button type="button" class="${cls}" data-d="${date}" aria-label="${fmtDay(date)}${locked?', locked':done?', completed, '+sumRes(r)+' points':c?', '+c+' of 4 rounds':''}" aria-pressed="${date===selDate}"><b>${i}</b><small>${sub}</small></button>`;}
+  $('days').innerHTML=h;renderBox();}
+function renderBox(){
+  if(!timeReady){$('dlabel').textContent='Checking today…';$('dsub').textContent='';$('rchips').innerHTML='';$('playBtn').disabled=true;$('playBtn').textContent='Play';$('stnote').innerHTML='';return;}
+  const today=zz.localISO(),locked=selDate>today,r=dayRes(selDate),c=cntRes(r),done=c===ROUNDS,signed=!!curUid;
+  $('dlabel').textContent=fmtDay(selDate)+(selDate===today?' · Today':'');
+  $('dsub').textContent=locked?'Opens '+fmtDay(selDate):done?(signed?'Best ':'This visit ')+sumRes(r)+' / 400':c?(signed?'Best so far ':'')+sumRes(r)+' · '+c+'/4 rounds':'4 rounds · up to 400';
+  $('rchips').innerHTML=[0,1,2,3].map(i=>`<span class="rc${r&&r[i]!=null?' on':''}">R${i+1}<b>${locked?'·':r&&r[i]!=null?r[i]:'–'}</b></span>`).join('');
+  const b=$('playBtn');b.disabled=locked||busy;b.innerHTML=locked?LOCK+' Locked':done?'Replay':c?'Play':'Play';
+  $('stnote').className='stnote';$('stnote').innerHTML=curUid?'Scores saved':'Guest · <a id="sg">sign in</a> to save';
   const l=$('sg');if(l)l.onclick=()=>$('chip').click();}
+async function loadBests(ym){const uid=curUid;if(!uid)return;
+  try{const r=await zz.getMyDays(ym+'-01',ym+'-31');if(uid!==curUid||!r||r.uid!==uid)return;bests.set(ym,{uid,days:r.days});if(view==='cal')renderCal();}catch(e){}}
+function showCal(date){if(date){selDate=date;shownYM=ymOf(date);}setView('cal');renderCal();loadBests(shownYM);}
+function gotoMonth(delta){let [y,m]=shownYM.split('-').map(Number);m+=delta;if(m<1){m=12;y--;}if(m>12){m=1;y++;}const ym=`${y}-${pad2(m)}`;
+  if(ym<ymOf(DAILY_START)||ym>ymOf(DAILY_END))return;shownYM=ym;renderCal();loadBests(ym);}
+$('prevM').onclick=()=>gotoMonth(-1);$('nextM').onclick=()=>gotoMonth(1);
+$('days').onclick=e=>{const b=e.target.closest('.d[data-d]');if(!b||busy)return;selDate=b.dataset.d;renderCal();buzz(4);};
+let tx=null;$('cal').addEventListener('touchstart',e=>{tx=e.touches.length===1?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
+$('cal').addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)gotoMonth(dx<0?1:-1);},{passive:true});
+function timeUp(){return zz.syncTime().then(()=>{const first=!timeReady;timeReady=true;
+  if(first){selDate=clampDate(zz.localISO());shownYM=ymOf(selDate);if(view==='cal')loadBests(shownYM);}
+  if(view==='cal')renderCal();});}
+setInterval(()=>{if(view==='cal'&&!document.hidden&&timeReady)renderCal();},30000);
+setInterval(()=>{if(!document.hidden)zz.syncTime();},300000);   // re-anchor to the server clock every 5 min   // unlocks the new day at local midnight while the calendar is open
+addEventListener('visibilitychange',()=>{if(!document.hidden&&timeReady)zz.syncTime().then(()=>{if(view==='cal')renderCal();});});
+
+// ---- starting a round ----
+function setBusy(b){busy=b;$('newp').disabled=b;if(view==='cal')renderBox();}
+function localBoard(b){return {mode:'local',cards:b.c,answer:b.g.map(g=>g[3]),groups:b.g.map(g=>({id:g[0],type:g[1],en:g[2]})),level:b.l};}
 function localRound(){const p=buildPuzzle(DATA,level,Math.random,seen,lastLocal);
   if(p.reset)seen.clear();p.groups.forEach(g=>seen.add(g.id));lastLocal={sig:p.sig,ids:p.ids};lastIds=p.ids;
   return {mode:'local',cards:p.cards,answer:p.answer,groups:p.groups,level:p.level};}
-async function startRound(){const my=++seq,uid=curUid;busy=true;sel=[];
-  $('startBtn').disabled=true;$('startBtn').innerHTML='<span class="spin"></span>Loading words…';$('stnote').className='stnote';$('stnote').textContent='';
-  $('newp').disabled=true;
-  let R=null,note='';
+function startDay(date){if(busy)return;if(date>zz.localISO()){toast('That day opens '+fmtDay(date));renderCal();return;}
+  D={date,round:1,res:[null,null,null,null],day:null};startRound();}
+function startPractice(){if(busy)return;D=null;level=1;seen=new Set();lastIds=[];lastLocal=null;startRound();}
+function loadingUI(on){
+  if(on){if(view==='cal'){if(D){$('playBtn').disabled=true;$('playBtn').innerHTML='<span class="spin"></span>Loading';}else $('practice').textContent='Loading…';}
+    else{$('next').disabled=true;$('next').innerHTML='<span class="spin"></span>Loading';}}
+  else{$('next').disabled=false;$('practice').textContent='∞ Practice';}}
+async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want||D.round):0;busy=true;sel=[];loadingUI(true);let R=null,note='';
+  const back=msg=>{if(view==='cal')D=null;busy=false;loadingUI(false);$('newp').disabled=false;if(msg)toast(msg,3500);if(view==='cal')renderCal();};
   try{
     if(uid){
-      try{const j=await zz.matchStart(level,[...seen],lastIds);if(my!==seq||uid!==curUid)return;
-        if(j.reset)seen.clear();(j.ids||[]).forEach(x=>seen.add(x));lastIds=j.ids||[];
-        R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}
-      catch(e){if(my!==seq)return;note=(e.message||'Could not start a saved round')+' This round won’t be saved.';}
+      try{
+        if(daily){const j=await zz.matchDailyStart(D.date,rn);if(my!==seq||uid!==curUid)return;R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}
+        else{const j=await zz.matchStart(level,[...seen],lastIds);if(my!==seq||uid!==curUid)return;
+          if(j.reset)seen.clear();(j.ids||[]).forEach(x=>seen.add(x));lastIds=j.ids||[];R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}}
+      catch(e){if(my!==seq)return;
+        if(daily&&['day_locked','date_out_of_range','bad_date','bad_clock','bad_timezone'].includes(e.code)){D=null;back(e.message);setView('cal');renderCal();return;}
+        note=(e.message||'Could not start a saved round')+' This round won’t be saved.';}
     }
-    if(!R){await loadData();if(my!==seq)return;R=localRound();}
-  }catch(e){console.warn('match start failed',e);if(my!==seq)return;busy=false;$('newp').disabled=false;
-    showStart('Could not load the words. Check your connection and try again.',true);return;}
-  busy=false;$('newp').disabled=false;
-  S={...R,solved:[],mistakes:0,done:false,t0:performance.now()};level=R.level||level;
-  setMode('play');$('lvlN').textContent=level;drawLives(0);$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
+    if(!R){if(daily){const m=await loadMonth(ymOf(D.date));if(my!==seq)return;const b=m.days[D.date]?.[rn-1];if(!b)throw new Error('no board');R=localBoard(b);}
+      else{await loadData();if(my!==seq)return;R=localRound();}}
+  }catch(e){console.warn('match start failed',e);if(my!==seq)return;if(view==='play'){busy=false;loadingUI(false);$('next').textContent='Try again';$('next').disabled=false;toast('Could not load the words. Check your connection.',3500);return;}
+    back('Could not load the words. Check your connection and try again.');return;}
+  busy=false;loadingUI(false);$('newp').disabled=false;if(daily){D.round=rn;D.want=0;}
+  S={...R,solved:[],mistakes:0,done:false,t0:performance.now()};if(!daily)level=R.level||level;
+  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
   buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();
   if(note)toast(note,3500);
 }
+function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
 
 // ---- play ----
 function syncBtns(){$('clr').disabled=!sel.length||!S||S.done;$('shuf').disabled=!S||S.done;}
@@ -288,7 +415,7 @@ function localJudge(pick){
   const j=judge(S.answer,pick);S.gis=S.gis||new Set();
   if(j.group>=0&&!S.gis.has(j.group)){const g=S.groups[j.group];S.gis.add(j.group);const won=S.gis.size===S.answer.length;
     const r={result:'correct',group:{type:g.type,en:g.en,indices:[...S.answer[j.group]]},mistakes:S.mistakes,done:won,won};
-    if(won){r.timeMs=Math.round(performance.now()-S.t0);r.score=scoreRound({level:S.level,solved:true,mistakes:S.mistakes,ms:r.timeMs});}
+    if(won){r.timeMs=Math.round(performance.now()-S.t0);r.score=D?scoreDaily({solved:true,mistakes:S.mistakes,ms:r.timeMs}):scoreRound({level:S.level,solved:true,mistakes:S.mistakes,ms:r.timeMs});}
     return r;}
   const mistakes=S.mistakes+1,lost=mistakes>=LIVES;
   const r={result:j.best>=PER_GROUP-1?'one_away':'wrong',mistakes,done:lost,won:false};
@@ -300,7 +427,7 @@ async function submitPick(){const pick=[...sel],my=seq,uid=curUid,S0=S;busy=true
   if(S.mode==='server'){
     try{r=await zz.matchGuess(S.token,pick);}
     catch(e){if(my!==seq||S!==S0)return;busy=false;
-      if(['round_expired','round_gone'].includes(e.code)||e.status===410||e.status===404){S.done=true;clearInterval(timer);toast(e.message||'Round ended',3000);showStart(e.message,true);return;}
+      if(['round_expired','round_gone'].includes(e.code)||e.status===410||e.status===404){S.done=true;clearInterval(timer);toast(e.message||'Round ended',3000);leaveToCal();return;}
       sel=[];render();syncBtns();toast(e.message||'Could not check that',2500);return;}
     if(my!==seq||S!==S0||uid!==curUid)return;
   }else r=localJudge(pick);
@@ -332,33 +459,55 @@ async function finish(r){const my=seq,S0=S;S.done=true;clearInterval(timer);$('c
   const t=(r.timeMs/1000).toFixed(1)+'s · '+(S.mistakes?S.mistakes+(S.mistakes>1?' mistakes':' mistake'):'no mistakes');
   const where=S.mode==='server'?(r.saved===false?'Not saved':'Saved'):'Guest · not saved';
   $('rs').textContent=t+' · '+where;
-  $('next').textContent=r.won?'Next':'Retry';
+  if(D){
+    D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:S.mode==='server'&&r.saved!==false};
+    if(S.mode==='server'&&r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
+    else if(S.mode!=='server'&&!curUid){const g=guestDays[D.date]||(guestDays[D.date]=[null,null,null,null]);g[D.round-1]=Math.max(g[D.round-1]??0,score);}
+    $('next').textContent=D.round<ROUNDS?'Next round':'Results';
+  }else{$('next').textContent=r.won?'Next':'Retry';if(r.won&&level<MAX_LEVEL)level++;}
   buzz(r.won?[15,50,15,50,30]:120);
   countUp(score);
-  if(r.won&&level<MAX_LEVEL)level++;
   if(S.mode==='server'&&S.uid===curUid){loadMine();loadLb();}
 }
 function countUp(n){const el=$('sc'),s=performance.now();(function f(){const k=Math.min(1,(performance.now()-s)/600);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})();}
-function newRound(){document.body.classList.remove('done');setMode('play');$('grid').replaceChildren();startRound();}
-
-$('startBtn').onclick=()=>{if(!busy)startRound();};
-$('next').onclick=()=>{if(!busy)newRound();};
-$('newp').onclick=()=>{if(busy)return;if(S&&!S.done)toast('New puzzle');newRound();};
+function newRound(){document.body.classList.remove('done');$('grid').replaceChildren();startRound();}
+function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),signed=!!curUid,saved=res.some(x=>x&&x.saved);
+  $('sdate').textContent=fmtDay(D.date)+(D.date===zz.localISO()?' · Today':'');$('stotal').textContent=run;
+  $('srows').innerHTML=res.map((x,i)=>`<div class="row"><span>Round ${i+1}<span class="m"> · ${x?(x.won?'solved':'lost'):'skipped'}</span></span><span class="m">${x?(x.timeMs/1000).toFixed(1)+'s · '+(x.mistakes?x.mistakes+' ✕':'clean'):''}</span><b>${x?x.score:'–'}</b></div>`).join('');
+  $('snote').textContent=signed?(saved&&D.day?`Saved · your best for this day: ${D.day.total} / 400`:'Not saved'):'Guest · not saved · sign in to keep your scores';
+  $('replay').textContent='Replay day';setView('sum');buzz([15,40,15]);}
+$('playBtn').onclick=()=>startDay(selDate);
+$('practice').onclick=startPractice;
+$('calScores').onclick=()=>$('scoresBtn').click();
+$('replay').onclick=()=>{if(D)startDay(D.date);};
+$('toCal').onclick=()=>{const d=D&&D.date;D=null;showCal(d||selDate);};
+$('next').onclick=()=>{if(busy)return;
+  if(!D){newRound();return;}
+  if(D.want&&D.want!==D.round){startRound();return;}                // retry after a failed load
+  if(D.round<ROUNDS){D.want=D.round+1;document.body.classList.remove('done');$('grid').replaceChildren();startRound();}else showSummary();};
+$('lvl').onclick=()=>{if(view!=='play')return;
+  const risky=D?!(S&&S.done&&D.round>=ROUNDS):!!(S&&!S.done);   // leaving mid-day loses the day's progress: ask for a second tap
+  if(!risky||$('lvl').dataset.arm){leaveToCal();return;}
+  $('lvl').dataset.arm='1';lvlLabel('Leave? tap again');clearTimeout(armT);armT=setTimeout(()=>{delete $('lvl').dataset.arm;lvlLabel();},2500);};
+$('newp').onclick=()=>{if(busy||D)return;if(S&&!S.done)toast('New puzzle');newRound();};
 $('clr').onclick=()=>{if(busy||!sel.length)return;sel.forEach(i=>els.get(i)?.setAttribute('aria-pressed','false'));sel=[];render();syncBtns();buzz(4);};
 $('shuf').onclick=()=>{if(busy||!S||S.done)return;const before=rects(),a=S.order;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}render({flip:true});buzz(5);};
 // ---- scores sheet ----
 const empty=t=>`<div class="empty">${t}</div>`;
+let lbG='matchdaily';
 function clearMine(msg){$('best').textContent='–';$('hist').innerHTML=empty(msg);}
 async function loadMine(){const my=++gen,uid=curUid;
   if(!uid){clearMine('Sign in to save your plays');return;}
-  let h;try{h=await zz.getMyHistory(G,8);}catch(e){h=undefined;}
+  let h,se;try{[h,se]=await Promise.all([zz.getMyHistory(G,8),zz.getMySeason()]);}catch(e){h=undefined;}
   if(my!==gen||uid!==curUid||zz.currentUser()?.uid!==uid)return;
-  if(!h||h.uid!==uid){clearMine('Could not load plays');return;}
-  $('best').textContent=h.best;
-  $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>Level ${p.level??'?'}<span class="m"> · ${p.won?'solved':'lost'}</span></span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):empty('No plays yet');}
-async function loadLb(){
-  try{const l=await Promise.race([zz.getLeaderboard(G,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):empty('No scores yet');}
-  catch(e){$('lb').innerHTML=empty('Leaderboard unavailable');}}
+  if(!h||h.uid!==uid||!se){clearMine('Could not load plays');return;}
+  $('best').textContent=se.best;
+  $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.date?esc(fmtDay(p.date))+' · R'+(p.round??'?'):'Practice · L'+(p.level??'?')}<span class="m"> · ${p.won?'solved':'lost'}</span></span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):empty('No plays yet');}
+async function loadLb(){const g=lbG;
+  try{const l=await Promise.race([zz.getLeaderboard(g,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);if(g!==lbG)return;$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):empty('No scores yet');}
+  catch(e){if(g===lbG)$('lb').innerHTML=empty('Leaderboard unavailable');}}
+function setLb(g){lbG=g;$('lbD').classList.toggle('on',g==='matchdaily');$('lbP').classList.toggle('on',g==='match');$('lb').innerHTML=empty('Loading…');loadLb();}
+$('lbD').onclick=()=>setLb('matchdaily');$('lbP').onclick=()=>setLb('match');
 $('scoresBtn').onclick=()=>{$('sheet').classList.add('show');loadMine();loadLb();};
 $('sclose').onclick=()=>$('sheet').classList.remove('show');
 $('sheet').onclick=e=>{if(e.target===$('sheet'))$('sheet').classList.remove('show');};
@@ -374,17 +523,17 @@ $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim()
 let authSeen=false;
 zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
   $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  if(uid!==curUid){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');
-    // a round belongs to one account: drop it and go back to the start screen
-    if(S){clearInterval(timer);S=null;sel=[];els.clear();document.body.classList.remove('done');$('newp').disabled=false;}
-    seen=new Set();lastIds=[];lastLocal=null;level=1;$('lvlN').textContent=1;drawLives(0);$('clock').textContent='0:00';showStart();}
-  else if($('start').hidden===false)showStart();
+  if(uid!==curUid){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();
+    // a round belongs to one account: drop it and go back to the calendar
+    if(S||D||view!=='cal'){clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();loadingUI(false);}
+    $('newp').disabled=false;seen=new Set();lastIds=[];lastLocal=null;level=1;lvlLabel();drawLives(0);$('clock').textContent='0:00';showCal();}
+  else if(view==='cal')renderBox();
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
   loadMine();loadLb();});
 $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||RM)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
 addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
 setTimeout(()=>document.body.classList.add('entered'),1000);
-drawLives(0);setMode('idle');showStart();clearMine('Loading…');zz.init();
+drawLives(0);setView('cal');renderCal();clearMine('Loading…');zz.init();timeUp();
 setTimeout(()=>{if(!authSeen){clearMine('Sign in to save your plays');loadLb();}},4000);
 </script>
 </body>
