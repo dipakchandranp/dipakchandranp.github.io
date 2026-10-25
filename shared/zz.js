@@ -1,12 +1,11 @@
 // zelo/zuno shared module: auth, profile, scores
-// Guests: nothing is saved. Signed in: plays live in Firestore only.
-import { firebaseConfig } from './firebase-config.js';
+// Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=5';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
 const RE = /^[A-Za-z0-9]{3,16}$/;
 export const validUsername = n => RE.test(n || '');
-const newId = () => (globalThis.crypto?.randomUUID?.() || (Date.now().toString(36) + Math.random().toString(36).slice(2, 12))).replace(/-/g, '');
 const logErr = (where, e) => console.error(`zz ${where}:`, e?.code || '', e?.message || e, e?.code === 'permission-denied' ? '(check Firestore rules are published)' : '');
 
 
@@ -55,61 +54,50 @@ export async function getProfile() {
   const s = await getDoc(doc(fb.db, 'users', user.uid));
   return profile = s.exists() ? s.data() : null;
 }
+// ---- score Worker client ----
+export class ZZError extends Error { constructor(message, status = 0, code = '') { super(message); this.status = status; this.code = code; } }
+const FRIENDLY = {
+  rate_limited: 'Too many tries in a row. Wait a few seconds and try again.',
+  unauthenticated: 'Please sign in again.',
+  username_taken: 'Username taken',
+  username_set: 'Username already set',
+  bad_username: '3–16 letters or digits',
+  round_expired: 'That round took too long. Start a new one.',
+  round_used: 'That round was already counted.',
+};
+async function api(path, body) {
+  if (!online()) throw new ZZError('Sign in to save scores', 0, 'signed_out');
+  let tok;
+  try { tok = await user.getIdToken(); } catch (e) { throw new ZZError(FRIENDLY.unauthenticated, 401, 'unauthenticated'); }
+  let r;
+  try { r = await fetch(workerUrl + path, { method: 'POST', headers: { 'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  catch (e) { throw new ZZError('Can’t reach the score server. Check your connection.', 0, 'network'); }
+  const j = await r.json().catch(() => ({}));
+  if (r.ok) return j;
+  const code = j.error?.code || '';
+  const msg = FRIENDLY[code] || (r.status === 429 ? FRIENDLY.rate_limited : r.status >= 500 ? 'The score server is having trouble. Try again soon.' : j.error?.message || 'Something went wrong');
+  if (r.status >= 500) logErr('worker ' + path, { code, message: j.error?.message });
+  throw new ZZError(msg, r.status, code);
+}
 export async function setUsername(name) {
   if (!user) throw new Error('Not signed in');
   if (!validUsername(name)) throw new Error('3–16 letters or digits');
-  const { doc, runTransaction, serverTimestamp } = fb.F, low = name.toLowerCase();
-  try {
-    await runTransaction(fb.db, async t => {
-      const nref = doc(fb.db, 'usernames', low), uref = doc(fb.db, 'users', user.uid);
-      const n = await t.get(nref), u = await t.get(uref);
-      if (n.exists() && n.data().uid !== user.uid) throw new Error('Username taken');
-      if (u.exists() && u.data().username) throw new Error('Username already set');
-      if (!n.exists()) t.set(nref, { uid: user.uid });
-      t.set(uref, { username: name, createdAt: serverTimestamp() });
-    });
-  } catch (e) { if (!/taken|already/.test(e.message)) logErr('setUsername', e); throw e; }
+  const uid = user.uid;
+  await api('/username', { name });
+  if (user?.uid !== uid) return null;
   profile = { username: name };
   subs.forEach(cb => cb(user, profile));
   return profile;
 }
+// Ask the Worker for a question. The Worker owns the numbers and the clock.
+export async function startRound(g) {
+  const uid = user?.uid, j = await api('/start', { gameId: g });
+  if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
+  return { a: j.question.a, b: j.question.b, token: j.roundToken, uid };
+}
+// Submit the answer; the Worker computes time + score and writes the play and leaderboard.
+export async function submitAnswer(g, token, answer) { return api('/answer', { roundToken: token, answer: String(answer) }); }
 
-// Write one play (doc id = play id) and update aggregate in one transaction.
-async function writePlay(g, uid, p) {
-  const { doc, runTransaction, serverTimestamp, Timestamp } = fb.F;
-  const gref = doc(fb.db, 'users', uid, 'games', g), pref = doc(fb.db, 'users', uid, 'games', g, 'plays', p.id);
-  return runTransaction(fb.db, async t => {
-    const gs = await t.get(gref), ps = await t.get(pref);
-    const cur = gs.exists() ? gs.data() : { best: 0, plays: 0 };
-    if (ps.exists()) return cur.best || 0;
-    const best = Math.max(cur.best || 0, p.score);
-    t.set(pref, { score: p.score, timeMs: p.timeMs ?? null, a: p.a ?? null, b: p.b ?? null, at: Timestamp.fromMillis(p.at) });
-    t.set(gref, { best, plays: (cur.plays || 0) + 1, lastPlayed: serverTimestamp() });
-    return best;
-  });
-}
-// Upsert public leaderboard entry from the user's Firestore best.
-export async function syncLeaderboard(g) {
-  if (!online() || !profile?.username) return;
-  const { doc, getDoc, setDoc, serverTimestamp } = fb.F;
-  try {
-    const s = await getDoc(doc(fb.db, 'users', user.uid, 'games', g));
-    const best = s.exists() ? (s.data().best || 0) : null;
-    if (best === null) return;
-    const lref = doc(fb.db, 'leaderboard', g, 'entries', user.uid), l = await getDoc(lref);
-    if (l.exists() && l.data().best === best && l.data().username === profile.username) return;
-    await setDoc(lref, { username: profile.username, best, updatedAt: serverTimestamp() });
-  } catch (e) { logErr('leaderboard write', e); }
-}
-
-// Saves only when signed in; returns the play, or null for guests.
-export async function saveScore(g, score, extra = {}) {
-  if (!online()) return null;
-  const uid = user.uid, p = { id: newId(), score, ...extra, at: Date.now() };
-  try { await writePlay(g, uid, p); } catch (e) { logErr('play write', e); throw e; }
-  if (user?.uid === uid) await syncLeaderboard(g);
-  return p;
-}
 // Firestore only; null when signed out.
 export async function getMyHistory(g, n = 10) {
   if (!online()) return null;

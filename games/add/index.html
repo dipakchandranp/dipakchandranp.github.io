@@ -104,6 +104,7 @@ body.leaving #who{opacity:0}
     <div class="res" id="res">
       <div class="big" id="big">0</div>
       <div class="sub" id="sub"></div>
+      <div class="sub" id="rerr" style="font-size:.8rem"></div>
       <button class="btn" id="next">Next</button>
     </div>
   </section>
@@ -120,19 +121,35 @@ body.leaving #who{opacity:0}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=4';
+import * as zz from '../../shared/zz.js?v=5';
 const G='add',$=id=>document.getElementById(id);
-let a,b,t0,raf,busy=false;
+let a,b,t0,raf,busy=false,token=null,roundUid=null,qseq=0;
 const pts=()=>Math.max(0,100-5*Math.floor((performance.now()-t0)/1000));
 function tick(){const ms=performance.now()-t0,p=pts();$('live').textContent=p;$('bar').style.transform=`scaleX(${Math.max(0,1-ms/20000)})`;if(p<=0)$('bar').style.background='#3a3a3c';if(p>0)raf=requestAnimationFrame(tick);}
-function newQ(){a=1+Math.floor(Math.random()*99);b=1+Math.floor(Math.random()*99);$('eq').innerHTML=`${a}<span>+</span>${b}`;$('in').value='';$('res').classList.remove('show');$('bar').style.background='';busy=false;t0=performance.now();cancelAnimationFrame(raf);tick();$('in').focus({preventScroll:true});}
+// note under the question: default sign-in hint for guests, or a one-off message
+let noteMsg='';
+function refreshNote(){const n=$('note'),u=zz.currentUser();n.innerHTML=noteMsg?esc(noteMsg):'Sign in to save &amp; join leaderboard';n.style.visibility=(noteMsg||!u)?'visible':'hidden';}
+function show(){$('eq').innerHTML=`${a}<span>+</span>${b}`;$('in').disabled=false;busy=false;t0=performance.now();cancelAnimationFrame(raf);tick();$('in').focus({preventScroll:true});}
+function localQ(){a=1+Math.floor(Math.random()*99);b=1+Math.floor(Math.random()*99);token=null;show();}
+// Signed in: the Worker makes the question and starts the clock. Guests (or if the Worker is unreachable): local, nothing saved.
+async function newQ(){const seq=++qseq;token=null;roundUid=null;noteMsg='';refreshNote();$('in').value='';$('res').classList.remove('show');$('bar').style.background='';cancelAnimationFrame(raf);
+  const uid=curUid;if(!uid){localQ();return;}
+  busy=true;$('in').disabled=true;$('eq').innerHTML='…';$('live').textContent='100';$('bar').style.transform='scaleX(1)';
+  try{const q=await zz.startRound(G);if(seq!==qseq)return;if(uid!==curUid)throw new Error('Signed out');a=q.a;b=q.b;token=q.token;roundUid=uid;show();}
+  catch(e){if(seq!==qseq)return;localQ();if(curUid){noteMsg=(e.message||'Could not start a saved round')+' This round won’t be saved.';refreshNote();}}}
 function countUp(n){const el=$('big'),s=performance.now();(function f(){const k=Math.min(1,(performance.now()-s)/600);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})();}
-$('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(busy||!/^\d+$/.test(v))return;busy=true;cancelAnimationFrame(raf);
-  const timeMs=Math.round(performance.now()-t0),ok=+v===a+b,score=ok?Math.max(0,100-5*Math.floor(timeMs/1000)):0;
-  $('in').blur();$('sub').className='sub'+(ok?'':' bad');$('sub').textContent=ok?`${(timeMs/1000).toFixed(1)}s · ${a} + ${b} = ${a+b}`:`Wrong — ${a} + ${b} = ${a+b}`;
-  $('res').classList.add('show');countUp(score);setTimeout(()=>$('next').focus({preventScroll:true}),50);
-  const uid=curUid;if(!uid)return;
-  try{await zz.saveScore(G,score,{timeMs,a,b});}catch(e){console.error(e);}
+function showResult(ok,score,timeMs,err){
+  $('sub').className='sub'+(ok?'':' bad');$('sub').textContent=ok?`${(timeMs/1000).toFixed(1)}s · ${a} + ${b} = ${a+b}`:`Wrong — ${a} + ${b} = ${a+b}`;
+  $('rerr').textContent=err||'';
+  $('res').classList.add('show');countUp(score);setTimeout(()=>$('next').focus({preventScroll:true}),50);}
+$('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(busy||!/^\d+$/.test(v))return;busy=true;cancelAnimationFrame(raf);$('in').blur();
+  const localMs=Math.round(performance.now()-t0),localOk=+v===a+b,localScore=localOk?Math.max(0,100-5*Math.floor(localMs/1000)):0;
+  const tk=token,uid=roundUid;token=null;
+  if(!tk||!uid||uid!==curUid){showResult(localOk,localScore,localMs);return;} // guest / unsaved round: local only
+  let r;
+  try{r=await zz.submitAnswer(G,tk,v);}
+  catch(err){if(uid!==curUid){showResult(localOk,localScore,localMs);return;}showResult(localOk,localScore,localMs,(err.message||'Could not save')+' This score was not saved.');return;}
+  showResult(r.correct,r.score,r.timeMs);
   if(uid===curUid){loadMine();loadLb();}};
 $('next').onclick=newQ;
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('res').classList.contains('show')&&document.activeElement!==$('next')){e.preventDefault();newQ();}});
@@ -164,8 +181,7 @@ $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim()
 let authSeen=false;
 zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
   $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  $('note').style.visibility=u?'hidden':'visible';
-  if(uid!==curUid){curUid=uid;gen++;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');}
+  if(uid!==curUid){curUid=uid;gen++;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');token=null;roundUid=null;if(uid&&!$('res').classList.contains('show'))newQ();else{noteMsg='';refreshNote();}}else refreshNote();
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
   loadMine();loadLb();});
 $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
