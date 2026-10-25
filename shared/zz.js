@@ -1,6 +1,6 @@
 // zelo/zuno shared module: auth, profile, scores
 // Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
-import { firebaseConfig, workerUrl } from './firebase-config.js?v=6';
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=7';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
@@ -64,6 +64,7 @@ const FRIENDLY = {
   bad_username: '3–16 letters or digits',
   round_expired: 'That round took too long. Start a new one.',
   round_used: 'That round was already counted.',
+  round_gone: 'That round is no longer available. Start a new one.',
 };
 async function api(path, body) {
   if (!online()) throw new ZZError('Sign in to save scores', 0, 'signed_out');
@@ -95,6 +96,13 @@ export async function startRound(g) {
   if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
   return { a: j.question.a, b: j.question.b, token: j.roundToken, uid };
 }
+// match: the Worker builds the puzzle (cards only, no answers), times the round and judges every guess.
+export async function matchStart(level, exclude = [], last = []) {
+  const uid = user?.uid, j = await api('/start', { gameId: 'match', level, exclude: exclude.slice(-60), last: last.slice(0, 8) });
+  if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
+  return { ...j, token: j.roundToken, uid };
+}
+export const matchGuess = (token, pick) => api('/guess', { roundToken: token, pick });
 // Submit the answer; the Worker computes time + score and writes the play and leaderboard.
 export async function submitAnswer(g, token, answer) { return api('/answer', { roundToken: token, answer: String(answer) }); }
 
