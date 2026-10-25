@@ -1,6 +1,6 @@
 // zelo/zuno shared module: auth, profile, scores
 // Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
-import { firebaseConfig, workerUrl } from './firebase-config.js?v=8';
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=9';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
@@ -155,13 +155,39 @@ export async function getMyHistory(g, n = 10) {
     return { uid, best: d.best || 0, plays: d.plays || 0, recent: q.docs.map(x => ({ id: x.id, ...x.data(), at: x.data().at?.toMillis?.() })) };
   } catch (e) { logErr('history', e); throw e; }
 }
-export async function getLeaderboard(g, n = 10) {
-  await init(); if (fb.offline) return [];
-  const { collection, query, orderBy, limit, getDocs } = fb.F;
+// Leaderboard view: the top `n` players plus, for a signed-in player with an entry who is NOT in the top n, their own row with a REAL rank.
+// Read-only. The rank is "players with a higher score + 1" (competition ranking: 1,2,2,4), computed with Firestore count() aggregations
+// (no document downloads, ~1 read per 1000 index entries), so the whole collection is never fetched. Tied scores share one rank and are flagged `tied`.
+// Returns { top:[{uid,username,best,rank,tied,me}], me:{uid,username,best,rank,tied,inTop}|null, uid }.
+export async function getLeaderboardView(g, n = 10) {
+  await init(); if (fb.offline) return { top: [], me: null, uid: null };
+  const { collection, query, orderBy, limit, getDocs, doc, getDoc, where, getCountFromServer } = fb.F, uid = user?.uid || null;
+  const col = collection(fb.db, 'leaderboard', g, 'entries');
   try {
-    const q = await getDocs(query(collection(fb.db, 'leaderboard', g, 'entries'), orderBy('best', 'desc'), limit(n)));
-    return q.docs.map(d => ({ username: d.data().username, best: d.data().best }));
+    const [q, mine] = await Promise.all([getDocs(query(col, orderBy('best', 'desc'), limit(n))), uid ? getDoc(doc(col, uid)) : null]);
+    const rows = q.docs.map(d => ({ uid: d.id, username: d.data().username, best: d.data().best }));
+    let rank = 0;                                                    // competition ranking inside the list
+    rows.forEach((r, i) => { r.rank = i && r.best === rows[i - 1].best ? rows[i - 1].rank : i + 1; });
+    rows.forEach((r, i) => { r.tied = (i > 0 && r.best === rows[i - 1].best) || (i < rows.length - 1 && r.best === rows[i + 1].best); r.me = !!uid && r.uid === uid; });
+    let me = null; const inTop = rows.find(r => r.me);
+    if (inTop) me = { ...inTop, inTop: true };
+    else if (mine && mine.exists() && typeof mine.data().best === 'number') {
+      const best = mine.data().best, [hi, eq] = await Promise.all([getCountFromServer(query(col, where('best', '>', best))), getCountFromServer(query(col, where('best', '==', best)))]);
+      rank = hi.data().count + 1; me = { uid, username: mine.data().username, best, rank, tied: eq.data().count > 1, inTop: false };
+    }
+    if (user?.uid !== uid) me = null;                                 // signed out / switched account while we were reading
+    return { top: rows, me, uid };
   } catch (e) { logErr('leaderboard read', e); throw e; }
+}
+export async function getLeaderboard(g, n = 10) { return (await getLeaderboardView(g, n)).top.map(r => ({ username: r.username, best: r.best })); }   // kept for older callers
+// HTML for the view above (theme classes live in each page): top rows, then a divider and the player's own row when they are outside the top.
+const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const lbRow = (r, me) => `<div class="row lbr${me ? ' me' : ''}"${me ? ' aria-label="Your rank"' : ''}><span><span class="m rk">${r.tied ? '=' : ''}${r.rank}</span>&nbsp; ${esc(r.username)}${me ? ' <span class="you">You</span>' : ''}</span><b>${esc(r.best)}</b></div>`;
+export function leaderboardHTML(v) {
+  if (!v.top.length) return '';
+  let h = v.top.map(r => lbRow(r, r.me)).join('');
+  if (v.me && !v.me.inTop) h += `<div class="lbgap" role="separator" aria-label="Your position"><i></i><i></i><i></i></div>` + lbRow(v.me, true);
+  return h;
 }
 
 // Daily calendar: per-day bests (users/{uid}/games/match/days/{YYYY-MM-DD}: r1..r4), read-only. Null when signed out.

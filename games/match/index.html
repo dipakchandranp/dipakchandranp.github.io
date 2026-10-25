@@ -108,6 +108,14 @@ body.done .actions{display:none}body.done .res{display:grid}
 .row{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;border-top:1px solid #1a1a1c;font-variant-numeric:tabular-nums;gap:10px}
 .row:first-of-type{border-top:0}
 .row .m{color:#86868b}
+.lbr>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbr .rk{display:inline-block;min-width:2em;text-align:right}
+.lbr.me{background:rgba(10,132,255,.14);box-shadow:inset 0 0 0 1px rgba(10,132,255,.45);border-radius:10px;border-top-color:transparent;margin:2px -8px;padding:6px 8px;font-weight:600}
+.lbr.me+.row,.lbr.me:first-of-type{border-top-color:transparent}
+.lbr.me .m{color:#6cb4ff}
+.lbr .you{display:inline-block;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:#6cb4ff;border:1px solid rgba(10,132,255,.55);border-radius:99px;padding:0 6px;margin-left:2px;vertical-align:1px;font-weight:600}
+.lbgap{display:flex;justify-content:center;gap:5px;padding:5px 0 3px}
+.lbgap i{width:4px;height:4px;border-radius:50%;background:#48484a}
 .empty{color:#6e6e73;font-size:.85rem}
 .about{margin-top:14px;font-size:.74rem;color:#6e6e73;line-height:1.45}
 .about a{color:#a1a1a6;text-decoration:underline}
@@ -258,9 +266,9 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=8';
-import {buildPuzzle,judge,scoreRound,validPick,LIVES,PER_GROUP,MAX_LEVEL} from './puzzle.js?v=8';
-import {ROUNDS,scoreDaily,DAILY_START,DAILY_END} from './daily.js?v=8';
+import * as zz from '../../shared/zz.js?v=9';
+import {buildPuzzle,judge,scoreRound,validPick,LIVES,PER_GROUP,MAX_LEVEL} from './puzzle.js?v=9';
+import {ROUNDS,scoreDaily,DAILY_START,DAILY_END} from './daily.js?v=9';
 const G='match',$=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -282,12 +290,12 @@ const fmtDay=d=>new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{weekday:'sh
 
 function loadData(){ // practice only. Plain fetch (HTTP cache is fine), kept in memory only.
   if(DATA)return Promise.resolve(DATA);
-  if(!dataP)dataP=Promise.all(['meaning','category'].map(t=>fetch('data/'+t+'.json?v=8').then(r=>{if(!r.ok)throw new Error('data '+r.status);return r.json();})))
+  if(!dataP)dataP=Promise.all(['meaning','category'].map(t=>fetch('data/'+t+'.json?v=9').then(r=>{if(!r.ok)throw new Error('data '+r.status);return r.json();})))
     .then(([m,c])=>(DATA={meaning:m,category:c})).catch(e=>{dataP=null;throw e;});
   return dataP;
 }
 function loadMonth(ym){ // the 4 boards x ~30 days of one month, ~65 KB, only when a guest taps Play
-  if(!monthP.has(ym))monthP.set(ym,fetch('daily/'+ym+'.json?v=8').then(r=>{if(!r.ok)throw new Error('daily '+r.status);return r.json();}).catch(e=>{monthP.delete(ym);throw e;}));
+  if(!monthP.has(ym))monthP.set(ym,fetch('daily/'+ym+'.json?v=9').then(r=>{if(!r.ok)throw new Error('daily '+r.status);return r.json();}).catch(e=>{monthP.delete(ym);throw e;}));
   return monthP.get(ym);
 }
 function toast(msg,ms=1500){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
@@ -504,7 +512,7 @@ async function loadMine(){const my=++gen,uid=curUid;
   $('best').textContent=se.best;
   $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.date?esc(fmtDay(p.date))+' · R'+(p.round??'?'):'Practice · L'+(p.level??'?')}<span class="m"> · ${p.won?'solved':'lost'}</span></span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):empty('No plays yet');}
 async function loadLb(){const g=lbG;
-  try{const l=await Promise.race([zz.getLeaderboard(g,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);if(g!==lbG)return;$('lb').innerHTML=l.length?l.map((r,i)=>`<div class="row"><span><span class="m">${i+1}</span>&nbsp; ${esc(r.username)}</span><b>${r.best}</b></div>`).join(''):empty('No scores yet');}
+  try{const l=await Promise.race([zz.getLeaderboardView(g,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);if(g!==lbG)return;$('lb').innerHTML=l.top.length?zz.leaderboardHTML(l):empty('No scores yet');}
   catch(e){if(g===lbG)$('lb').innerHTML=empty('Leaderboard unavailable');}}
 function setLb(g){lbG=g;$('lbD').classList.toggle('on',g==='matchdaily');$('lbP').classList.toggle('on',g==='match');$('lb').innerHTML=empty('Loading…');loadLb();}
 $('lbD').onclick=()=>setLb('matchdaily');$('lbP').onclick=()=>setLb('match');
