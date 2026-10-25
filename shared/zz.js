@@ -1,6 +1,6 @@
 // zelo/zuno shared module: auth, profile, scores
 // Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
-import { firebaseConfig, workerUrl } from './firebase-config.js?v=5';
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=6';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();

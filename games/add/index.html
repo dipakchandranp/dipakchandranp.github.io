@@ -35,6 +35,7 @@ main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;displa
 .ans input:focus{border-color:#0a84ff}
 .btn{background:#f5f5f7;color:#000;border:0;border-radius:14px;padding:0 20px;font-size:1rem;font-weight:600;transition:transform .15s,opacity .2s}
 .btn:active{transform:scale(.96)}
+.ans .btn{display:none} /* answers submit automatically; Enter still submits early */
 .res{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#111113;opacity:0;pointer-events:none;transition:opacity .35s}
 .res.show{opacity:1;pointer-events:auto}
 .big{font-size:clamp(4.5rem,22vw,8rem);font-weight:700;letter-spacing:-.05em;font-variant-numeric:tabular-nums;line-height:1;background:linear-gradient(180deg,#fff,#8e8e93);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -96,7 +97,7 @@ body.leaving #who{opacity:0}
     <div class="q">
       <div class="eq" id="eq">0<span>+</span>0</div>
       <form class="ans" id="form" autocomplete="off">
-        <input id="in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="?" aria-label="answer">
+        <input id="in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="?" aria-label="answer" enterkeyhint="done" autocomplete="off">
         <button class="btn" type="submit">Go</button>
       </form>
     </div>
@@ -121,7 +122,7 @@ body.leaving #who{opacity:0}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=5';
+import * as zz from '../../shared/zz.js?v=6';
 const G='add',$=id=>document.getElementById(id);
 let a,b,t0,raf,busy=false,token=null,roundUid=null,qseq=0;
 const pts=()=>Math.max(0,100-5*Math.floor((performance.now()-t0)/1000));
@@ -129,7 +130,7 @@ function tick(){const ms=performance.now()-t0,p=pts();$('live').textContent=p;$(
 // note under the question: default sign-in hint for guests, or a one-off message
 let noteMsg='';
 function refreshNote(){const n=$('note'),u=zz.currentUser();n.innerHTML=noteMsg?esc(noteMsg):'Sign in to save &amp; join leaderboard';n.style.visibility=(noteMsg||!u)?'visible':'hidden';}
-function show(){$('eq').innerHTML=`${a}<span>+</span>${b}`;$('in').disabled=false;busy=false;t0=performance.now();cancelAnimationFrame(raf);tick();$('in').focus({preventScroll:true});}
+function show(){$('eq').innerHTML=`${a}<span>+</span>${b}`;$('in').maxLength=String(a+b).length;$('in').disabled=false;busy=false;t0=performance.now();cancelAnimationFrame(raf);tick();$('in').focus({preventScroll:true});}
 function localQ(){a=1+Math.floor(Math.random()*99);b=1+Math.floor(Math.random()*99);token=null;show();}
 // Signed in: the Worker makes the question and starts the clock. Guests (or if the Worker is unreachable): local, nothing saved.
 async function newQ(){const seq=++qseq;token=null;roundUid=null;noteMsg='';refreshNote();$('in').value='';$('res').classList.remove('show');$('bar').style.background='';cancelAnimationFrame(raf);
@@ -142,7 +143,8 @@ function showResult(ok,score,timeMs,err){
   $('sub').className='sub'+(ok?'':' bad');$('sub').textContent=ok?`${(timeMs/1000).toFixed(1)}s · ${a} + ${b} = ${a+b}`:`Wrong — ${a} + ${b} = ${a+b}`;
   $('rerr').textContent=err||'';
   $('res').classList.add('show');countUp(score);setTimeout(()=>$('next').focus({preventScroll:true}),50);}
-$('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(busy||!/^\d+$/.test(v))return;busy=true;cancelAnimationFrame(raf);$('in').blur();
+// Auto-submit: as soon as the player has typed as many digits as the correct answer (a+b), the round is submitted.
+async function submitAnswer(v){if(busy||!/^\d+$/.test(v))return;busy=true;$('in').disabled=true;cancelAnimationFrame(raf);$('in').blur();
   const localMs=Math.round(performance.now()-t0),localOk=+v===a+b,localScore=localOk?Math.max(0,100-5*Math.floor(localMs/1000)):0;
   const tk=token,uid=roundUid;token=null;
   if(!tk||!uid||uid!==curUid){showResult(localOk,localScore,localMs);return;} // guest / unsaved round: local only
@@ -150,7 +152,9 @@ $('form').onsubmit=async e=>{e.preventDefault();const v=$('in').value.trim();if(
   try{r=await zz.submitAnswer(G,tk,v);}
   catch(err){if(uid!==curUid){showResult(localOk,localScore,localMs);return;}showResult(localOk,localScore,localMs,(err.message||'Could not save')+' This score was not saved.');return;}
   showResult(r.correct,r.score,r.timeMs);
-  if(uid===curUid){loadMine();loadLb();}};
+  if(uid===curUid){loadMine();loadLb();}}
+$('in').addEventListener('input',()=>{const el=$('in');if(busy||el.disabled)return;const d=el.value.replace(/\D/g,'').slice(0,String(a+b).length);if(el.value!==d)el.value=d;if(d.length===String(a+b).length)submitAnswer(d);});
+$('form').onsubmit=e=>{e.preventDefault();submitAnswer($('in').value.trim());}; // Enter submits early
 $('next').onclick=newQ;
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('res').classList.contains('show')&&document.activeElement!==$('next')){e.preventDefault();newQ();}});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
