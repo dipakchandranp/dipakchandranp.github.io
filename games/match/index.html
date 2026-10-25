@@ -198,7 +198,14 @@ body.leaving #who{opacity:0}
 .seg button.on{background:#f5f5f7;color:#000}
 .panel h3{align-items:center}
 button.pill.back{padding-left:9px}
-body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res{display:none}
+body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res,body.guestv .hud,body.guestv .actions,body.guestv .res,body.bootv .hud,body.bootv .actions,body.bootv .res{display:none}
+body.demo #newp,body.demo #scoresBtn{display:none}body.demo .actions{grid-template-columns:1fr 1fr}
+body.demo .res{height:auto;min-height:52px}body.demo .res .tx b{white-space:normal;line-height:1.25}body.demo .res .tx span{white-space:normal}
+.d.off{opacity:.16;background:transparent;border-color:transparent;pointer-events:none}
+.start .lead{font-size:.95rem;color:#c7c7cc;max-width:310px;line-height:1.45}
+.start .stack{display:grid;gap:10px;width:100%;max-width:300px}.start .btn{width:100%}
+.start.sm{overflow:auto;justify-content:flex-start;padding-top:22px}
+.start.sm>*{flex:none}
 body.daily #newp{display:none}
 body.daily .actions{grid-template-columns:1fr 1fr}
 @media(max-width:360px){.pill{padding:0 9px;font-size:.72rem}.hud{gap:5px}.right{gap:5px}.lives{gap:5px}.d{border-radius:9px;font-size:.88rem}.rc{height:40px}.panel2{padding:10px 8px 8px}}
@@ -208,7 +215,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
 @media(max-width:340px){.card{border-radius:11px}.grid{gap:6px}.act{font-size:.82rem}}
 </style>
 </head>
-<body class="cal">
+<body class="bootv">
 <header class="top">
   <a class="logo" id="home" href="../../#tiles">zelo/zuno</a>
   <button class="chip" id="chip"><span id="chipT">Sign in</span></button><div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
@@ -221,6 +228,18 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   </div>
   <div class="board" id="board">
     <div class="grid" id="grid" hidden></div>
+    <section class="start" id="boot" aria-label="Loading"><div class="stnote"><span class="spin" style="border-color:#ffffff33;border-top-color:#fff"></span>Loading…</div></section>
+    <section class="start sm" id="guest" aria-label="Word match" hidden>
+      <h2>Word match</h2>
+      <p class="lead">16 Malayalam words hide 4 groups of 4. Tap four that belong together.</p>
+      <ul class="rules">
+        <li>Group them by meaning or by category.</li>
+        <li>You have 4 lives – each wrong group costs one.</li>
+        <li>Daily challenge: 4 new rounds every day, a calendar of past days and a leaderboard.</li>
+      </ul>
+      <div class="stack"><button class="btn" id="signG" type="button">Sign in with Google to play</button><button class="btn alt" id="demoBtn" type="button">Try a sample round</button></div>
+      <div class="stnote" id="gnote">The sample round isn’t scored or saved.</div>
+    </section>
     <section class="panel2" id="cal" aria-label="Daily calendar">
       <div class="calhead"><button class="nav" id="prevM" type="button" aria-label="Previous month">‹</button><div class="mtitle" id="mtitle"></div><button class="nav" id="nextM" type="button" aria-label="Next month">›</button></div>
       <div class="dow" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
@@ -256,7 +275,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   <div class="shead"><h2>Scores</h2><button class="x" id="sclose" type="button" aria-label="close">✕</button></div>
   <div class="panel"><h3>My plays <span>season <b id="best">–</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
   <div class="panel"><h3>Leaderboard <span class="seg" role="group" aria-label="leaderboard"><button type="button" id="lbD" class="on">Daily</button><button type="button" id="lbP">Practice</button></span></h3><div id="lb"><div class="empty">Loading…</div></div></div>
-  <p class="about">Every day brings 4 new boards of 16 words, and a new day opens at midnight in your own timezone. Past days stay open to play or replay. The daily leaderboard ranks your season total (the sum of your best score on each day). Word match groups Malayalam words by meaning or by kind. Word lists are built from the <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL, © Olam / Kailash Nadh and contributors) plus hand-curated lists. Style inspired by Word Association Solitaire.</p>
+  <p class="about">Every day brings 4 new boards of 16 words, starting 25 Oct 2026, and a new day opens at midnight in your own timezone. Past days stay open to play or replay. The daily leaderboard ranks your season total (the sum of your best score on each day). Word match groups Malayalam words by meaning or by kind. Word lists are built from the <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL, © Olam / Kailash Nadh and contributors) plus hand-curated lists. Style inspired by Word Association Solitaire.</p>
 </div></div>
 <div class="modal" id="modal"><form class="mbox" id="uform">
   <h2>Choose a username</h2>
@@ -266,45 +285,33 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=9';
-import {buildPuzzle,judge,scoreRound,validPick,LIVES,PER_GROUP,MAX_LEVEL} from './puzzle.js?v=9';
-import {ROUNDS,scoreDaily,DAILY_START,DAILY_END} from './daily.js?v=9';
+import * as zz from '../../shared/zz.js?v=10';
+import {ROUNDS,DAILY_START,DAILY_END} from './daily.js?v=10';
+const LIVES=4,PER_GROUP=4,MAX_LEVEL=5;
 const G='match',$=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---- in-memory state only (no localStorage / sessionStorage / cookies / IndexedDB) ----
-let DATA=null,dataP=null;                 // practice word lists, fetched lazily when Practice starts
-const monthP=new Map();                   // 'YYYY-MM' -> promise of that month's daily boards (guests / fallback), fetched lazily on Play
-let level=1,seen=new Set(),lastIds=[],lastLocal=null;
+let DEMO=null;                            // the fixed try-out round (demo.json), fetched on demand; judged in the browser
+let level=1,seen=new Set(),lastIds=[];
 let S=null,D=null;                        // S: current round. D: current daily run {date,round,res[4],day}; null in Practice
 let curUid=null,gen=0,seq=0,busy=false,sel=[],timer=null,toastT=null,view='cal',armT=null;
 const els=new Map();                      // card index -> button
 const bests=new Map();                    // 'YYYY-MM' -> {uid, days:{date:[r1..r4]}}   signed-in bests, read from Firestore
-const guestDays={};                       // date -> [r1..r4] for this visit only (guests; nothing is stored)
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const ymOf=d=>d.slice(0,7),pad2=n=>String(n).padStart(2,'0');
 const clampDate=d=>d<DAILY_START?DAILY_START:d>DAILY_END?DAILY_END:d;
 let timeReady=false,selDate=DAILY_START,shownYM=ymOf(DAILY_START);   // 'today' is unknown until the server time arrives (or fails and the device clock is used)
 const fmtDay=d=>new Date(d+'T00:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
 
-function loadData(){ // practice only. Plain fetch (HTTP cache is fine), kept in memory only.
-  if(DATA)return Promise.resolve(DATA);
-  if(!dataP)dataP=Promise.all(['meaning','category'].map(t=>fetch('data/'+t+'.json?v=9').then(r=>{if(!r.ok)throw new Error('data '+r.status);return r.json();})))
-    .then(([m,c])=>(DATA={meaning:m,category:c})).catch(e=>{dataP=null;throw e;});
-  return dataP;
-}
-function loadMonth(ym){ // the 4 boards x ~30 days of one month, ~65 KB, only when a guest taps Play
-  if(!monthP.has(ym))monthP.set(ym,fetch('daily/'+ym+'.json?v=9').then(r=>{if(!r.ok)throw new Error('daily '+r.status);return r.json();}).catch(e=>{monthP.delete(ym);throw e;}));
-  return monthP.get(ym);
-}
 function toast(msg,ms=1500){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);}
-function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const b=document.body;b.classList.toggle('cal',v==='cal');b.classList.toggle('sumv',v==='sum');b.classList.toggle('daily',!!D);if(v!=='play')b.classList.remove('done');
-  $('cal').hidden=v!=='cal';$('sum').hidden=v!=='sum';$('grid').hidden=v!=='play';}
+function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const b=document.body;b.classList.toggle('cal',v==='cal');b.classList.toggle('sumv',v==='sum');b.classList.toggle('guestv',v==='guest');b.classList.toggle('bootv',v==='boot');b.classList.toggle('daily',!!D);b.classList.toggle('demo',v==='play'&&!!S&&S.mode==='demo');if(v!=='play')b.classList.remove('done');
+  $('cal').hidden=v!=='cal';$('sum').hidden=v!=='sum';$('grid').hidden=v!=='play';$('guest').hidden=v!=='guest';$('boot').hidden=v!=='boot';}
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function drawLives(lost,pop){[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
 function tickClock(){if(S&&!S.done)$('clock').textContent=fmt(performance.now()-S.t0);}
-function lvlLabel(txt){$('lvlT').innerHTML=txt||(D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
+function lvlLabel(txt){$('lvlT').innerHTML=txt||(S&&S.mode==='demo'?'Try-out':D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
 
 // ---- fit Malayalam text into a card: single line shrinking first, then wrapped ----
 function fit(btn){const w=btn.firstChild,aw=btn.clientWidth-8,ah=btn.clientHeight-8;if(aw<=0)return;
@@ -337,27 +344,28 @@ function buildCards(){els.clear();$('grid').replaceChildren();
 
 // ---- calendar ----
 const LOCK='<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path fill="currentColor" d="M3 5V4a3 3 0 016 0v1h.5A1.5 1.5 0 0111 6.5v4A1.5 1.5 0 019.5 12h-7A1.5 1.5 0 011 10.5v-4A1.5 1.5 0 012.5 5H3zm1.5 0h3V4a1.5 1.5 0 00-3 0v1z"/></svg>';
-function dayRes(date){if(curUid){const b=bests.get(ymOf(date));return b&&b.uid===curUid?b.days[date]||null:null;}return guestDays[date]||null;}
+function dayRes(date){if(curUid){const b=bests.get(ymOf(date));return b&&b.uid===curUid?b.days[date]||null:null;}return null;}
 const sumRes=r=>r?r.reduce((a,x)=>a+(x||0),0):0,cntRes=r=>r?r.filter(x=>x!=null).length:0;
 function renderCal(){
   if(!timeReady){$('days').innerHTML='';renderBox();return;}
   const today=zz.localISO(),[y,m]=shownYM.split('-').map(Number),lead=(new Date(Date.UTC(y,m-1,1)).getUTCDay()+6)%7,n=new Date(Date.UTC(y,m,0)).getUTCDate();
   $('mtitle').textContent=MONTHS[m-1]+' '+y;$('prevM').disabled=shownYM<=ymOf(DAILY_START);$('nextM').disabled=shownYM>=ymOf(DAILY_END);
   let h='<span class="d pad"></span>'.repeat(lead);
-  for(let i=1;i<=n;i++){const date=`${shownYM}-${pad2(i)}`,locked=date>today,r=dayRes(date),c=cntRes(r),done=c===ROUNDS;
+  for(let i=1;i<=n;i++){const date=`${shownYM}-${pad2(i)}`;
+    if(date<DAILY_START||date>DAILY_END){h+=`<span class="d off" aria-hidden="true"><b>${i}</b><small></small></span>`;continue;}   // outside the daily calendar: not playable, no lock
+    const locked=date>today,r=dayRes(date),c=cntRes(r),done=c===ROUNDS;
     const cls='d'+(locked?' locked':'')+(date===today?' today':'')+(date===selDate?' sel':'')+(done?' done':c?' part':'');
     const sub=locked?LOCK:done?'✓ '+sumRes(r):c?c+'/'+ROUNDS:'';
     h+=`<button type="button" class="${cls}" data-d="${date}" aria-label="${fmtDay(date)}${locked?', locked':done?', completed, '+sumRes(r)+' points':c?', '+c+' of 4 rounds':''}" aria-pressed="${date===selDate}"><b>${i}</b><small>${sub}</small></button>`;}
   $('days').innerHTML=h;renderBox();}
 function renderBox(){
   if(!timeReady){$('dlabel').textContent='Checking today…';$('dsub').textContent='';$('rchips').innerHTML='';$('playBtn').disabled=true;$('playBtn').textContent='Play';$('stnote').innerHTML='';return;}
-  const today=zz.localISO(),locked=selDate>today,r=dayRes(selDate),c=cntRes(r),done=c===ROUNDS,signed=!!curUid;
+  const today=zz.localISO(),locked=selDate>today,r=dayRes(selDate),c=cntRes(r),done=c===ROUNDS,signed=true;
   $('dlabel').textContent=fmtDay(selDate)+(selDate===today?' · Today':'');
   $('dsub').textContent=locked?'Opens '+fmtDay(selDate):done?(signed?'Best ':'This visit ')+sumRes(r)+' / 400':c?(signed?'Best so far ':'')+sumRes(r)+' · '+c+'/4 rounds':'4 rounds · up to 400';
   $('rchips').innerHTML=[0,1,2,3].map(i=>`<span class="rc${r&&r[i]!=null?' on':''}">R${i+1}<b>${locked?'·':r&&r[i]!=null?r[i]:'–'}</b></span>`).join('');
   const b=$('playBtn');b.disabled=locked||busy;b.innerHTML=locked?LOCK+' Locked':done?'Replay':c?'Play':'Play';
-  $('stnote').className='stnote';$('stnote').innerHTML=curUid?'Scores saved':'Guest · <a id="sg">sign in</a> to save';
-  const l=$('sg');if(l)l.onclick=()=>$('chip').click();}
+  $('stnote').className='stnote';$('stnote').innerHTML='Scores saved';}
 async function loadBests(ym){const uid=curUid;if(!uid)return;
   try{const r=await zz.getMyDays(ym+'-01',ym+'-31');if(uid!==curUid||!r||r.uid!==uid)return;bests.set(ym,{uid,days:r.days});if(view==='cal')renderCal();}catch(e){}}
 function showCal(date){if(date){selDate=date;shownYM=ymOf(date);}setView('cal');renderCal();loadBests(shownYM);}
@@ -367,48 +375,48 @@ $('prevM').onclick=()=>gotoMonth(-1);$('nextM').onclick=()=>gotoMonth(1);
 $('days').onclick=e=>{const b=e.target.closest('.d[data-d]');if(!b||busy)return;selDate=b.dataset.d;renderCal();buzz(4);};
 let tx=null;$('cal').addEventListener('touchstart',e=>{tx=e.touches.length===1?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 $('cal').addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)gotoMonth(dx<0?1:-1);},{passive:true});
-function timeUp(){return zz.syncTime().then(()=>{const first=!timeReady;timeReady=true;
+let timeStarted=false;
+function timeUp(){timeStarted=true;return zz.syncTime().then(()=>{const first=!timeReady;timeReady=true;
   if(first){selDate=clampDate(zz.localISO());shownYM=ymOf(selDate);if(view==='cal')loadBests(shownYM);}
   if(view==='cal')renderCal();});}
 setInterval(()=>{if(view==='cal'&&!document.hidden&&timeReady)renderCal();},30000);
-setInterval(()=>{if(!document.hidden)zz.syncTime();},300000);   // re-anchor to the server clock every 5 min   // unlocks the new day at local midnight while the calendar is open
-addEventListener('visibilitychange',()=>{if(!document.hidden&&timeReady)zz.syncTime().then(()=>{if(view==='cal')renderCal();});});
+setInterval(()=>{if(!document.hidden&&curUid)zz.syncTime();},300000);   // re-anchor to the server clock every 5 min   // unlocks the new day at local midnight while the calendar is open
+addEventListener('visibilitychange',()=>{if(!document.hidden&&timeReady&&curUid)zz.syncTime().then(()=>{if(view==='cal')renderCal();});});
 
 // ---- starting a round ----
 function setBusy(b){busy=b;$('newp').disabled=b;if(view==='cal')renderBox();}
-function localBoard(b){return {mode:'local',cards:b.c,answer:b.g.map(g=>g[3]),groups:b.g.map(g=>({id:g[0],type:g[1],en:g[2]})),level:b.l};}
-function localRound(){const p=buildPuzzle(DATA,level,Math.random,seen,lastLocal);
-  if(p.reset)seen.clear();p.groups.forEach(g=>seen.add(g.id));lastLocal={sig:p.sig,ids:p.ids};lastIds=p.ids;
-  return {mode:'local',cards:p.cards,answer:p.answer,groups:p.groups,level:p.level};}
-function startDay(date){if(busy)return;if(date>zz.localISO()){toast('That day opens '+fmtDay(date));renderCal();return;}
+function startDay(date){if(busy||!curUid)return;if(date>zz.localISO()){toast('That day opens '+fmtDay(date));renderCal();return;}
   D={date,round:1,res:[null,null,null,null],day:null};startRound();}
-function startPractice(){if(busy)return;D=null;level=1;seen=new Set();lastIds=[];lastLocal=null;startRound();}
+function startPractice(){if(busy||!curUid)return;D=null;level=1;seen=new Set();lastIds=[];startRound();}
 function loadingUI(on){
   if(on){if(view==='cal'){if(D){$('playBtn').disabled=true;$('playBtn').innerHTML='<span class="spin"></span>Loading';}else $('practice').textContent='Loading…';}
     else{$('next').disabled=true;$('next').innerHTML='<span class="spin"></span>Loading';}}
   else{$('next').disabled=false;$('practice').textContent='∞ Practice';}}
-async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want||D.round):0;busy=true;sel=[];loadingUI(true);let R=null,note='';
+async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want||D.round):0;busy=true;sel=[];loadingUI(true);let R=null;
   const back=msg=>{if(view==='cal')D=null;busy=false;loadingUI(false);$('newp').disabled=false;if(msg)toast(msg,3500);if(view==='cal')renderCal();};
+  if(!uid){back();return;}                                  // boards are only ever served to signed-in players
   try{
-    if(uid){
-      try{
-        if(daily){const j=await zz.matchDailyStart(D.date,rn);if(my!==seq||uid!==curUid)return;R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}
-        else{const j=await zz.matchStart(level,[...seen],lastIds);if(my!==seq||uid!==curUid)return;
-          if(j.reset)seen.clear();(j.ids||[]).forEach(x=>seen.add(x));lastIds=j.ids||[];R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}}
-      catch(e){if(my!==seq)return;
-        if(daily&&['day_locked','date_out_of_range','bad_date','bad_clock','bad_timezone'].includes(e.code)){D=null;back(e.message);setView('cal');renderCal();return;}
-        note=(e.message||'Could not start a saved round')+' This round won’t be saved.';}
-    }
-    if(!R){if(daily){const m=await loadMonth(ymOf(D.date));if(my!==seq)return;const b=m.days[D.date]?.[rn-1];if(!b)throw new Error('no board');R=localBoard(b);}
-      else{await loadData();if(my!==seq)return;R=localRound();}}
-  }catch(e){console.warn('match start failed',e);if(my!==seq)return;if(view==='play'){busy=false;loadingUI(false);$('next').textContent='Try again';$('next').disabled=false;toast('Could not load the words. Check your connection.',3500);return;}
-    back('Could not load the words. Check your connection and try again.');return;}
+    if(daily){const j=await zz.matchDailyStart(D.date,rn);if(my!==seq||uid!==curUid)return;R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}
+    else{const j=await zz.matchStart(level,[...seen],lastIds);if(my!==seq||uid!==curUid)return;
+      if(j.reset)seen.clear();(j.ids||[]).forEach(x=>seen.add(x));lastIds=j.ids||[];R={mode:'server',cards:j.cards,token:j.token,uid,level:j.level};}
+  }catch(e){if(my!==seq)return;
+    if(daily&&['day_locked','date_out_of_range','bad_date','bad_clock','bad_timezone'].includes(e.code)){D=null;back(e.message);setView('cal');renderCal();return;}
+    console.warn('match start failed',e);
+    if(view==='play'){busy=false;loadingUI(false);$('next').textContent='Try again';$('next').disabled=false;toast(e.message||'Could not load the words. Check your connection.',3500);return;}
+    back(e.message||'Could not load the words. Check your connection and try again.');return;}
   busy=false;loadingUI(false);$('newp').disabled=false;if(daily){D.round=rn;D.want=0;}
   S={...R,solved:[],mistakes:0,done:false,t0:performance.now()};if(!daily)level=R.level||level;
   setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
   buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();
-  if(note)toast(note,3500);
 }
+// ---- guest: description + one fixed try-out round (demo.json). Judged in the browser: no scoring, no Worker calls, nothing stored ----
+function showGuest(){seq++;busy=false;clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();document.body.classList.remove('done');loadingUI(false);$('demoBtn').disabled=false;setView('guest');}
+async function startDemo(){if(curUid||busy)return;busy=true;$('demoBtn').disabled=true;
+  try{if(!DEMO){const r=await fetch('demo.json?v=10');if(!r.ok)throw new Error('demo '+r.status);DEMO=await r.json();}}
+  catch(e){busy=false;$('demoBtn').disabled=false;toast('Could not load the sample round. Check your connection.',3500);return;}
+  busy=false;if(curUid||view!=='guest')return;
+  sel=[];D=null;S={mode:'demo',cards:DEMO.cards,answer:DEMO.groups.map(g=>g.indices),groups:DEMO.groups,level:1,solved:[],mistakes:0,done:false,t0:performance.now()};
+  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
 function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
 
 // ---- play ----
@@ -418,17 +426,14 @@ function tap(i){if(busy||!S||S.done)return;const k=sel.indexOf(i);
   else{if(sel.length>=PER_GROUP){buzz(10);return;}sel.push(i);buzz(7);}
   els.get(i).classList.toggle('sel',sel.includes(i));els.get(i).setAttribute('aria-pressed',sel.includes(i));
   syncBtns();if(sel.length===PER_GROUP)submitPick();}
-function localJudge(pick){
-  if(!validPick(pick,S.solved.flatMap(x=>x.indices)))return{error:'bad_pick'};
-  const j=judge(S.answer,pick);S.gis=S.gis||new Set();
-  if(j.group>=0&&!S.gis.has(j.group)){const g=S.groups[j.group];S.gis.add(j.group);const won=S.gis.size===S.answer.length;
-    const r={result:'correct',group:{type:g.type,en:g.en,indices:[...S.answer[j.group]]},mistakes:S.mistakes,done:won,won};
-    if(won){r.timeMs=Math.round(performance.now()-S.t0);r.score=D?scoreDaily({solved:true,mistakes:S.mistakes,ms:r.timeMs}):scoreRound({level:S.level,solved:true,mistakes:S.mistakes,ms:r.timeMs});}
-    return r;}
-  const mistakes=S.mistakes+1,lost=mistakes>=LIVES;
-  const r={result:j.best>=PER_GROUP-1?'one_away':'wrong',mistakes,done:lost,won:false};
-  if(lost){r.timeMs=Math.round(performance.now()-S.t0);r.score=0;
-    r.solution=S.answer.map((idx,gi)=>({type:S.groups[gi].type,en:S.groups[gi].en,indices:[...idx],gi})).filter(x=>!S.gis.has(x.gi));}
+function demoJudge(pick){const have=new Set(S.solved.flatMap(x=>x.indices));
+  if(pick.length!==PER_GROUP||new Set(pick).size!==PER_GROUP||pick.some(i=>!(i>=0&&i<S.cards.length)||have.has(i)))return{error:'bad_pick'};
+  S.gis=S.gis||new Set();let best=0,hit=-1;
+  S.answer.forEach((a,gi)=>{if(S.gis.has(gi))return;const c=pick.filter(i=>a.includes(i)).length;if(c>best)best=c;if(c===PER_GROUP)hit=gi;});
+  if(hit>=0){const g=S.groups[hit];S.gis.add(hit);const won=S.gis.size===S.answer.length;
+    const r={result:'correct',group:{type:g.type,en:g.en,indices:[...S.answer[hit]]},mistakes:S.mistakes,done:won,won};if(won)r.timeMs=Math.round(performance.now()-S.t0);return r;}
+  const mistakes=S.mistakes+1,lost=mistakes>=LIVES,r={result:best>=PER_GROUP-1?'one_away':'wrong',mistakes,done:lost,won:false};
+  if(lost){r.timeMs=Math.round(performance.now()-S.t0);r.solution=S.answer.map((idx,gi)=>({type:S.groups[gi].type,en:S.groups[gi].en,indices:[...idx],gi})).filter(x=>!S.gis.has(x.gi));}
   return r;}
 async function submitPick(){const pick=[...sel],my=seq,uid=curUid,S0=S;busy=true;syncBtns();
   let r;
@@ -438,7 +443,7 @@ async function submitPick(){const pick=[...sel],my=seq,uid=curUid,S0=S;busy=true
       if(['round_expired','round_gone'].includes(e.code)||e.status===410||e.status===404){S.done=true;clearInterval(timer);toast(e.message||'Round ended',3000);leaveToCal();return;}
       sel=[];render();syncBtns();toast(e.message||'Could not check that',2500);return;}
     if(my!==seq||S!==S0||uid!==curUid)return;
-  }else r=localJudge(pick);
+  }else r=demoJudge(pick);
   if(r.error){busy=false;sel=[];render();syncBtns();return;}
   applyResult(r,pick);}
 function sleep(ms){return new Promise(r=>setTimeout(r,RM?0:ms));}
@@ -463,26 +468,26 @@ async function finish(r){const my=seq,S0=S;S.done=true;clearInterval(timer);$('c
   }
   sel=[];busy=false;
   document.body.classList.add('done');
+  if(S.mode==='demo'){$('sc').textContent='✓';$('rt').textContent='Sign in with Google to play the daily challenge';$('rs').textContent='Try-out '+(r.won?'solved':'over')+' · not scored · nothing saved';$('next').textContent='Sign in';$('next').disabled=false;buzz(r.won?[15,50,15,50,30]:120);return;}
   const score=r.score??0;$('rt').textContent=r.won?'Solved!':'Out of lives';
   const t=(r.timeMs/1000).toFixed(1)+'s · '+(S.mistakes?S.mistakes+(S.mistakes>1?' mistakes':' mistake'):'no mistakes');
-  const where=S.mode==='server'?(r.saved===false?'Not saved':'Saved'):'Guest · not saved';
+  const where=r.saved===false?'Not saved':'Saved';
   $('rs').textContent=t+' · '+where;
   if(D){
-    D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:S.mode==='server'&&r.saved!==false};
-    if(S.mode==='server'&&r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
-    else if(S.mode!=='server'&&!curUid){const g=guestDays[D.date]||(guestDays[D.date]=[null,null,null,null]);g[D.round-1]=Math.max(g[D.round-1]??0,score);}
+    D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:r.saved!==false};
+    if(r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
     $('next').textContent=D.round<ROUNDS?'Next round':'Results';
   }else{$('next').textContent=r.won?'Next':'Retry';if(r.won&&level<MAX_LEVEL)level++;}
   buzz(r.won?[15,50,15,50,30]:120);
   countUp(score);
-  if(S.mode==='server'&&S.uid===curUid){loadMine();loadLb();}
+  if(S.uid===curUid){loadMine();loadLb();}
 }
 function countUp(n){const el=$('sc'),s=performance.now();(function f(){const k=Math.min(1,(performance.now()-s)/600);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})();}
 function newRound(){document.body.classList.remove('done');$('grid').replaceChildren();startRound();}
-function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),signed=!!curUid,saved=res.some(x=>x&&x.saved);
+function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),saved=res.some(x=>x&&x.saved);
   $('sdate').textContent=fmtDay(D.date)+(D.date===zz.localISO()?' · Today':'');$('stotal').textContent=run;
   $('srows').innerHTML=res.map((x,i)=>`<div class="row"><span>Round ${i+1}<span class="m"> · ${x?(x.won?'solved':'lost'):'skipped'}</span></span><span class="m">${x?(x.timeMs/1000).toFixed(1)+'s · '+(x.mistakes?x.mistakes+' ✕':'clean'):''}</span><b>${x?x.score:'–'}</b></div>`).join('');
-  $('snote').textContent=signed?(saved&&D.day?`Saved · your best for this day: ${D.day.total} / 400`:'Not saved'):'Guest · not saved · sign in to keep your scores';
+  $('snote').textContent=saved&&D.day?`Saved · your best for this day: ${D.day.total} / 400`:'Not saved';
   $('replay').textContent='Replay day';setView('sum');buzz([15,40,15]);}
 $('playBtn').onclick=()=>startDay(selDate);
 $('practice').onclick=startPractice;
@@ -490,14 +495,18 @@ $('calScores').onclick=()=>$('scoresBtn').click();
 $('replay').onclick=()=>{if(D)startDay(D.date);};
 $('toCal').onclick=()=>{const d=D&&D.date;D=null;showCal(d||selDate);};
 $('next').onclick=()=>{if(busy)return;
+  if(S&&S.mode==='demo'){$('chip').click();return;}
   if(!D){newRound();return;}
   if(D.want&&D.want!==D.round){startRound();return;}                // retry after a failed load
   if(D.round<ROUNDS){D.want=D.round+1;document.body.classList.remove('done');$('grid').replaceChildren();startRound();}else showSummary();};
+$('signG').onclick=()=>$('chip').click();
+$('demoBtn').onclick=startDemo;
 $('lvl').onclick=()=>{if(view!=='play')return;
+  if(S&&S.mode==='demo'){showGuest();return;}
   const risky=D?!(S&&S.done&&D.round>=ROUNDS):!!(S&&!S.done);   // leaving mid-day loses the day's progress: ask for a second tap
   if(!risky||$('lvl').dataset.arm){leaveToCal();return;}
   $('lvl').dataset.arm='1';lvlLabel('Leave? tap again');clearTimeout(armT);armT=setTimeout(()=>{delete $('lvl').dataset.arm;lvlLabel();},2500);};
-$('newp').onclick=()=>{if(busy||D)return;if(S&&!S.done)toast('New puzzle');newRound();};
+$('newp').onclick=()=>{if(busy||D||!curUid)return;if(S&&!S.done)toast('New puzzle');newRound();};
 $('clr').onclick=()=>{if(busy||!sel.length)return;sel.forEach(i=>els.get(i)?.setAttribute('aria-pressed','false'));sel=[];render();syncBtns();buzz(4);};
 $('shuf').onclick=()=>{if(busy||!S||S.done)return;const before=rects(),a=S.order;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}render({flip:true});buzz(5);};
 // ---- scores sheet ----
@@ -529,20 +538,21 @@ $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim()
   if(!zz.validUsername(n)){$('uerr').textContent='3–16 letters or digits only';return;}
   $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');}catch(err){$('uerr').textContent=err.message||'Could not save';}};
 let authSeen=false;
-zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
+function enter(){authSeen=true;if(curUid){if(!timeStarted)timeUp();showCal();}else showGuest();}
+zz.onUser((u,p)=>{const first=!authSeen,uid=u?.uid||null;
   $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  if(uid!==curUid){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();
-    // a round belongs to one account: drop it and go back to the calendar
-    if(S||D||view!=='cal'){clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();loadingUI(false);}
-    $('newp').disabled=false;seen=new Set();lastIds=[];lastLocal=null;level=1;lvlLabel();drawLives(0);$('clock').textContent='0:00';showCal();}
+  if(uid!==curUid||first){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();
+    // a round belongs to one account: drop it and start from the calendar (signed in) or the guest page
+    clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();loadingUI(false);
+    $('newp').disabled=false;seen=new Set();lastIds=[];level=1;lvlLabel();drawLives(0);$('clock').textContent='0:00';enter();}
   else if(view==='cal')renderBox();
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
-  loadMine();loadLb();});
+  if(uid){loadMine();loadLb();}});
 $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||RM)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
 addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
 setTimeout(()=>document.body.classList.add('entered'),1000);
-drawLives(0);setView('cal');renderCal();clearMine('Loading…');zz.init();timeUp();
-setTimeout(()=>{if(!authSeen){clearMine('Sign in to save your plays');loadLb();}},4000);
+drawLives(0);setView('boot');clearMine('Loading…');zz.init();
+setTimeout(()=>{if(!authSeen)enter();},4000);   // sign-in state unknown after 4 s: show the guest page (it switches by itself if the sign-in arrives later)
 </script>
 </body>
 </html>

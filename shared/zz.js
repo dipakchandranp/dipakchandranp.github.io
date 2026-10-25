@@ -1,6 +1,6 @@
 // zelo/zuno shared module: auth, profile, scores
 // Guests: nothing is saved. Signed in: plays live in Firestore only; all writes go through the score Worker.
-import { firebaseConfig, workerUrl } from './firebase-config.js?v=9';
+import { firebaseConfig, workerUrl } from './firebase-config.js?v=10';
 const V = '10.14.1', B = `https://www.gstatic.com/firebasejs/${V}/`;
 let fb = null, user = null, profile = null;
 const subs = new Set();
@@ -103,7 +103,7 @@ export async function startRound(g) {
 }
 // match: the Worker builds the puzzle (cards only, no answers), times the round and judges every guess.
 export async function matchStart(level, exclude = [], last = []) {
-  const uid = user?.uid, j = await api('/start', { gameId: 'match', level, exclude: exclude.slice(-60), last: last.slice(0, 8) });
+  const uid = user?.uid, j = await api('/v2/start', { gameId: 'match', level, exclude: exclude.slice(-60), last: last.slice(0, 8) });
   if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
   return { ...j, token: j.roundToken, uid };
 }
@@ -136,7 +136,7 @@ export function localISO(ms = nowMs()) {
   const d = new Date(ms); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 export async function matchDailyStart(date, round) {
-  const uid = user?.uid, j = await api('/start', { gameId: 'match', date, round, tz: tzName() });   // the Worker checks the date against ITS clock + this zone
+  const uid = user?.uid, j = await api('/v2/start', { gameId: 'match', date, round, tz: tzName() });   // the Worker checks the date against ITS clock + this zone
   if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
   return { ...j, token: j.roundToken, uid };
 }
