@@ -56,22 +56,16 @@ main{flex:1;min-height:0;width:100%;max-width:560px;margin:0 auto;padding:0 14px
 .pill#clock{background:transparent;border-color:transparent;color:#6e6e73;padding:0 4px}
 button.pill{transition:border-color .2s,transform .12s}
 button.pill:active{transform:scale(.95)}
-.lives{display:flex;gap:7px;align-items:center}
-.lives i{font-style:normal;font-size:15px;line-height:1;color:#ff453a}
-.lives i:before{content:'\2665'}
-.lives i.lost{color:#2c2c2e;transform:scale(.7)}
-.lives i.pop{animation:lp .45s}
-@keyframes lp{0%{transform:scale(1.8)}100%{transform:scale(.7)}}
 .right{display:flex;gap:8px}
-/* round / level / sample progress: numbered boxes (no transitions) */
-.steps{flex:none;display:flex;align-items:center;justify-content:center;gap:8px;height:38px;list-style:none}
-.st{position:relative;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;border:1px solid #1d1d1f}
-.st.todo{background:#0a0a0b;color:#48484a}
-.st.done{background:#0f3a24;border-color:#30d158;color:#7ef0ad}
-.st.done:after{content:'\2713';position:absolute;top:1px;right:3px;font-size:.6rem;font-weight:700;color:#7ef0ad}
-.st.lost{background:#44300c;border-color:#ffb340;color:#ffcb78}
-.st.lost:after{content:'\2715';position:absolute;top:1px;right:3px;font-size:.6rem;font-weight:700;color:#ffcb78}
-.st.cur{width:38px;height:38px;border-radius:11px;background:#f5f5f7;border:2px solid #0a84ff;color:#000;font-size:1.1rem;box-shadow:0 0 0 2px #000,0 0 0 4px #f5f5f7}
+/* round / level / sample progress: plain digits in the top bar (no boxes, no transitions) */
+.steps{display:flex;align-items:center;justify-content:center;gap:15px;list-style:none;min-width:0}
+.st{position:relative;font-size:15px;line-height:1;font-weight:500;font-variant-numeric:tabular-nums;color:#515154}
+.st.cur{color:#fff;font-weight:800}
+.st.done{color:#30d158;font-weight:700}
+.st.lost{color:#ffb340;font-weight:700}
+.st.done:after,.st.lost:after{position:absolute;left:100%;top:-4px;font-size:9px;line-height:1;margin-left:2px;font-weight:700}
+.st.done:after{content:'\2713'}
+.st.lost:after{content:'\2715'}
 /* board */
 .board{flex:1;min-height:0;position:relative;width:100%;max-height:640px;align-self:center}
 .grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:8px}
@@ -239,7 +233,7 @@ body.leaving #who{opacity:0}
 .seg button.on{background:#f5f5f7;color:#000}
 .panel h3{align-items:center}
 button.pill.back{padding-left:9px}
-body.cal .steps,body.sumv .steps,body.guestv .steps,body.bootv .steps,body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res,body.guestv .hud,body.guestv .actions,body.guestv .res,body.bootv .hud,body.bootv .actions,body.bootv .res{display:none}
+body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res,body.guestv .hud,body.guestv .actions,body.guestv .res,body.bootv .hud,body.bootv .actions,body.bootv .res{display:none}
 body.demo #newp,body.demo #scoresBtn{display:none}body.demo .actions{grid-template-columns:1fr 1fr}
 body.demo .res{height:auto;min-height:52px}body.demo .res .tx b{white-space:normal;line-height:1.25}body.demo .res .tx span{white-space:normal}
 .d.off{opacity:.16;background:transparent;border-color:transparent;pointer-events:none}
@@ -249,7 +243,7 @@ body.demo .res{height:auto;min-height:52px}body.demo .res .tx b{white-space:norm
 .start.sm>*{flex:none}
 body.daily #newp{display:none}
 body.daily .actions{grid-template-columns:1fr 1fr}
-@media(max-width:360px){.pill{padding:0 9px;font-size:.72rem}.hud{gap:5px}.right{gap:5px}.lives{gap:5px}.d{border-radius:9px;font-size:.88rem}.rc{height:40px}.panel2{padding:10px 8px 8px}}
+@media(max-width:360px){.pill{padding:0 9px;font-size:.72rem}.hud{gap:5px}.right{gap:5px}.d{border-radius:9px;font-size:.88rem}.rc{height:40px}.panel2{padding:10px 8px 8px}}
 @media(max-width:360px){main{padding-left:8px;padding-right:8px}.days,.dow{gap:3px}}
 @media(max-height:620px){.dow{display:none}.panel2{gap:6px}.daybox{padding:7px 8px;gap:5px}.rc{height:36px}.daybox .btn{height:40px}.calhead{height:38px}.nav{height:38px;width:38px}.calhead{grid-template-columns:38px 1fr 38px}}
 @media(max-height:520px){.top{padding-top:calc(env(safe-area-inset-top) + .6rem);padding-bottom:4px}.credit{display:none}.hud{height:32px}.actions,.res{height:44px}.rules{display:none}.start{gap:8px}}
@@ -267,10 +261,9 @@ body.daily .actions{grid-template-columns:1fr 1fr}
 <main>
   <div class="hud">
     <button class="pill back" id="lvl" type="button" aria-label="Back to calendar">‹ <span id="lvlT">Round <b id="lvlN">1</b>/4</span></button>
-    <div class="lives" id="lives" role="img" aria-label="Lives: 4 of 4"><i></i><i></i><i></i><i></i></div>
+    <div class="steps" id="steps" role="list" aria-label="Progress"></div>
     <div class="right"><div class="pill" id="clock" aria-label="Elapsed time (counts up, no time limit)">0:00</div><button class="pill" id="scoresBtn" type="button">Scores</button></div>
   </div>
-  <div class="steps" id="steps" role="list" aria-label="Progress"></div>
   <div class="board" id="board">
     <div class="grid" id="grid" hidden></div>
     <section class="start" id="boot" aria-label="Loading"><div class="stnote"><span class="spin" style="border-color:#ffffff33;border-top-color:#fff"></span>Loading…</div></section>
@@ -359,8 +352,7 @@ function toast(msg,ms=1500){const t=$('toast');t.textContent=msg;t.classList.add
 function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const b=document.body;b.classList.toggle('cal',v==='cal');b.classList.toggle('sumv',v==='sum');b.classList.toggle('guestv',v==='guest');b.classList.toggle('bootv',v==='boot');b.classList.toggle('daily',!!D);b.classList.toggle('demo',v==='play'&&!!S&&S.mode==='demo');if(v!=='play')b.classList.remove('done');
   $('cal').hidden=v!=='cal';$('sum').hidden=v!=='sum';$('grid').hidden=v!=='play';$('guest').hidden=v!=='guest';$('boot').hidden=v!=='boot';}
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
-function drawLives(lost,pop){$('lives').setAttribute('aria-label','Lives: '+(LIVES-lost)+' of '+LIVES);[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
-// ---- progress boxes: current = bright + ring, completed = green (amber if lost), upcoming = dimmed ----
+// ---- progress digits in the top bar: current = white bold, completed = green, lost = amber, upcoming = dim grey ----
 function stepsModel(){ if(!S)return null;
   if(S.mode==='demo')return{word:'Sample',n:3,cur:S.n+1,res:[...Array(3)].map((_,i)=>i<S.n?true:i===S.n&&S.done?!!S.won:undefined)};
   if(D)return{word:'Round',n:ROUNDS,cur:D.round,res:[...Array(ROUNDS)].map((_,i)=>i<D.round-1?(D.res[i]?!!D.res[i].won:undefined):i===D.round-1&&S.done?!!S.won:undefined)};
@@ -466,7 +458,7 @@ async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want
     back(e.message||'Could not load the words. Check your connection and try again.');return;}
   busy=false;loadingUI(false);$('newp').disabled=false;if(daily){D.round=rn;D.want=0;}
   S={...R,solved:[],mistakes:0,done:false,t0:performance.now()};if(!daily)level=R.level||level;
-  setView('play');lvlLabel();drawLives(0);renderSteps();$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
+  setView('play');lvlLabel();renderSteps();$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
   buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();
 }
 // ---- guest: description + one fixed try-out round (demo.json). Judged in the browser: no scoring, no Worker calls, nothing stored ----
@@ -478,7 +470,7 @@ async function startDemo(){if(curUid||busy)return;busy=true;$('demoBtn').disable
   demoRound(0);}
 function demoRound(n){const R=DEMO.rounds[n];sel=[];D=null;document.body.classList.remove('done');$('grid').replaceChildren();
   S={mode:'demo',n,cards:R.cards,answer:R.groups.map(g=>g.indices),groups:R.groups,level:n+1,solved:[],mistakes:0,done:false,t0:performance.now()};
-  setView('play');lvlLabel();drawLives(0);renderSteps();$('clock').textContent='0:00';$('sc').textContent='0';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
+  setView('play');lvlLabel();renderSteps();$('clock').textContent='0:00';$('sc').textContent='0';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
 function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;renderSteps();sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
 
 // ---- play ----
@@ -515,7 +507,7 @@ async function applyResult(r,pick){const my=seq,S0=S;
     (S.log=S.log||[]).push(S.solved.length);S.solved.push({type:r.group.type,en:r.group.en,indices:r.group.indices});sel=[];
     pick.forEach(i=>els.get(i).classList.remove('lock'));render({flip:true});
   }else{
-    (S.log=S.log||[]).push(-1);S.mistakes=r.mistakes;pick.forEach(i=>els.get(i).classList.add('shake'));buzz([40,30,40]);drawLives(S.mistakes,true);
+    (S.log=S.log||[]).push(-1);S.mistakes=r.mistakes;pick.forEach(i=>els.get(i).classList.add('shake'));buzz([40,30,40]);
     if(r.result==='one_away')toast('One away…');
     await sleep(460);if(my!==seq||S!==S0)return;
     pick.forEach(i=>els.get(i).classList.remove('shake'));sel=[];
@@ -625,7 +617,7 @@ zz.onUser((u,p)=>{const first=!authSeen,uid=u?.uid||null;
   if(uid!==curUid||first){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();played.clear();
     // a round belongs to one account: drop it and start from the calendar (signed in) or the guest page
     clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();loadingUI(false);
-    $('newp').disabled=false;seen=new Set();lastIds=[];level=1;lvlLabel();drawLives(0);$('clock').textContent='0:00';enter();}
+    $('newp').disabled=false;seen=new Set();lastIds=[];level=1;lvlLabel();$('clock').textContent='0:00';enter();}
   else if(view==='cal')renderBox();
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
   if(uid){loadMine();loadLb();}});
@@ -633,7 +625,7 @@ $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.bu
 addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
 setTimeout(()=>document.body.classList.add('entered'),1000);
 mountFeedback('match');
-drawLives(0);setView('boot');clearMine('Loading…');zz.init();
+setView('boot');clearMine('Loading…');zz.init();
 setTimeout(()=>{if(!authSeen)enter();},4000);   // sign-in state unknown after 4 s: show the guest page (it switches by itself if the sign-in arrives later)
 </script>
 </body>
