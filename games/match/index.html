@@ -13,16 +13,18 @@
 <meta property="og:title" content="Connection · Malayalam word grouping game · zelo/zuno">
 <meta property="og:description" content="Group 16 Malayalam words into 4 hidden groups before you run out of lives. A free daily Malayalam word puzzle. മലയാളം വാക്കു കളി.">
 <meta property="og:url" content="https://zelozuno.com/games/match/">
-<meta property="og:image" content="https://zelozuno.com/assets/og-connection.png">
+<meta property="og:image" content="https://zelozuno.com/assets/og-connection.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Connection: a Malayalam word puzzle on zelo/zuno. Group 16 Malayalam words into 4 groups.">
 <meta property="og:locale" content="en_IE">
 <meta property="og:locale:alternate" content="ml_IN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Connection · Malayalam word grouping game · zelo/zuno">
 <meta name="twitter:description" content="Group 16 Malayalam words into 4 hidden groups before you run out of lives. A free daily Malayalam word puzzle. മലയാളം വാക്കു കളി.">
-<meta name="twitter:image" content="https://zelozuno.com/assets/og-connection.png">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-connection.png?v=2">
+<meta name="twitter:image:alt" content="Connection: a Malayalam word puzzle on zelo/zuno. Group 16 Malayalam words into 4 groups.">
 <link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
@@ -51,6 +53,7 @@ main{flex:1;min-height:0;width:100%;max-width:560px;margin:0 auto;padding:0 14px
 .hud{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:36px}
 .pill{background:#111113;border:1px solid #1d1d1f;border-radius:999px;padding:0 12px;height:38px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:#a1a1a6;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill b{color:#f5f5f7;font-weight:600}
+.pill#clock{background:transparent;border-color:transparent;color:#6e6e73;padding:0 4px}
 button.pill{transition:border-color .2s,transform .12s}
 button.pill:active{transform:scale(.95)}
 .lives{display:flex;gap:7px;align-items:center}
@@ -254,7 +257,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   <div class="hud">
     <button class="pill back" id="lvl" type="button" aria-label="Back to calendar">‹ <span id="lvlT">Round <b id="lvlN">1</b>/4</span></button>
     <div class="lives" id="lives" aria-label="lives"><i></i><i></i><i></i><i></i></div>
-    <div class="right"><div class="pill" id="clock" aria-label="time">0:00</div><button class="pill" id="scoresBtn" type="button">Scores</button></div>
+    <div class="right"><div class="pill" id="clock" aria-label="Elapsed time (counts up, no time limit)">0:00</div><button class="pill" id="scoresBtn" type="button">Scores</button></div>
   </div>
   <div class="board" id="board">
     <div class="grid" id="grid" hidden></div>
@@ -265,6 +268,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
       <ul class="rules">
         <li>Group them by meaning or by category.</li>
         <li>You have 4 lives – each wrong group costs one.</li>
+        <li>No time limit. Take your time – the small clock only counts up, and a faster solve scores a little more.</li>
         <li>Daily challenge: 4 new rounds every day, a calendar of past days and a leaderboard.</li>
       </ul>
       <div class="stack"><button class="btn" id="signG" type="button">Sign in with Google to play</button><button class="btn alt" id="demoBtn" type="button">Try 3 sample rounds</button></div>
