@@ -3,9 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="robots" content="noindex">
+<title>Connection · Malayalam word grouping game · zelo/zuno</title>
+<!-- seo:start (URLs are FINAL; the preview sync rewrites them, see README-preview) -->
+<meta name="description" content="Group 16 Malayalam words into 4 hidden groups before you run out of lives. A free daily Malayalam word puzzle. മലയാളം വാക്കു കളി.">
+<link rel="canonical" href="https://zelozuno.com/games/match/">
 <meta name="theme-color" content="#000000">
-<title>match · zelo/zuno</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="zelo/zuno">
+<meta property="og:title" content="Connection · Malayalam word grouping game · zelo/zuno">
+<meta property="og:description" content="Group 16 Malayalam words into 4 hidden groups before you run out of lives. A free daily Malayalam word puzzle. മലയാളം വാക്കു കളി.">
+<meta property="og:url" content="https://zelozuno.com/games/match/">
+<meta property="og:image" content="https://zelozuno.com/assets/og-connection.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:locale" content="en_IE">
+<meta property="og:locale:alternate" content="ml_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Connection · Malayalam word grouping game · zelo/zuno">
+<meta name="twitter:description" content="Group 16 Malayalam words into 4 hidden groups before you run out of lives. A free daily Malayalam word puzzle. മലയാളം വാക്കു കളി.">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-connection.png">
+<link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
+<link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
+<link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
+<!-- seo:end -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Malayalam:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -92,6 +115,7 @@ button.pill:active{transform:scale(.95)}
 body.done .actions{display:none}body.done .res{display:grid}
 .credit{flex:none;font-size:.66rem;color:#515154;text-align:center;line-height:1.3;padding-bottom:2px}
 .credit a{color:#6e6e73;text-decoration:underline}
+.fbrow{flex:none;text-align:center;margin-top:-6px;line-height:1}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translate(-50%,10px);background:#2c2c2e;color:#f5f5f7;border-radius:999px;padding:9px 16px;font-size:.84rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:8;max-width:calc(100vw - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 /* sheet */
@@ -193,6 +217,9 @@ body.leaving #who{opacity:0}
 .sbtns{display:flex;gap:10px;width:100%;max-width:340px}
 .sbtns .btn{flex:1;min-width:0;padding:0 10px}
 .btn.alt{background:#1d1d1f;color:#f5f5f7}
+.sbtns{flex-wrap:wrap}.sbtns .shr{flex:1 1 100%}
+.res #shareR{grid-column:1/-1;height:44px;width:100%;min-width:0}.res #shareR[hidden]{display:none}
+.res.wsh{height:auto;min-height:52px}
 .seg{display:inline-flex;background:#1a1a1c;border-radius:999px;padding:2px;gap:2px}
 .seg button{background:none;border:0;border-radius:999px;padding:4px 11px;font-size:.7rem;font-weight:600;color:#86868b;letter-spacing:.04em;text-transform:uppercase}
 .seg button.on{background:#f5f5f7;color:#000}
@@ -214,6 +241,9 @@ body.daily .actions{grid-template-columns:1fr 1fr}
 @media(max-height:520px){.top{padding-top:calc(env(safe-area-inset-top) + .6rem);padding-bottom:4px}.credit{display:none}.hud{height:32px}.actions,.res{height:44px}.rules{display:none}.start{gap:8px}}
 @media(max-width:340px){.card{border-radius:11px}.grid{gap:6px}.act{font-size:.82rem}}
 </style>
+<!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d75b63747073451eafbd23ad7bae0b1e"}'></script>
+<!-- analytics:end -->
 </head>
 <body class="bootv">
 <header class="top">
@@ -237,8 +267,8 @@ body.daily .actions{grid-template-columns:1fr 1fr}
         <li>You have 4 lives – each wrong group costs one.</li>
         <li>Daily challenge: 4 new rounds every day, a calendar of past days and a leaderboard.</li>
       </ul>
-      <div class="stack"><button class="btn" id="signG" type="button">Sign in with Google to play</button><button class="btn alt" id="demoBtn" type="button">Try a sample round</button></div>
-      <div class="stnote" id="gnote">The sample round isn’t scored or saved.</div>
+      <div class="stack"><button class="btn" id="signG" type="button">Sign in with Google to play</button><button class="btn alt" id="demoBtn" type="button">Try 3 sample rounds</button></div>
+      <div class="stnote" id="gnote">The sample rounds aren’t scored or saved.</div>
     </section>
     <section class="panel2" id="cal" aria-label="Daily calendar">
       <div class="calhead"><button class="nav" id="prevM" type="button" aria-label="Previous month">‹</button><div class="mtitle" id="mtitle"></div><button class="nav" id="nextM" type="button" aria-label="Next month">›</button></div>
@@ -255,7 +285,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
       <div class="big" id="stotal">0</div><div class="of">out of 400</div>
       <div class="srows" id="srows"></div>
       <div class="snote" id="snote"></div>
-      <div class="sbtns"><button class="btn" id="replay" type="button">Replay day</button><button class="btn alt" id="toCal" type="button">Calendar</button></div>
+      <div class="sbtns"><button class="btn shr" id="shareD" type="button">Share</button><button class="btn alt" id="replay" type="button">Replay day</button><button class="btn alt" id="toCal" type="button">Calendar</button></div>
     </section>
   </div>
   <div class="actions" id="actions">
@@ -267,8 +297,10 @@ body.daily .actions{grid-template-columns:1fr 1fr}
     <div class="sc" id="sc">0</div>
     <div class="tx"><b id="rt">Solved</b><span id="rs"></span></div>
     <button class="btn" id="next" type="button">Next</button>
+    <button class="btn alt" id="shareR" type="button" hidden>Share</button>
   </div>
   <div class="credit">Word data: <a href="https://olam.in/Download" target="_blank" rel="noopener">Olam English–Malayalam dictionary</a> (ODbL) · daily boards built from it and hand-curated lists</div>
+  <div class="fbrow"><button type="button" class="fbk" data-game="match">feedback</button></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <div class="sheet" id="sheet"><div class="sbox">
@@ -285,7 +317,8 @@ body.daily .actions{grid-template-columns:1fr 1fr}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=11';
+import * as zz from '../../shared/zz.js?v=12';
+import {shareText,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=1';
 import {ROUNDS,DAILY_START,DAILY_END} from './daily.js?v=10';
 const LIVES=4,PER_GROUP=4,MAX_LEVEL=5;
 const G='match',$=id=>document.getElementById(id);
@@ -293,7 +326,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---- in-memory state only (no localStorage / sessionStorage / cookies / IndexedDB) ----
-let DEMO=null;                            // the fixed try-out round (demo.json), fetched on demand; judged in the browser
+let DEMO=null;                            // the 3 fixed try-out boards (demo3.json: static, public sample data), fetched on demand; judged in the browser
 let level=1,seen=new Set(),lastIds=[];
 let S=null,D=null;                        // S: current round. D: current daily run {date,round,res[4],day}; null in Practice
 let curUid=null,gen=0,seq=0,busy=false,sel=[],timer=null,toastT=null,view='cal',armT=null;
@@ -311,7 +344,7 @@ function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const 
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function drawLives(lost,pop){[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
 function tickClock(){if(S&&!S.done)$('clock').textContent=fmt(performance.now()-S.t0);}
-function lvlLabel(txt){$('lvlT').innerHTML=txt||(S&&S.mode==='demo'?'Try-out':D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
+function lvlLabel(txt){$('lvlT').innerHTML=txt||(S&&S.mode==='demo'?`Sample <b>${S.n+1}</b>/3`:D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
 
 // ---- fit Malayalam text into a card: single line shrinking first, then wrapped ----
 function fit(btn){const w=btn.firstChild,aw=btn.clientWidth-8,ah=btn.clientHeight-8;if(aw<=0)return;
@@ -333,10 +366,10 @@ function render(opts={}){const before=opts.flip?rects():null,g=$('grid'),solvedI
   S.solved.forEach((x,k)=>{if(!x.el)x.el=banner(x,k,x.missed);frag.appendChild(x.el);});
   S.order.forEach(i=>{if(!solvedIdx.has(i))frag.appendChild(els.get(i));});
   g.replaceChildren(frag);
-  els.forEach((b,i)=>b.classList.toggle('sel',sel.includes(i)));
+  els.forEach((b,i)=>{const on=sel.includes(i);b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on);});
   if(before)flip(before);
 }
-function buildCards(){els.clear();$('grid').replaceChildren();
+function buildCards(){$('shareR').hidden=true;$('res').classList.remove('wsh');els.clear();$('grid').replaceChildren();
   S.order=[...Array(S.cards.length).keys()];
   S.order.forEach((i,pos)=>{const b=document.createElement('button');b.type='button';b.className='card';b.style.setProperty('--i',pos);b.setAttribute('aria-pressed','false');
     b.innerHTML='<span class="w ml" lang="ml"></span>';b.firstChild.textContent=S.cards[i];b.onclick=()=>tap(i);els.set(i,b);});
@@ -412,11 +445,13 @@ async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want
 // ---- guest: description + one fixed try-out round (demo.json). Judged in the browser: no scoring, no Worker calls, nothing stored ----
 function showGuest(){seq++;busy=false;clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();document.body.classList.remove('done');loadingUI(false);$('demoBtn').disabled=false;setView('guest');}
 async function startDemo(){if(curUid||busy)return;busy=true;$('demoBtn').disabled=true;
-  try{if(!DEMO){const r=await fetch('demo.json?v=10');if(!r.ok)throw new Error('demo '+r.status);DEMO=await r.json();}}
-  catch(e){busy=false;$('demoBtn').disabled=false;toast('Could not load the sample round. Check your connection.',3500);return;}
+  try{if(!DEMO){const r=await fetch('demo3.json?v=12');if(!r.ok)throw new Error('demo '+r.status);DEMO=await r.json();if(!Array.isArray(DEMO.rounds)||DEMO.rounds.length!==3)throw new Error('demo shape');}}
+  catch(e){busy=false;$('demoBtn').disabled=false;toast('Could not load the sample rounds. Check your connection.',3500);return;}
   busy=false;if(curUid||view!=='guest')return;
-  sel=[];D=null;S={mode:'demo',cards:DEMO.cards,answer:DEMO.groups.map(g=>g.indices),groups:DEMO.groups,level:1,solved:[],mistakes:0,done:false,t0:performance.now()};
-  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
+  demoRound(0);}
+function demoRound(n){const R=DEMO.rounds[n];sel=[];D=null;document.body.classList.remove('done');$('grid').replaceChildren();
+  S={mode:'demo',n,cards:R.cards,answer:R.groups.map(g=>g.indices),groups:R.groups,level:n+1,solved:[],mistakes:0,done:false,t0:performance.now()};
+  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';$('sc').textContent='0';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
 function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
 
 // ---- play ----
@@ -450,10 +485,10 @@ function sleep(ms){return new Promise(r=>setTimeout(r,RM?0:ms));}
 async function applyResult(r,pick){const my=seq,S0=S;
   if(r.result==='correct'){
     pick.forEach(i=>els.get(i).classList.add('lock'));buzz([12,40,12]);await sleep(170);if(my!==seq||S!==S0)return;
-    S.solved.push({type:r.group.type,en:r.group.en,indices:r.group.indices});sel=[];
+    (S.log=S.log||[]).push(S.solved.length);S.solved.push({type:r.group.type,en:r.group.en,indices:r.group.indices});sel=[];
     pick.forEach(i=>els.get(i).classList.remove('lock'));render({flip:true});
   }else{
-    S.mistakes=r.mistakes;pick.forEach(i=>els.get(i).classList.add('shake'));buzz([40,30,40]);drawLives(S.mistakes,true);
+    (S.log=S.log||[]).push(-1);S.mistakes=r.mistakes;pick.forEach(i=>els.get(i).classList.add('shake'));buzz([40,30,40]);drawLives(S.mistakes,true);
     if(r.result==='one_away')toast('One away…');
     await sleep(460);if(my!==seq||S!==S0)return;
     pick.forEach(i=>els.get(i).classList.remove('shake'));sel=[];
@@ -468,22 +503,33 @@ async function finish(r){const my=seq,S0=S;S.done=true;clearInterval(timer);$('c
   }
   sel=[];busy=false;
   document.body.classList.add('done');
-  if(S.mode==='demo'){$('sc').textContent='✓';$('rt').textContent='Sign in with Google to play the daily challenge';$('rs').textContent='Try-out '+(r.won?'solved':'over')+' · not scored · nothing saved';$('next').textContent='Sign in';$('next').disabled=false;buzz(r.won?[15,50,15,50,30]:120);return;}
+  if(S.mode==='demo'){const last=S.n>=2,res=r.won?'solved':'over';$('sc').textContent='✓';
+    $('rt').textContent=last?'Sign in with Google to play the daily challenge':(r.won?'Solved!':'Out of lives');
+    $('rs').textContent=last?`Sample 3/3 ${res} · not scored · nothing saved`:`Sample ${S.n+1}/3 ${res} · not scored · Sign in with Google to play the daily challenge`;
+    $('next').textContent=last?'Sign in':'Next sample';$('next').disabled=false;buzz(r.won?[15,50,15,50,30]:120);return;}
   const score=r.score??0;$('rt').textContent=r.won?'Solved!':'Out of lives';
   const t=(r.timeMs/1000).toFixed(1)+'s · '+(S.mistakes?S.mistakes+(S.mistakes>1?' mistakes':' mistake'):'no mistakes');
   const where=r.saved===false?'Not saved':'Saved';
   $('rs').textContent=t+' · '+where;
   if(D){
-    D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:r.saved!==false};
+    D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:r.saved!==false,log:[...(S.log||[])]};
     if(r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
     $('next').textContent=D.round<ROUNDS?'Next round':'Results';
-  }else{$('next').textContent=r.won?'Next':'Retry';if(r.won&&level<MAX_LEVEL)level++;}
+  }else{$('next').textContent=r.won?'Next':'Retry';S.share=practiceShare(score,S.log||[],!!r.won,S.level||level);$('shareR').hidden=false;$('res').classList.add('wsh');if(r.won&&level<MAX_LEVEL)level++;}
   buzz(r.won?[15,50,15,50,30]:120);
   countUp(score);
   if(S.uid===curUid){loadMine();loadLb();}
 }
 function countUp(n){const el=$('sc'),s=performance.now();(function f(){const k=Math.min(1,(performance.now()-s)/600);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})();}
 function newRound(){document.body.classList.remove('done');$('grid').replaceChildren();startRound();}
+// ---- Share: Wordle-style text built ONLY from what this player already saw (their own guesses and the groups they solved). Nothing stored. ----
+const SQ=['🟨','🟩','🟦','🟪'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],SHARE_URL='https://zelozuno.com/games/match/';
+const shareDate=iso=>{const [y,m,d]=iso.split('-').map(Number);return `${d} ${MON[m-1]} ${y}`;};
+const rowOf=(log,won)=>log.map(k=>k<0?'⬛':SQ[k%4]).join('')+(won?'':'❌');      // one square per guess: a solved group in the colour of its place, ⬛ for a mistake, ❌ when the round was lost
+function dayShareText(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0);
+  return [`zelozuno Connection ${shareDate(D.date)} · ${run}/400`,...res.map((x,i)=>x?`R${i+1} ${rowOf(x.log||[],x.won)} ${x.score}`:`R${i+1} –`),SHARE_URL].join('\n');}
+function practiceShare(score,log,won,lvl){return [`zelozuno Connection ${shareDate(zz.localISO())} · practice level ${lvl} · ${score} pts`,rowOf(log,won),SHARE_URL].join('\n');}
+async function doShare(text){const r=await shareText(text);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);return r;}
 function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),saved=res.some(x=>x&&x.saved);
   $('sdate').textContent=fmtDay(D.date)+(D.date===zz.localISO()?' · Today':'');$('stotal').textContent=run;
   $('srows').innerHTML=res.map((x,i)=>`<div class="row"><span>Round ${i+1}<span class="m"> · ${x?(x.won?'solved':'lost'):'skipped'}</span></span><span class="m">${x?(x.timeMs/1000).toFixed(1)+'s · '+(x.mistakes?x.mistakes+' ✕':'clean'):''}</span><b>${x?x.score:'–'}</b></div>`).join('');
@@ -492,10 +538,12 @@ function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),
 $('playBtn').onclick=()=>startDay(selDate);
 $('practice').onclick=startPractice;
 $('calScores').onclick=()=>$('scoresBtn').click();
+$('shareD').onclick=()=>{if(D)doShare(dayShareText());};
+$('shareR').onclick=()=>{if(S&&S.share)doShare(S.share);};
 $('replay').onclick=()=>{if(D)startDay(D.date);};
 $('toCal').onclick=()=>{const d=D&&D.date;D=null;showCal(d||selDate);};
 $('next').onclick=()=>{if(busy)return;
-  if(S&&S.mode==='demo'){$('chip').click();return;}
+  if(S&&S.mode==='demo'){if(S.n<2&&S.done&&DEMO)demoRound(S.n+1);else $('chip').click();return;}
   if(!D){newRound();return;}
   if(D.want&&D.want!==D.round){startRound();return;}                // retry after a failed load
   if(D.round<ROUNDS){D.want=D.round+1;document.body.classList.remove('done');$('grid').replaceChildren();startRound();}else showSummary();};
@@ -551,6 +599,7 @@ zz.onUser((u,p)=>{const first=!authSeen,uid=u?.uid||null;
 $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||RM)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
 addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
 setTimeout(()=>document.body.classList.add('entered'),1000);
+mountFeedback('match');
 drawLives(0);setView('boot');clearMine('Loading…');zz.init();
 setTimeout(()=>{if(!authSeen)enter();},4000);   // sign-in state unknown after 4 s: show the guest page (it switches by itself if the sign-in arrives later)
 </script>

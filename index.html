@@ -3,7 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>zelo/zuno</title>
+<title>zelo/zuno · Free Malayalam word games · മലയാളം</title>
+<!-- seo:start (URLs are FINAL; the preview sync rewrites them, see README-preview) -->
+<meta name="description" content="Free Malayalam word games: group the words, fill in the missing letters, beat the clock with quick sums. No ads. മലയാളം വാക്കു കളികൾ.">
+<link rel="canonical" href="https://zelozuno.com/">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="zelo/zuno">
+<meta property="og:title" content="zelo/zuno · Free Malayalam word games · മലയാളം">
+<meta property="og:description" content="Free Malayalam word games: group the words, fill in the missing letters, beat the clock with quick sums. No ads. മലയാളം വാക്കു കളികൾ.">
+<meta property="og:url" content="https://zelozuno.com/">
+<meta property="og:image" content="https://zelozuno.com/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:locale" content="en_IE">
+<meta property="og:locale:alternate" content="ml_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="zelo/zuno · Free Malayalam word games · മലയാളം">
+<meta name="twitter:description" content="Free Malayalam word games: group the words, fill in the missing letters, beat the clock with quick sums. No ads. മലയാളം വാക്കു കളികൾ.">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-home.png">
+<link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
+<link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
+<link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
+<!-- seo:end -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+Malayalam:wght@500&display=swap" rel="stylesheet">
@@ -18,7 +43,7 @@ h1{font-weight:600;font-size:clamp(2.75rem,11vw,7rem);line-height:1.1;letter-spa
 body.open .hero{top:calc(env(safe-area-inset-top) + 1.25rem);transform:translate(-50%,0)}
 body.open h1{font-size:clamp(1.5rem,5vw,2.25rem)}
 body.open .go{opacity:0;pointer-events:none}
-.grid{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 5rem);bottom:1.25rem;margin:0 auto;max-width:960px;padding:0 1.25rem;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,170px);gap:1rem;align-content:center;pointer-events:none}
+.grid{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 5rem);bottom:2.5rem;margin:0 auto;max-width:960px;padding:0 1.25rem;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,170px);gap:1rem;align-content:center;pointer-events:none}
 .card{background:#111113;border:1px solid #1d1d1f;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;opacity:0;transform:translateY(16px) scale(.97);transition:opacity .5s,transform .5s,border-color .2s,background .2s;cursor:pointer;min-height:0}
 a.card{color:inherit;text-decoration:none}
 .card:hover{border-color:#3a3a3c;background:#161618}
@@ -41,7 +66,13 @@ body.instant .hero,body.instant h1,body.instant .go{transition:none!important}
 @media(max-width:360px){#who{font-size:.72rem;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 31px)/2)}}
 body.leaving .card{opacity:0!important;transform:scale(.98)!important;transition:opacity .25s ease,transform .25s ease!important;transition-delay:0s!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.fbfoot{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 2px);text-align:center;z-index:4;line-height:1;pointer-events:none}
+.fbfoot .fbk{pointer-events:auto}
 </style>
+<!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d75b63747073451eafbd23ad7bae0b1e"}'></script>
+<!-- analytics:end -->
 </head>
 <body>
 <div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
@@ -59,6 +90,8 @@ body.leaving .card{opacity:0!important;transform:scale(.98)!important;transition
 <div class="card off dim"><span class="ic">എ</span><span class="t">loading</span></div>
 <div class="card off" id="ld"><span class="ic">അഃ</span><span class="t">loading</span></div>
 </div>
+<div class="sr"><h2>Free Malayalam word games</h2><p>zelozuno is a set of free Malayalam word games for Kerala and the Malayali diaspora: Connection (group Malayalam words by meaning and category), Filling (complete a Malayalam word from its letter tiles) and Addition (quick mental sums). മലയാളം വാക്കു കളികൾ, സൗജന്യം. No ads, no cookies, nothing stored in your browser.</p><ul><li><a href="games/match/">Connection: Malayalam word grouping game</a></li><li><a href="games/gap/">Filling: complete the Malayalam word</a></li><li><a href="games/add/">Addition: mental maths game</a></li></ul></div>
+<div class="fbfoot"><button type="button" class="fbk" data-game="home">feedback</button></div>
 <script>
 function openTiles(){document.body.classList.add('open');document.querySelectorAll('.card').forEach(function(c,i){c.style.transitionDelay=(0.55+i*0.07)+'s'});setTimeout(function(){document.querySelectorAll('.card').forEach(function(c){c.style.transitionDelay='0s'})},1600)}
 document.getElementById('go').onclick=function(){document.body.classList.add('open');document.querySelectorAll('.card').forEach(function(c,i){c.style.transitionDelay=(0.55+i*0.07)+'s'});setTimeout(function(){document.querySelectorAll('.card').forEach(function(c){c.style.transitionDelay='0s'})},1600)};
@@ -84,7 +117,8 @@ document.querySelectorAll('a.card').forEach(function(a){a.addEventListener('clic
 <script type="module">
 // signed-in indicator; home keeps working if Firebase fails
 const who=document.getElementById('who'),whoT=document.getElementById('whoT');let zzm;document.getElementById('whoX').onclick=function(e){e.preventDefault();e.stopPropagation();if(zzm)zzm.signOut().catch(console.warn)};
-import('./shared/zz.js?v=11').then(zz=>{zzm=zz;zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
+import('./shared/zz.js?v=12').then(zz=>{zzm=zz;zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
+import('./shared/ux.js?v=1').then(m=>m.mountFeedback('home')).catch(e=>console.warn('feedback unavailable',e));
 </script>
 </body>
 </html>

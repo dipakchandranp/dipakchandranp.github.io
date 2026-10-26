@@ -3,8 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="robots" content="noindex">
-<title>add · zelo/zuno</title>
+<title>Addition · Quick mental maths game · zelo/zuno</title>
+<!-- seo:start (URLs are FINAL; the preview sync rewrites them, see README-preview) -->
+<meta name="description" content="Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.">
+<link rel="canonical" href="https://zelozuno.com/games/add/">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="zelo/zuno">
+<meta property="og:title" content="Addition · Quick mental maths game · zelo/zuno">
+<meta property="og:description" content="Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.">
+<meta property="og:url" content="https://zelozuno.com/games/add/">
+<meta property="og:image" content="https://zelozuno.com/assets/og-addition.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:locale" content="en_IE">
+<meta property="og:locale:alternate" content="ml_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Addition · Quick mental maths game · zelo/zuno">
+<meta name="twitter:description" content="Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-addition.png">
+<link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
+<link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
+<link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
+<!-- seo:end -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +99,7 @@ main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;displa
 .mrow{display:flex;gap:10px;justify-content:flex-end}
 .ghost{background:none;border:0;color:#86868b;font-size:.9rem;padding:10px}
 .mbox .btn{padding:11px 20px}
+.fbfoot{text-align:center;padding:0 0 calc(env(safe-area-inset-bottom) + 8px);line-height:1;margin-top:-8px}
 @keyframes zin{from{opacity:0}to{opacity:1}}
 main,.chip{animation:zin .35s ease both}
 main,.chip{transition:opacity .25s ease}
@@ -92,6 +117,9 @@ body.authed .top .chip{visibility:hidden}
 #who{position:absolute}
 body.leaving #who{opacity:0}
 </style>
+<!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d75b63747073451eafbd23ad7bae0b1e"}'></script>
+<!-- analytics:end -->
 </head>
 <body>
 <header class="top">
@@ -122,6 +150,7 @@ body.leaving #who{opacity:0}
     <div class="panel"><h3>Leaderboard</h3><div id="lb"><div class="empty">Loading…</div></div></div>
   </aside>
 </main>
+<div class="fbfoot"><button type="button" class="fbk" data-game="add">feedback</button></div>
 <div class="modal" id="modal"><form class="mbox" id="uform">
   <h2>Choose a username</h2>
   <p>Shown on the leaderboard. 3–16 letters or digits.</p>
@@ -130,7 +159,9 @@ body.leaving #who{opacity:0}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=11';
+import * as zz from '../../shared/zz.js?v=12';
+import {mountFeedback} from '../../shared/ux.js?v=1';
+mountFeedback('add');
 const G='add',$=id=>document.getElementById(id);
 let a,b,t0,raf,busy=false,token=null,roundUid=null,qseq=0;
 const pts=()=>Math.max(0,100-5*Math.floor((performance.now()-t0)/1000));

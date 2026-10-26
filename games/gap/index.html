@@ -3,9 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="robots" content="noindex">
+<title>Filling · Complete the Malayalam word · zelo/zuno</title>
+<!-- seo:start (URLs are FINAL; the preview sync rewrites them, see README-preview) -->
+<meta name="description" content="Complete the Malayalam word from its letter tiles. A free endless Malayalam spelling game that gets harder as you go. മലയാളം വാക്കു പൂരിപ്പിക്കൽ.">
+<link rel="canonical" href="https://zelozuno.com/games/gap/">
 <meta name="theme-color" content="#000000">
-<title>filling · zelo/zuno</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="zelo/zuno">
+<meta property="og:title" content="Filling · Complete the Malayalam word · zelo/zuno">
+<meta property="og:description" content="Complete the Malayalam word from its letter tiles. A free endless Malayalam spelling game that gets harder as you go. മലയാളം വാക്കു പൂരിപ്പിക്കൽ.">
+<meta property="og:url" content="https://zelozuno.com/games/gap/">
+<meta property="og:image" content="https://zelozuno.com/assets/og-filling.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:locale" content="en_IE">
+<meta property="og:locale:alternate" content="ml_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Filling · Complete the Malayalam word · zelo/zuno">
+<meta name="twitter:description" content="Complete the Malayalam word from its letter tiles. A free endless Malayalam spelling game that gets harder as you go. മലയാളം വാക്കു പൂരിപ്പിക്കൽ.">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-filling.png">
+<link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
+<link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
+<link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
+<!-- seo:end -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Malayalam:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -98,6 +121,11 @@ button.u{cursor:pointer;color:inherit}
 .mrow{display:flex;gap:10px;justify-content:flex-end}
 .ghost{background:none;border:0;color:#86868b;font-size:.9rem;padding:10px;min-height:44px}
 .mbox .btn{height:auto;min-height:44px;padding:11px 20px;min-width:0}
+.shrow{flex:none;display:flex;justify-content:center;margin-top:-4px}
+.shbtn{background:none;border:1px solid #1d1d1f;border-radius:999px;color:#a1a1a6;font-size:.8rem;height:36px;padding:0 16px;transition:border-color .2s,transform .12s}
+.shbtn:hover{border-color:#3a3a3c;color:#f5f5f7}.shbtn:active{transform:scale(.95)}
+.fbrow{flex:none;text-align:center;line-height:1;margin-top:-4px}
+@media(max-height:620px){.shbtn{height:32px}}
 @keyframes zin{from{opacity:0}to{opacity:1}}
 main,.chip{animation:zin .35s ease both;transition:opacity .25s ease}
 body.entered main,body.entered .chip{animation:none}
@@ -116,6 +144,9 @@ body.leaving #who{opacity:0}
 @media(max-width:340px){main{padding-left:8px;padding-right:8px}.u{min-width:44px;padding:0 4px;min-height:58px;border-radius:12px}.o{min-width:46px;height:54px;padding:0 7px;border-radius:12px}.word{gap:6px 4px}.opts{gap:6px}.pill{padding:0 10px;font-size:.78rem}}
 @media(max-height:620px){.top{padding-top:calc(env(safe-area-inset-top) + .7rem)}.stage{gap:8px}.u{min-height:54px}.o{height:52px}}
 </style>
+<!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d75b63747073451eafbd23ad7bae0b1e"}'></script>
+<!-- analytics:end -->
 </head>
 <body class="bootv">
 <header class="top">
@@ -125,7 +156,7 @@ body.leaving #who{opacity:0}
 <main>
   <section class="card" id="boot" aria-label="Loading"><div class="stnote"><span class="spin"></span>Loading…</div></section>
   <section class="card" id="guest" aria-label="Filling" hidden>
-    <div class="big" aria-hidden="true">നി</div>
+    <div class="big" aria-hidden="true">പൂ</div>
     <h2>Filling</h2>
     <p class="lead">A Malayalam word with some letters missing. Fill the gaps from the tiles below.</p>
     <ul class="rules">
@@ -134,7 +165,8 @@ body.leaving #who{opacity:0}
       <li>It starts easy and gets harder as you solve more words.</li>
     </ul>
     <button class="btn" id="signG" type="button">Sign in with Google to play</button>
-    <div class="stnote">Your solved count is saved to your account.</div>
+    <button class="btn alt" id="sampleBtn" type="button">Try 4 sample words</button>
+    <div class="stnote" id="gnote">Samples aren’t saved. Signed in, your solved count is saved to your account.</div>
   </section>
   <section id="play" hidden style="display:contents">
     <div class="hud">
@@ -142,12 +174,14 @@ body.leaving #who{opacity:0}
       <div class="ttl">filling</div>
       <button class="pill" id="skip" type="button" aria-label="Skip this word">Skip ›</button>
     </div>
+    <div class="shrow" id="shrow" hidden><button class="shbtn" id="shareG" type="button">Share ↗</button></div>
     <div class="stage">
       <div class="word ml" id="word" lang="ml" role="group" aria-label="Word with gaps"></div>
       <div class="opts ml" id="opts" lang="ml" role="group" aria-label="Letter tiles"></div>
     </div>
     <div class="bar"><div class="msg" id="msg"></div><button class="btn" id="next" type="button" hidden>Next</button></div>
   </section>
+  <div class="fbrow"><button type="button" class="fbk" data-game="gap">feedback</button></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <div class="modal" id="modal"><form class="mbox" id="uform">
@@ -158,7 +192,8 @@ body.leaving #who{opacity:0}
   <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
 </form></div>
 <script type="module">
-import * as zz from '../../shared/zz.js?v=11';
+import * as zz from '../../shared/zz.js?v=12';
+import {shareText,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=1';
 const $=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -166,6 +201,7 @@ const AUTO_MS=1300;                         // the finished word stays on screen
 // ---- in-memory state only (no localStorage / sessionStorage / cookies / IndexedDB) ----
 let curUid=null,view='boot',seq=0,busy=false,toastT=null,autoT=null;
 let R=null;                                  // current round: {token,units[],gaps:[idx],opts[],filled:{gap:optIdx},used:Set,sel,solved,done}
+let SM=null;                                 // guest try-out: 4 fixed static words (sample.json), checked in the browser, nothing sent or stored
 let lastIds=[];                              // ids of the last words served (sent so they are not repeated)
 const unitEls=[],optEls=[];
 
@@ -186,11 +222,26 @@ function build(j){
     else{b.className='u shown';b.textContent=u;b.tabIndex=-1;b.disabled=true;}
     unitEls.push(b);w.appendChild(b);});
   R.opts.forEach((t,k)=>{const b=document.createElement('button');b.type='button';b.className='o';b.textContent=t;b.onclick=()=>tapOpt(k);optEls.push(b);o.appendChild(b);});
+  R.guest=!!j.guest;$('skip').hidden=R.guest;$('shrow').hidden=R.guest||!(R.solved>0);
   $('cntN').textContent=R.solved;$('next').hidden=true;$('msg').hidden=false;say('Tap a tile to fill the gap');$('skip').disabled=false;$('opts').classList.remove('dim');
   select(R.gaps[0]);
 }
 function flash(el){el.classList.remove('bad');void el.offsetWidth;el.classList.add('bad');setTimeout(()=>el.classList.remove('bad'),RM?0:460);}
 
+// ---- guest samples: public, fixed words with fixed masks (half hidden, then mostly, then all) and fixed tiles ----
+async function startSample(){
+  if(curUid||busy)return;busy=true;$('sampleBtn').disabled=true;
+  try{if(!SM){const r=await fetch('sample.json?v=12');if(!r.ok)throw new Error('sample '+r.status);const j=await r.json();
+      if(!Array.isArray(j.words)||j.words.length!==4)throw new Error('sample shape');SM={words:j.words,i:0,done:0};}}
+  catch(e){busy=false;$('sampleBtn').disabled=false;$('gnote').textContent='Could not load the samples. Check your connection.';return;}
+  busy=false;$('sampleBtn').disabled=false;if(curUid||view!=='guest')return;
+  SM.done=0;sampleWord(0);
+}
+function sampleWord(i){
+  const w=SM.words[i];SM.i=i;const hid=new Set(w.hidden);
+  setView('play');build({token:null,guest:true,units:w.units.map((u,k)=>hid.has(k)?null:u),options:w.options,solved:SM.done,id:-1});
+  $('next').textContent='Next sample';
+}
 // ---- starting / finishing a word ----
 async function loadWord(){
   const my=++seq,uid=curUid;if(!uid)return;busy=true;clearTimeout(autoT);
@@ -206,6 +257,13 @@ async function loadWord(){
 async function pickTile(k){
   if(!R||R.done||busy||R.sel===null||R.sel===undefined)return;
   if(R.used.has(k))return;
+  if(R.guest){                                // sample word: judged right here, nothing is sent
+    const g=R.sel,w=SM.words[SM.i];
+    if(R.opts[k]!==w.units[g]){flash(optEls[k]);flash(unitEls[g]);buzz([40,30,40]);return;}
+    R.filled[g]=k;R.used.add(k);const ub=unitEls[g];ub.textContent=R.opts[k];ub.classList.remove('sel');ub.classList.add('ok');ub.disabled=true;ub.onclick=null;optEls[k].classList.add('used');optEls[k].disabled=true;buzz(12);
+    if(R.gaps.every(x=>R.filled[x]!==undefined)){finishWord({solved:SM.done+1});return;}
+    say('');select(firstEmpty());return;
+  }
   const my=seq,S0=R,g=R.sel;busy=true;let r;
   try{
     r=await zz.gapPick(R.token,g,k);
@@ -229,6 +287,11 @@ async function finishWord(r){
   $('word').classList.add('won');$('word').classList.remove('ent');$('opts').classList.add('dim');$('skip').disabled=true;
   const n=Number.isFinite(r.solved)?r.solved:R.solved+1;R.solved=n;$('cntN').textContent=n;
   const pill=$('cnt');pill.classList.remove('bump');void pill.offsetWidth;pill.classList.add('bump');
+  $('shrow').hidden=!!R.guest;
+  if(R.guest){SM.done=n;const last=SM.i>=3;
+    say(last?'Sign in with Google to keep playing':'Solved!','good');$('next').hidden=false;$('next').textContent=last?'Sign in with Google':'Next sample';$('next').disabled=false;buzz([15,50,15,50,30]);
+    if(!last){clearTimeout(autoT);autoT=setTimeout(()=>{if(my===seq&&S0===R&&R.done)sampleWord(SM.i+1);},AUTO_MS);}
+    return;}
   say('Solved!','good');$('next').hidden=false;$('next').textContent='Next';$('next').disabled=false;buzz([15,50,15,50,30]);
   clearTimeout(autoT);autoT=setTimeout(()=>{if(my===seq&&S0===R&&R.done&&!busy)loadWord();},AUTO_MS);
 }
@@ -237,7 +300,8 @@ async function skip(){
   try{await zz.gapSkip(R.token);}catch(e){/* an old or closed round is fine to leave behind */}
   if(my!==seq||S0!==R)return;busy=false;loadWord();
 }
-$('next').onclick=()=>{if(busy&&R&&!R.done)return;if(R&&R.done){clearTimeout(autoT);}loadWord();};
+$('next').onclick=()=>{if(R&&R.guest){clearTimeout(autoT);if(R.done&&SM.i<3)sampleWord(SM.i+1);else if(R.done)$('chip').click();return;}
+  if(busy&&R&&!R.done)return;if(R&&R.done){clearTimeout(autoT);}loadWord();};
 $('skip').onclick=skip;
 
 // ---- auth (same behaviour as the other games) ----
@@ -245,6 +309,8 @@ $('chip').onclick=async()=>{const u=zz.currentUser();
   if(!u){try{await zz.signInWithGoogle();}catch(e){console.warn(e);}}
   else if(!zz.currentProfile()?.username)$('modal').classList.add('show');};
 $('signG').onclick=()=>$('chip').click();
+$('sampleBtn').onclick=startSample;
+$('shareG').onclick=async()=>{if(!R||R.guest||!(R.solved>0))return;const r=await shareText(`I've solved ${R.solved} Malayalam word${R.solved===1?'':'s'} in zelozuno filling ✅\nhttps://zelozuno.com/games/gap/`);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);};
 $('whoX').onclick=e=>{e.preventDefault();zz.signOut().catch(console.warn);};
 $('ulater').onclick=()=>$('modal').classList.remove('show');
 $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();
@@ -254,11 +320,12 @@ let authSeen=false;
 function enter(){authSeen=true;if(curUid){setView('boot');loadWord();}else{setView('guest');}}
 zz.onUser((u,p)=>{const first=!authSeen,uid=u?.uid||null;
   $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  if(uid!==curUid||first){curUid=uid;seq++;busy=false;clearTimeout(autoT);R=null;lastIds=[];$('word').replaceChildren();$('opts').replaceChildren();unitEls.length=0;optEls.length=0;$('uname').value='';$('uerr').textContent='';enter();}
+  if(uid!==curUid||first){curUid=uid;seq++;busy=false;clearTimeout(autoT);R=null;SM=null;lastIds=[];$('shrow').hidden=true;$('skip').hidden=false;$('word').replaceChildren();$('opts').replaceChildren();unitEls.length=0;optEls.length=0;$('uname').value='';$('uerr').textContent='';enter();}
   if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');});
 $('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||RM)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
 addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
 setTimeout(()=>document.body.classList.add('entered'),1000);
+mountFeedback('gap');
 setView('boot');zz.init();
 setTimeout(()=>{if(!authSeen)enter();},4000);   // sign-in state unknown after 4 s: show the guest page (it switches by itself if the sign-in arrives later)
 </script>

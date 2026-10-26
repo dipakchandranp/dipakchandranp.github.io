@@ -86,6 +86,18 @@ async function api(path, body) {
   if (r.status >= 500) logErr('worker ' + path, { code, message: j.error?.message });
   throw new ZZError(msg, r.status, code);
 }
+// Feedback: open to guests; a signed-in player's ID token (if any) just lets the Worker attach the uid. Nothing is stored in the browser.
+export async function sendFeedback(text, contact, game) {
+  let tok = null;
+  if (online()) { try { tok = await user.getIdToken(); } catch (e) { tok = null; } }
+  let r;
+  try { r = await fetch(workerUrl + '/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(tok ? { 'Authorization': 'Bearer ' + tok } : {}) }, body: JSON.stringify({ text, contact: contact || '', game }) }); }
+  catch (e) { throw new ZZError('Can’t reach the server. Check your connection.', 0, 'network'); }
+  const j = await r.json().catch(() => ({}));
+  if (r.ok) return true;
+  const code = j.error?.code || '';
+  throw new ZZError(r.status === 429 ? 'Thanks! You have sent a few already. Please try again later.' : r.status >= 500 ? 'The server is having trouble. Try again soon.' : j.error?.message || 'Could not send', r.status, code);
+}
 export async function setUsername(name) {
   if (!user) throw new Error('Not signed in');
   if (!validUsername(name)) throw new Error('3–16 letters or digits');
