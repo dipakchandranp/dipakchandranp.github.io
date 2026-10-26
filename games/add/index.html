@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- seo:start -->
 <title>Addition · Quick mental maths game · zelo/zuno</title>
-<!-- seo:start (URLs are FINAL; the preview sync rewrites them, see README-preview) -->
 <meta name="description" content="Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.">
 <link rel="canonical" href="https://zelozuno.com/games/add/">
 <meta name="theme-color" content="#000000">
@@ -25,215 +25,25 @@
 <meta name="twitter:description" content="Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.">
 <meta name="twitter:image" content="https://zelozuno.com/assets/og-addition.png?v=2">
 <meta name="twitter:image:alt" content="Addition: quick sums on zelo/zuno. Beat the clock.">
-<link rel="icon" href="https://zelozuno.com/favicon.ico" sizes="any">
+<link rel="icon" sizes="any" href="https://zelozuno.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
 <link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
 <link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
 <!-- seo:end -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{min-height:100%;overflow-x:hidden}
-body{background:#000;color:#f5f5f7;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',Arial,sans-serif;min-height:100dvh;display:flex;flex-direction:column}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer}
-.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;padding:calc(env(safe-area-inset-top) + 1.25rem) 18px 10px;max-width:1040px;width:100%;margin:0 auto}
-.logo{grid-column:2;font-weight:600;font-size:clamp(1.5rem,5vw,2.25rem);line-height:1.1;letter-spacing:-.04em;text-align:center}
-.top .chip{grid-column:3;justify-self:end;align-self:center;min-width:0;max-width:100%}
-.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-@media(max-width:360px){.top .chip{padding:6px 9px;font-size:.72rem}}
-.chip{background:#111113;border:1px solid #1d1d1f;color:#f5f5f7;border-radius:999px;padding:7px 14px;font-size:.8rem;display:flex;align-items:center;gap:7px;transition:border-color .2s}
-.chip:hover{border-color:#3a3a3c}
-main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:0 18px 18px;display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:900px){main{grid-template-columns:1.6fr 1fr;align-items:start;padding-top:24px}}
-.play{background:#111113;border:1px solid #1d1d1f;border-radius:20px;padding:22px 20px 20px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;min-height:min(520px,calc(100dvh - 90px))}
-.bar{position:absolute;left:0;top:0;height:3px;width:100%;background:#1d1d1f}
-.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0a84ff,#5e5ce6);transform-origin:left;transition:background .3s}
-.pts{font-size:.8rem;color:#86868b;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
-.pts b{color:#f5f5f7;font-weight:600}
-.q{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;gap:22px}
-.eq{font-size:clamp(3.2rem,15vw,6rem);font-weight:600;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1;transition:opacity .3s,transform .3s;white-space:nowrap}
-.eq span{color:#6e6e73;font-weight:400;margin:0 .15em}
-.ans{display:flex;gap:10px;width:100%;max-width:320px}
-.ans input{flex:1;min-width:0;background:#000;border:1px solid #2c2c2e;border-radius:14px;color:#f5f5f7;font-size:1.8rem;font-weight:600;text-align:center;padding:12px;font-family:inherit;outline:none;transition:border-color .2s}
-.ans input:focus{border-color:#0a84ff}
-.btn{background:#f5f5f7;color:#000;border:0;border-radius:14px;padding:0 20px;font-size:1rem;font-weight:600;transition:transform .15s,opacity .2s}
-.btn:active{transform:scale(.96)}
-.ans .btn{display:none} /* answers submit automatically; Enter still submits early */
-.res{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#111113;opacity:0;pointer-events:none;transition:opacity .35s}
-.res.show{opacity:1;pointer-events:auto}
-.big{font-size:clamp(4.5rem,22vw,8rem);font-weight:700;letter-spacing:-.05em;font-variant-numeric:tabular-nums;line-height:1;background:linear-gradient(180deg,#fff,#8e8e93);-webkit-background-clip:text;background-clip:text;color:transparent}
-.res.show .big{animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
-@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
-.res .sub{color:#86868b;font-size:.95rem;text-align:center}
-.res .sub.bad{color:#ff6961}
-.res .btn{padding:13px 34px;margin-top:14px}
-.note{font-size:.75rem;color:#6e6e73;margin-top:12px;text-align:center}
-.note a{color:#a1a1a6;text-decoration:underline;cursor:pointer}
-.side{display:grid;gap:16px}
-@media(max-width:899px){.side{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.side{grid-template-columns:1fr}}
-.panel{background:#111113;border:1px solid #1d1d1f;border-radius:20px;padding:16px 18px}
-.panel h3{font-size:.75rem;color:#86868b;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between}
-.panel h3 b{color:#f5f5f7;font-weight:600}
-.row{display:flex;justify-content:space-between;font-size:.9rem;padding:6px 0;border-top:1px solid #1a1a1c;font-variant-numeric:tabular-nums}
-.row:first-of-type{border-top:0}
-.row .m{color:#86868b}
-.lbr>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lbr .rk{display:inline-block;min-width:2em;text-align:right}
-.lbr.me{background:rgba(10,132,255,.14);box-shadow:inset 0 0 0 1px rgba(10,132,255,.45);border-radius:10px;border-top-color:transparent;margin:2px -8px;padding:6px 8px;font-weight:600}
-.lbr.me+.row,.lbr.me:first-of-type{border-top-color:transparent}
-.lbr.me .m{color:#6cb4ff}
-.lbr .you{display:inline-block;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:#6cb4ff;border:1px solid rgba(10,132,255,.55);border-radius:99px;padding:0 6px;margin-left:2px;vertical-align:1px;font-weight:600}
-.lbgap{display:flex;justify-content:center;gap:5px;padding:5px 0 3px}
-.lbgap i{width:4px;height:4px;border-radius:50%;background:#48484a}
-.empty{color:#6e6e73;font-size:.85rem}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
-.modal.show{opacity:1;pointer-events:auto}
-.mbox{background:#111113;border:1px solid #2c2c2e;border-radius:22px;padding:26px 22px;width:100%;max-width:360px}
-.mbox h2{font-size:1.3rem;font-weight:600;letter-spacing:-.02em;margin-bottom:6px}
-.mbox p{color:#86868b;font-size:.85rem;margin-bottom:16px}
-.mbox input{width:100%;background:#000;border:1px solid #2c2c2e;border-radius:12px;color:#f5f5f7;font-size:1.05rem;padding:12px 14px;font-family:inherit;outline:none;margin-bottom:8px}
-.mbox input:focus{border-color:#0a84ff}
-.err{color:#ff6961;font-size:.8rem;min-height:1.2em;margin-bottom:10px}
-.mrow{display:flex;gap:10px;justify-content:flex-end}
-.ghost{background:none;border:0;color:#86868b;font-size:.9rem;padding:10px}
-.mbox .btn{padding:11px 20px}
-.fbfoot{text-align:center;padding:0 0 calc(env(safe-area-inset-bottom) + 8px);line-height:1;margin-top:-8px}
-@keyframes zin{from{opacity:0}to{opacity:1}}
-main,.chip{animation:zin .35s ease both}
-main,.chip{transition:opacity .25s ease}
-body.entered main,body.entered .chip{animation:none}
-body.leaving main{opacity:0}
-body.leaving .chip{opacity:0}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-#who{position:fixed;z-index:5;top:calc(env(safe-area-inset-top) + 1.25rem + (clamp(1.5rem,5vw,2.25rem)*1.1 - 31px)/2);right:max(18px,calc(50vw - 520px + 18px));max-width:calc(50vw - 82px);min-width:0;height:31px;font-size:.8rem;color:#6e6e73;display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .4s}
-#who.on{opacity:1;pointer-events:auto}
-#whoT{color:#f5f5f7;overflow:hidden;text-overflow:ellipsis;min-width:0}
-#whoX{flex:none;color:#a1a1a6;background:none;border:0;padding:0;font:inherit;cursor:pointer}
-#whoX:hover{color:#f5f5f7}
-@media(max-width:360px){#who{font-size:.72rem;top:calc(env(safe-area-inset-top) + 1.25rem + (1.5rem*1.1 - 31px)/2)}}
-body.authed .top .chip{visibility:hidden}
-#who{position:absolute}
-body.leaving #who{opacity:0}
-</style>
-<!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
-<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6f0a63e25cab4b2b9c3797b8781024cf"}'></script>
-<!-- analytics:end -->
-</head>
-<body>
-<header class="top">
-  <a class="logo" id="home" href="../../#tiles">zelo/zuno</a>
-  <button class="chip" id="chip"><span id="chipT">Sign in</span></button><div id="who" aria-live="polite"><span id="whoT"></span><span aria-hidden="true">|</span><button type="button" id="whoX">sign out</button></div>
-</header>
-<main>
-  <section class="play">
-    <div class="bar"><i id="bar"></i></div>
-    <div class="pts"><b id="live">100</b> points</div>
-    <div class="q">
-      <div class="eq" id="eq">0<span>+</span>0</div>
-      <form class="ans" id="form" autocomplete="off">
-        <input id="in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="?" aria-label="answer" enterkeyhint="done" autocomplete="off">
-        <button class="btn" type="submit">Go</button>
-      </form>
-    </div>
-    <div class="note" id="note">Sign in to save &amp; join leaderboard</div>
-    <div class="res" id="res">
-      <div class="big" id="big">0</div>
-      <div class="sub" id="sub"></div>
-      <div class="sub" id="rerr" style="font-size:.8rem"></div>
-      <button class="btn" id="next">Next</button>
-    </div>
-  </section>
-  <aside class="side">
-    <div class="panel"><h3>My plays <span>best <b id="best">–</b></span></h3><div id="hist"><div class="empty">Loading…</div></div></div>
-    <div class="panel"><h3>Leaderboard</h3><div id="lb"><div class="empty">Loading…</div></div></div>
-  </aside>
-</main>
-<div class="fbfoot"><button type="button" class="fbk" data-game="add">feedback</button></div>
-<div class="modal" id="modal"><form class="mbox" id="uform">
-  <h2>Choose a username</h2>
-  <p>Shown on the leaderboard. 3–16 letters or digits.</p>
-  <input id="uname" maxlength="16" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="username">
-  <div class="err" id="uerr"></div>
-  <div class="mrow"><button type="button" class="ghost" id="ulater">Later</button><button class="btn" type="submit">Save</button></div>
-</form></div>
-<script type="module">
-import * as zz from '../../shared/zz.js?v=12';
-import {mountFeedback} from '../../shared/ux.js?v=2';
-mountFeedback('add');
-const G='add',$=id=>document.getElementById(id);
-let a,b,t0,raf,busy=false,token=null,roundUid=null,qseq=0;
-const pts=()=>Math.max(0,100-5*Math.floor((performance.now()-t0)/1000));
-function tick(){const ms=performance.now()-t0,p=pts();$('live').textContent=p;$('bar').style.transform=`scaleX(${Math.max(0,1-ms/20000)})`;if(p<=0)$('bar').style.background='#3a3a3c';if(p>0)raf=requestAnimationFrame(tick);}
-// note under the question: default sign-in hint for guests, or a one-off message
-let noteMsg='';
-function refreshNote(){const n=$('note'),u=zz.currentUser();n.innerHTML=noteMsg?esc(noteMsg):'Sign in to save &amp; join leaderboard';n.style.visibility=(noteMsg||!u)?'visible':'hidden';}
-function show(){$('eq').innerHTML=`${a}<span>+</span>${b}`;$('in').maxLength=String(a+b).length;$('in').disabled=false;busy=false;t0=performance.now();cancelAnimationFrame(raf);tick();$('in').focus({preventScroll:true});}
-function localQ(){a=1+Math.floor(Math.random()*99);b=1+Math.floor(Math.random()*99);token=null;show();}
-// Signed in: the Worker makes the question and starts the clock. Guests (or if the Worker is unreachable): local, nothing saved.
-async function newQ(){const seq=++qseq;token=null;roundUid=null;noteMsg='';refreshNote();$('in').value='';$('res').classList.remove('show');$('bar').style.background='';cancelAnimationFrame(raf);
-  const uid=curUid;if(!uid){localQ();return;}
-  busy=true;$('in').disabled=true;$('eq').innerHTML='…';$('live').textContent='100';$('bar').style.transform='scaleX(1)';
-  try{const q=await zz.startRound(G);if(seq!==qseq)return;if(uid!==curUid)throw new Error('Signed out');a=q.a;b=q.b;token=q.token;roundUid=uid;show();}
-  catch(e){if(seq!==qseq)return;localQ();if(curUid){noteMsg=(e.message||'Could not start a saved round')+' This round won’t be saved.';refreshNote();}}}
-function countUp(n){const el=$('big'),s=performance.now();(function f(){const k=Math.min(1,(performance.now()-s)/600);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})();}
-function showResult(ok,score,timeMs,err){
-  $('sub').className='sub'+(ok?'':' bad');$('sub').textContent=ok?`${(timeMs/1000).toFixed(1)}s · ${a} + ${b} = ${a+b}`:`Wrong — ${a} + ${b} = ${a+b}`;
-  $('rerr').textContent=err||'';
-  $('res').classList.add('show');countUp(score);setTimeout(()=>$('next').focus({preventScroll:true}),50);}
-// Auto-submit: as soon as the player has typed as many digits as the correct answer (a+b), the round is submitted.
-async function submitAnswer(v){if(busy||!/^\d+$/.test(v))return;busy=true;$('in').disabled=true;cancelAnimationFrame(raf);$('in').blur();
-  const localMs=Math.round(performance.now()-t0),localOk=+v===a+b,localScore=localOk?Math.max(0,100-5*Math.floor(localMs/1000)):0;
-  const tk=token,uid=roundUid;token=null;
-  if(!tk||!uid||uid!==curUid){showResult(localOk,localScore,localMs);return;} // guest / unsaved round: local only
-  let r;
-  try{r=await zz.submitAnswer(G,tk,v);}
-  catch(err){if(uid!==curUid){showResult(localOk,localScore,localMs);return;}showResult(localOk,localScore,localMs,(err.message||'Could not save')+' This score was not saved.');return;}
-  showResult(r.correct,r.score,r.timeMs);
-  if(uid===curUid){loadMine();loadLb();}}
-$('in').addEventListener('input',()=>{const el=$('in');if(busy||el.disabled)return;const d=el.value.replace(/\D/g,'').slice(0,String(a+b).length);if(el.value!==d)el.value=d;if(d.length===String(a+b).length)submitAnswer(d);});
-$('form').onsubmit=e=>{e.preventDefault();submitAnswer($('in').value.trim());}; // Enter submits early
-$('next').onclick=newQ;
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('res').classList.contains('show')&&document.activeElement!==$('next')){e.preventDefault();newQ();}});
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-// ---- auth-scoped state: everything below is keyed to curUid + gen token ----
-let curUid=null,gen=0;
-const empty=t=>`<div class="empty">${t}</div>`;
-function clearMine(msg){$('best').textContent='–';$('hist').innerHTML=empty(msg);}
-async function loadMine(){const my=++gen,uid=curUid;
-  if(!uid){clearMine('Sign in to save your plays');return;}
-  let h;try{h=await zz.getMyHistory(G,6);}catch(e){h=undefined;}
-  if(my!==gen||uid!==curUid||zz.currentUser()?.uid!==uid)return; // stale
-  if(!h||h.uid!==uid){clearMine('Could not load plays');return;}
-  $('best').textContent=h.best;
-  $('hist').innerHTML=h.recent.length?h.recent.map(p=>`<div class="row"><span>${p.a??'?'} + ${p.b??'?'}</span><span class="m">${p.timeMs!=null?(p.timeMs/1000).toFixed(1)+'s':''}</span><b>${p.score}</b></div>`).join(''):empty('No plays yet');}
-async function loadLb(){
-  try{const l=await Promise.race([zz.getLeaderboardView(G,10),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))]);$('lb').innerHTML=l.top.length?zz.leaderboardHTML(l):empty('No scores yet');}
-  catch(e){$('lb').innerHTML=empty('Leaderboard unavailable');}}
-$('chip').onclick=async()=>{const u=zz.currentUser();
-  if(!u){try{await zz.signInWithGoogle();}catch(e){console.warn(e);}}
-  else if(!zz.currentProfile()?.username)$('modal').classList.add('show');
-  };
-$('whoX').onclick=e=>{e.preventDefault();zz.signOut().catch(console.warn);};
-$('note').onclick=()=>{if(!zz.currentUser())$('chip').click();};
-$('ulater').onclick=()=>$('modal').classList.remove('show');
-$('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();
-  if(!zz.validUsername(n)){$('uerr').textContent='3–16 letters or digits only';return;}
-  $('uerr').textContent='';try{await zz.setUsername(n);$('modal').classList.remove('show');}catch(err){$('uerr').textContent=err.message||'Could not save';}};
-let authSeen=false;
-zz.onUser((u,p)=>{authSeen=true;const uid=u?.uid||null;
-  $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  if(uid!==curUid){curUid=uid;gen++;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');token=null;roundUid=null;if(uid&&!$('res').classList.contains('show'))newQ();else{noteMsg='';refreshNote();}}else refreshNote();
-  if(u&&!p?.username)$('modal').classList.add('show');else $('modal').classList.remove('show');
-  loadMine();loadLb();});
-$('home').addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.button||matchMedia('(prefers-reduced-motion: reduce)').matches)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>location.href=$('home').href,250);});
-addEventListener('pageshow',e=>{if(e.persisted)document.body.classList.remove('leaving');});
-setTimeout(()=>document.body.classList.add('entered'),1000);
-$('best').textContent='–';$('hist').innerHTML=empty('Loading…');newQ();zz.init();
-setTimeout(()=>{if(!authSeen){clearMine('Sign in to save your plays');loadLb();}},4000);
-</script>
-</body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Malayalam:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6f0a63e25cab4b2b9c3797b8781024cf"}'></script>
+    <!-- analytics:end -->
+    <script type="module" crossorigin src="/app-assets/index-B3hJG4hx.js"></script>
+    <link rel="stylesheet" crossorigin href="/app-assets/index-DQxdeiYA.css">
+  </head>
+  <body>
+    <div id="root"><!-- fallback:start --><div class="sr-only"><h1>Addition</h1><p>Quick mental addition against the clock. Free, with a leaderboard. zelo/zuno, free Malayalam word games. മലയാളം വാക്കു കളികൾ.</p><ul><li><a href="/games/add/">Addition</a></li><li><a href="/games/match/">Connection</a></li><li><a href="/games/gap/">Filling</a></li></ul></div><!-- fallback:end --></div>
+  </body>
 </html>
