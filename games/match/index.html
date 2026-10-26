@@ -57,11 +57,21 @@ main{flex:1;min-height:0;width:100%;max-width:560px;margin:0 auto;padding:0 14px
 button.pill{transition:border-color .2s,transform .12s}
 button.pill:active{transform:scale(.95)}
 .lives{display:flex;gap:7px;align-items:center}
-.lives i{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#0a84ff,#5e5ce6);transition:transform .3s,opacity .3s,background .3s}
-.lives i.lost{background:#2c2c2e;transform:scale(.7)}
+.lives i{font-style:normal;font-size:15px;line-height:1;color:#ff453a}
+.lives i:before{content:'\2665'}
+.lives i.lost{color:#2c2c2e;transform:scale(.7)}
 .lives i.pop{animation:lp .45s}
 @keyframes lp{0%{transform:scale(1.8)}100%{transform:scale(.7)}}
 .right{display:flex;gap:8px}
+/* round / level / sample progress: numbered boxes (no transitions) */
+.steps{flex:none;display:flex;align-items:center;justify-content:center;gap:8px;height:38px;list-style:none}
+.st{position:relative;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;border:1px solid #1d1d1f}
+.st.todo{background:#0a0a0b;color:#48484a}
+.st.done{background:#0f3a24;border-color:#30d158;color:#7ef0ad}
+.st.done:after{content:'\2713';position:absolute;top:1px;right:3px;font-size:.6rem;font-weight:700;color:#7ef0ad}
+.st.lost{background:#44300c;border-color:#ffb340;color:#ffcb78}
+.st.lost:after{content:'\2715';position:absolute;top:1px;right:3px;font-size:.6rem;font-weight:700;color:#ffcb78}
+.st.cur{width:38px;height:38px;border-radius:11px;background:#f5f5f7;border:2px solid #0a84ff;color:#000;font-size:1.1rem;box-shadow:0 0 0 2px #000,0 0 0 4px #f5f5f7}
 /* board */
 .board{flex:1;min-height:0;position:relative;width:100%;max-height:640px;align-self:center}
 .grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:8px}
@@ -199,13 +209,14 @@ body.leaving #who{opacity:0}
 .dline{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
 .dline b{font-size:.98rem;font-weight:600;white-space:nowrap}
 .dline span{font-size:.74rem;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.dact{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.dact{display:grid;gap:8px}
 .rchips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
 .rc{background:#111113;border:1px solid #1d1d1f;border-radius:9px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.58rem;color:#6e6e73;line-height:1;font-variant-numeric:tabular-nums}
 .rc b{font-size:.9rem;font-weight:600;color:#5a5a5e}
 .rc.on b{color:#f5f5f7}
 .daybox .btn{height:44px;min-width:104px;padding:0 16px;font-size:.95rem}
 .daybox .btn[disabled]{opacity:.45}
+.dbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dbtns .btn{min-width:0;width:100%}
 .calfoot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;margin-top:-4px}
 .link{background:none;border:0;color:#a1a1a6;font-size:.82rem;padding:6px 4px;min-height:34px;text-decoration:underline;text-underline-offset:3px}
 .calfoot .link{min-height:44px;min-width:44px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center}
@@ -228,7 +239,7 @@ body.leaving #who{opacity:0}
 .seg button.on{background:#f5f5f7;color:#000}
 .panel h3{align-items:center}
 button.pill.back{padding-left:9px}
-body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res,body.guestv .hud,body.guestv .actions,body.guestv .res,body.bootv .hud,body.bootv .actions,body.bootv .res{display:none}
+body.cal .steps,body.sumv .steps,body.guestv .steps,body.bootv .steps,body.cal .hud,body.cal .actions,body.cal .res,body.sumv .hud,body.sumv .actions,body.sumv .res,body.guestv .hud,body.guestv .actions,body.guestv .res,body.bootv .hud,body.bootv .actions,body.bootv .res{display:none}
 body.demo #newp,body.demo #scoresBtn{display:none}body.demo .actions{grid-template-columns:1fr 1fr}
 body.demo .res{height:auto;min-height:52px}body.demo .res .tx b{white-space:normal;line-height:1.25}body.demo .res .tx span{white-space:normal}
 .d.off{opacity:.16;background:transparent;border-color:transparent;pointer-events:none}
@@ -256,9 +267,10 @@ body.daily .actions{grid-template-columns:1fr 1fr}
 <main>
   <div class="hud">
     <button class="pill back" id="lvl" type="button" aria-label="Back to calendar">‹ <span id="lvlT">Round <b id="lvlN">1</b>/4</span></button>
-    <div class="lives" id="lives" aria-label="lives"><i></i><i></i><i></i><i></i></div>
+    <div class="lives" id="lives" role="img" aria-label="Lives: 4 of 4"><i></i><i></i><i></i><i></i></div>
     <div class="right"><div class="pill" id="clock" aria-label="Elapsed time (counts up, no time limit)">0:00</div><button class="pill" id="scoresBtn" type="button">Scores</button></div>
   </div>
+  <div class="steps" id="steps" role="list" aria-label="Progress"></div>
   <div class="board" id="board">
     <div class="grid" id="grid" hidden></div>
     <section class="start" id="boot" aria-label="Loading"><div class="stnote"><span class="spin" style="border-color:#ffffff33;border-top-color:#fff"></span>Loading…</div></section>
@@ -280,7 +292,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
       <div class="days" id="days"></div>
       <div class="daybox" id="daybox">
         <div class="dline"><b id="dlabel"></b><span id="dsub"></span></div>
-        <div class="dact"><div class="rchips" id="rchips"></div><button class="btn" id="playBtn" type="button">Play</button></div>
+        <div class="dact"><div class="rchips" id="rchips"></div><div class="dbtns"><button class="btn" id="playBtn" type="button">Play</button><button class="btn alt" id="shareCal" type="button" disabled>Share</button></div></div>
       </div>
       <div class="calfoot"><button class="link" id="practice" type="button">∞ Practice</button><span class="link" style="text-decoration:none"><button class="link" id="calScores" type="button">Scores</button></span><span class="stnote" id="stnote"></span></div>
     </section>
@@ -336,6 +348,7 @@ let S=null,D=null;                        // S: current round. D: current daily 
 let curUid=null,gen=0,seq=0,busy=false,sel=[],timer=null,toastT=null,view='cal',armT=null;
 const els=new Map();                      // card index -> button
 const bests=new Map();                    // 'YYYY-MM' -> {uid, days:{date:[r1..r4]}}   signed-in bests, read from Firestore
+const played=new Map();                   // 'YYYY-MM-DD' -> [{score,log,won}x4]: this visit's best play of each round (guess squares), so the calendar can share the full text. In memory only.
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const ymOf=d=>d.slice(0,7),pad2=n=>String(n).padStart(2,'0');
 const clampDate=d=>d<DAILY_START?DAILY_START:d>DAILY_END?DAILY_END:d;
@@ -346,7 +359,16 @@ function toast(msg,ms=1500){const t=$('toast');t.textContent=msg;t.classList.add
 function setView(v){clearTimeout(armT);delete $("lvl").dataset.arm;view=v;const b=document.body;b.classList.toggle('cal',v==='cal');b.classList.toggle('sumv',v==='sum');b.classList.toggle('guestv',v==='guest');b.classList.toggle('bootv',v==='boot');b.classList.toggle('daily',!!D);b.classList.toggle('demo',v==='play'&&!!S&&S.mode==='demo');if(v!=='play')b.classList.remove('done');
   $('cal').hidden=v!=='cal';$('sum').hidden=v!=='sum';$('grid').hidden=v!=='play';$('guest').hidden=v!=='guest';$('boot').hidden=v!=='boot';}
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
-function drawLives(lost,pop){[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
+function drawLives(lost,pop){$('lives').setAttribute('aria-label','Lives: '+(LIVES-lost)+' of '+LIVES);[...$('lives').children].forEach((d,i)=>{d.classList.toggle('lost',i>=LIVES-lost);if(pop&&i===LIVES-lost){d.classList.remove('pop');void d.offsetWidth;d.classList.add('pop');}});}
+// ---- progress boxes: current = bright + ring, completed = green (amber if lost), upcoming = dimmed ----
+function stepsModel(){ if(!S)return null;
+  if(S.mode==='demo')return{word:'Sample',n:3,cur:S.n+1,res:[...Array(3)].map((_,i)=>i<S.n?true:i===S.n&&S.done?!!S.won:undefined)};
+  if(D)return{word:'Round',n:ROUNDS,cur:D.round,res:[...Array(ROUNDS)].map((_,i)=>i<D.round-1?(D.res[i]?!!D.res[i].won:undefined):i===D.round-1&&S.done?!!S.won:undefined)};
+  const c=Math.min(MAX_LEVEL,S.level||level);return{word:'Level',n:MAX_LEVEL,cur:c,res:[...Array(MAX_LEVEL)].map((_,i)=>i<c-1?true:i===c-1&&S.done?!!S.won:undefined)};}
+function renderSteps(){const el=$('steps'),m=stepsModel();if(!m){el.replaceChildren();return;}
+  el.innerHTML=m.res.map((r,i)=>{const k=i+1,cur=k===m.cur&&r===undefined,state=cur?'cur':r===undefined?(k<m.cur?'done':'todo'):r?'done':'lost',
+    word=cur?'current':state==='done'?'completed':state==='lost'?'completed, not solved':'not started';
+    return `<span class="st ${state}" role="listitem" aria-label="${m.word} ${k} of ${m.n}, ${word}"${cur?' aria-current="step"':''}>${k}</span>`;}).join('');}
 function tickClock(){if(S&&!S.done)$('clock').textContent=fmt(performance.now()-S.t0);}
 function lvlLabel(txt){$('lvlT').innerHTML=txt||(S&&S.mode==='demo'?`Sample <b>${S.n+1}</b>/3`:D?`Round <b>${D.round}</b>/${ROUNDS}`:`Level <b>${level}</b>`);}
 
@@ -396,11 +418,12 @@ function renderCal(){
     h+=`<button type="button" class="${cls}" data-d="${date}" aria-label="${fmtDay(date)}${locked?', locked':done?', completed, '+sumRes(r)+' points':c?', '+c+' of 4 rounds':''}" aria-pressed="${date===selDate}"><b>${i}</b><small>${sub}</small></button>`;}
   $('days').innerHTML=h;renderBox();}
 function renderBox(){
-  if(!timeReady){$('dlabel').textContent='Checking today…';$('dsub').textContent='';$('rchips').innerHTML='';$('playBtn').disabled=true;$('playBtn').textContent='Play';$('stnote').innerHTML='';return;}
+  if(!timeReady){$('shareCal').disabled=true;$('dlabel').textContent='Checking today…';$('dsub').textContent='';$('rchips').innerHTML='';$('playBtn').disabled=true;$('playBtn').textContent='Play';$('stnote').innerHTML='';return;}
   const today=zz.localISO(),locked=selDate>today,r=dayRes(selDate),c=cntRes(r),done=c===ROUNDS,signed=true;
   $('dlabel').textContent=fmtDay(selDate)+(selDate===today?' · Today':'');
   $('dsub').textContent=locked?'Opens '+fmtDay(selDate):done?(signed?'Best ':'This visit ')+sumRes(r)+' / 400':c?(signed?'Best so far ':'')+sumRes(r)+' · '+c+'/4 rounds':'4 rounds · up to 400';
   $('rchips').innerHTML=[0,1,2,3].map(i=>`<span class="rc${r&&r[i]!=null?' on':''}">R${i+1}<b>${locked?'·':r&&r[i]!=null?r[i]:'–'}</b></span>`).join('');
+  const sb=$('shareCal'),st=!locked&&calShareText(selDate);sb.disabled=!st;sb.setAttribute('aria-label',st?'Share result for '+fmtDay(selDate):'Share (no result for '+fmtDay(selDate)+')');
   const b=$('playBtn');b.disabled=locked||busy;b.innerHTML=locked?LOCK+' Locked':done?'Replay':c?'Play':'Play';
   $('stnote').className='stnote';$('stnote').innerHTML='Scores saved';}
 async function loadBests(ym){const uid=curUid;if(!uid)return;
@@ -443,7 +466,7 @@ async function startRound(){const my=++seq,uid=curUid,daily=!!D,rn=daily?(D.want
     back(e.message||'Could not load the words. Check your connection and try again.');return;}
   busy=false;loadingUI(false);$('newp').disabled=false;if(daily){D.round=rn;D.want=0;}
   S={...R,solved:[],mistakes:0,done:false,t0:performance.now()};if(!daily)level=R.level||level;
-  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
+  setView('play');lvlLabel();drawLives(0);renderSteps();$('clock').textContent='0:00';$('res').querySelector('.sc').textContent='0';
   buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();
 }
 // ---- guest: description + one fixed try-out round (demo.json). Judged in the browser: no scoring, no Worker calls, nothing stored ----
@@ -455,8 +478,8 @@ async function startDemo(){if(curUid||busy)return;busy=true;$('demoBtn').disable
   demoRound(0);}
 function demoRound(n){const R=DEMO.rounds[n];sel=[];D=null;document.body.classList.remove('done');$('grid').replaceChildren();
   S={mode:'demo',n,cards:R.cards,answer:R.groups.map(g=>g.indices),groups:R.groups,level:n+1,solved:[],mistakes:0,done:false,t0:performance.now()};
-  setView('play');lvlLabel();drawLives(0);$('clock').textContent='0:00';$('sc').textContent='0';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
-function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
+  setView('play');lvlLabel();drawLives(0);renderSteps();$('clock').textContent='0:00';$('sc').textContent='0';buildCards();clearInterval(timer);timer=setInterval(tickClock,250);syncBtns();}
+function leaveToCal(){seq++;busy=false;clearInterval(timer);S=null;renderSteps();sel=[];els.clear();$('grid').replaceChildren();const d=D&&D.date;D=null;document.body.classList.remove('done');loadingUI(false);showCal(d||selDate);}
 
 // ---- play ----
 function syncBtns(){$('clr').disabled=!sel.length||!S||S.done;$('shuf').disabled=!S||S.done;}
@@ -500,7 +523,7 @@ async function applyResult(r,pick){const my=seq,S0=S;
   }
   if(r.done){await finish(r);return;}
   busy=false;syncBtns();}
-async function finish(r){const my=seq,S0=S;S.done=true;clearInterval(timer);$('clock').textContent=fmt(r.timeMs??performance.now()-S.t0);
+async function finish(r){const my=seq,S0=S;S.done=true;S.won=!!r.won;renderSteps();clearInterval(timer);$('clock').textContent=fmt(r.timeMs??performance.now()-S.t0);
   if(!r.won&&r.solution){ // reveal the groups that were missed, one by one
     const have=new Set(S.solved.flatMap(x=>x.indices));for(const g of r.solution.filter(g=>!g.indices.some(i=>have.has(i)))){await sleep(380);if(my!==seq||S!==S0)return;const x={type:g.type,en:g.en,indices:g.indices,missed:true};S.solved.push(x);
       render({flip:true});}
@@ -517,6 +540,7 @@ async function finish(r){const my=seq,S0=S;S.done=true;clearInterval(timer);$('c
   $('rs').textContent=t+' · '+where;
   if(D){
     D.res[D.round-1]={score,timeMs:r.timeMs,mistakes:S.mistakes,won:!!r.won,saved:r.saved!==false,log:[...(S.log||[])]};
+    {const pa=played.get(D.date)||[null,null,null,null],o=pa[D.round-1];if(!o||score>=o.score)pa[D.round-1]={score,log:[...(S.log||[])],won:!!r.won};played.set(D.date,pa);}
     if(r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
     $('next').textContent=D.round<ROUNDS?'Next round':'Results';
   }else{$('next').textContent=r.won?'Next':'Retry';S.share=practiceShare(score,S.log||[],!!r.won,S.level||level);$('shareR').hidden=false;$('res').classList.add('wsh');if(r.won&&level<MAX_LEVEL)level++;}
@@ -532,6 +556,10 @@ const shareDate=iso=>{const [y,m,d]=iso.split('-').map(Number);return `${d} ${MO
 const rowOf=(log,won)=>log.map(k=>k<0?'⬛':SQ[k%4]).join('')+(won?'':'❌');      // one square per guess: a solved group in the colour of its place, ⬛ for a mistake, ❌ when the round was lost
 function dayShareText(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0);
   return [`zelozuno Connection ${shareDate(D.date)} · ${run}/400`,...res.map((x,i)=>x?`R${i+1} ${rowOf(x.log||[],x.won)} ${x.score}`:`R${i+1} –`),SHARE_URL].join('\n');}
+// Calendar share: any day with a saved result. Scores come from the saved bests (users/<uid>/games/match/days); a round also gets its guess squares when this visit's best play of it is that same score. Otherwise the line is just "R<n> <score>". No answers involved.
+function calShareText(date){const r=dayRes(date),pa=played.get(date)||[],sc=i=>r?(r[i]!=null?r[i]:null):(pa[i]?pa[i].score:null),sc4=[0,1,2,3].map(sc);
+  if(sc4.every(x=>x==null))return null;
+  return [`zelozuno Connection ${shareDate(date)} · ${sc4.reduce((a,x)=>a+(x||0),0)}/400`,...sc4.map((x,i)=>x==null?`R${i+1} –`:pa[i]&&pa[i].score===x?`R${i+1} ${rowOf(pa[i].log,pa[i].won)} ${x}`:`R${i+1} ${x}`),SHARE_URL].join('\n');}
 function practiceShare(score,log,won,lvl){return [`zelozuno Connection ${shareDate(zz.localISO())} · practice level ${lvl} · ${score} pts`,rowOf(log,won),SHARE_URL].join('\n');}
 async function doShare(text){const r=await shareText(text);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);return r;}
 function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),saved=res.some(x=>x&&x.saved);
@@ -542,6 +570,7 @@ function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),
 $('playBtn').onclick=()=>startDay(selDate);
 $('practice').onclick=startPractice;
 $('calScores').onclick=()=>$('scoresBtn').click();
+$('shareCal').onclick=()=>{const t=timeReady&&selDate<=zz.localISO()&&calShareText(selDate);if(t)doShare(t);};
 $('shareD').onclick=()=>{if(D)doShare(dayShareText());};
 $('shareR').onclick=()=>{if(S&&S.share)doShare(S.share);};
 $('replay').onclick=()=>{if(D)startDay(D.date);};
@@ -593,7 +622,7 @@ let authSeen=false;
 function enter(){authSeen=true;if(curUid){if(!timeStarted)timeUp();showCal();}else showGuest();}
 zz.onUser((u,p)=>{const first=!authSeen,uid=u?.uid||null;
   $('chipT').textContent='Sign in';document.body.classList.toggle('authed',!!u);$('whoT').textContent=u?(p?.username||'Signed in'):'';$('who').classList.toggle('on',!!u);
-  if(uid!==curUid||first){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();
+  if(uid!==curUid||first){curUid=uid;gen++;seq++;busy=false;$('uname').value='';$('uerr').textContent='';clearMine(uid?'Loading…':'Sign in to save your plays');bests.clear();played.clear();
     // a round belongs to one account: drop it and start from the calendar (signed in) or the guest page
     clearInterval(timer);S=null;D=null;sel=[];els.clear();$('grid').replaceChildren();loadingUI(false);
     $('newp').disabled=false;seen=new Set();lastIds=[];level=1;lvlLabel();drawLives(0);$('clock').textContent='0:00';enter();}
