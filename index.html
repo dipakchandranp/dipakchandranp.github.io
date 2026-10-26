@@ -52,7 +52,7 @@ body.leaving .card{opacity:0!important;transform:scale(.98)!important;transition
 <div class="grid" id="grid">
 <a class="card" href="games/add/"><span class="ic">സ</span><span class="sub">addition</span></a>
 <a class="card" href="games/match/"><span class="ic">ക</span><span class="sub">connection</span></a>
-<div class="card off dim"><span class="ic">ച</span><span class="t">loading</span></div>
+<a class="card" href="games/gap/"><span class="ic">നി</span><span class="sub">filling</span></a>
 <div class="card off dim"><span class="ic">ല</span><span class="t">loading</span></div>
 <div class="card off dim"><span class="ic">മ</span><span class="t">loading</span></div>
 <div class="card off dim"><span class="ic">ത</span><span class="t">loading</span></div>
@@ -84,7 +84,7 @@ document.querySelectorAll('a.card').forEach(function(a){a.addEventListener('clic
 <script type="module">
 // signed-in indicator; home keeps working if Firebase fails
 const who=document.getElementById('who'),whoT=document.getElementById('whoT');let zzm;document.getElementById('whoX').onclick=function(e){e.preventDefault();e.stopPropagation();if(zzm)zzm.signOut().catch(console.warn)};
-import('./shared/zz.js?v=10').then(zz=>{zzm=zz;zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
+import('./shared/zz.js?v=11').then(zz=>{zzm=zz;zz.onUser((u,p)=>{if(u){whoT.textContent=p&&p.username?p.username:'Signed in';who.classList.add('on')}else{who.classList.remove('on');whoT.textContent=''}});return zz.init()}).catch(e=>console.warn('zz unavailable',e));
 </script>
 </body>
 </html>

@@ -70,6 +70,7 @@ const FRIENDLY = {
   bad_clock: 'Your device date looks wrong. Check it and try again.',
   bad_timezone: 'Your device timezone looks wrong. Check it and try again.',
   busy: 'Busy right now. Try again.',
+  round_closed: 'That word is already finished.',
 };
 async function api(path, body) {
   if (!online()) throw new ZZError('Sign in to save scores', 0, 'signed_out');
@@ -140,6 +141,14 @@ export async function matchDailyStart(date, round) {
   if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
   return { ...j, token: j.roundToken, uid };
 }
+// gap (fill the gap in a word): the Worker picks the word, hides some units, judges every pick and counts the solved words. The answer never reaches the page.
+export async function gapStart(last = []) {
+  const uid = user?.uid, j = await api('/v2/gap/start', { last: last.slice(-20) });
+  if (user?.uid !== uid) throw new ZZError('Signed out', 0, 'signed_out');
+  return { ...j, token: j.roundToken, uid };
+}
+export const gapPick = (token, gapIndex, optionIndex) => api('/v2/gap/pick', { roundToken: token, gapIndex, optionIndex });
+export const gapSkip = token => api('/v2/gap/skip', { roundToken: token });
 export const matchGuess = (token, pick) => api('/guess', { roundToken: token, pick });
 // Submit the answer; the Worker computes time + score and writes the play and leaderboard.
 export async function submitAnswer(g, token, answer) { return api('/answer', { roundToken: token, answer: String(answer) }); }
