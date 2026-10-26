@@ -195,7 +195,7 @@ body.leaving #who{opacity:0}
 </form></div>
 <script type="module">
 import * as zz from '../../shared/zz.js?v=12';
-import {shareText,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=1';
+import {shareText,shareCard,cardBlob,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=2';
 const $=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -224,7 +224,7 @@ function build(j){
     else{b.className='u shown';b.textContent=u;b.tabIndex=-1;b.disabled=true;}
     unitEls.push(b);w.appendChild(b);});
   R.opts.forEach((t,k)=>{const b=document.createElement('button');b.type='button';b.className='o';b.textContent=t;b.onclick=()=>tapOpt(k);optEls.push(b);o.appendChild(b);});
-  R.guest=!!j.guest;$('skip').hidden=R.guest;$('shrow').hidden=R.guest||!(R.solved>0);
+  R.guest=!!j.guest;$('skip').hidden=R.guest;$('shrow').hidden=R.guest||!(R.solved>0);if(!R.guest&&R.solved>0)cardBlob(gapCard(R.solved));
   $('cntN').textContent=R.solved;$('next').hidden=true;$('msg').hidden=false;say('Tap a tile to fill the gap');$('skip').disabled=false;$('opts').classList.remove('dim');
   select(R.gaps[0]);
 }
@@ -289,7 +289,7 @@ async function finishWord(r){
   $('word').classList.add('won');$('word').classList.remove('ent');$('opts').classList.add('dim');$('skip').disabled=true;
   const n=Number.isFinite(r.solved)?r.solved:R.solved+1;R.solved=n;$('cntN').textContent=n;
   const pill=$('cnt');pill.classList.remove('bump');void pill.offsetWidth;pill.classList.add('bump');
-  $('shrow').hidden=!!R.guest;
+  $('shrow').hidden=!!R.guest;if(!R.guest&&n>0)cardBlob(gapCard(n));
   if(R.guest){SM.done=n;const last=SM.i>=3;
     say(last?'Sign in with Google to keep playing':'Solved!','good');$('next').hidden=false;$('next').textContent=last?'Sign in with Google':'Next sample';$('next').disabled=false;buzz([15,50,15,50,30]);
     if(!last){clearTimeout(autoT);autoT=setTimeout(()=>{if(my===seq&&S0===R&&R.done)sampleWord(SM.i+1);},AUTO_MS);}
@@ -312,7 +312,10 @@ $('chip').onclick=async()=>{const u=zz.currentUser();
   else if(!zz.currentProfile()?.username)$('modal').classList.add('show');};
 $('signG').onclick=()=>$('chip').click();
 $('sampleBtn').onclick=startSample;
-$('shareG').onclick=async()=>{if(!R||R.guest||!(R.solved>0))return;const r=await shareText(`I've solved ${R.solved} Malayalam word${R.solved===1?'':'s'} in zelozuno filling ✅\nhttps://zelozuno.com/games/gap/`);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);};
+// Share image: brand header + result card (words solved, from the same count as the text) drawn on a canvas; pre-rendered so Share stays inside the tap.
+const gapDate=()=>new Date(zz.localISO()+'T00:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
+const gapCard=n=>({game:'gap',file:'zelozuno-filling.png',title:'Words solved',right:gapDate(),tiles:[{label:'Solved',value:n}]});
+$('shareG').onclick=async()=>{if(!R||R.guest||!(R.solved>0))return;const r=await shareCard(`I've solved ${R.solved} Malayalam word${R.solved===1?'':'s'} in zelozuno filling ✅\nhttps://zelozuno.com/games/gap/`,gapCard(R.solved));if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);};
 $('whoX').onclick=e=>{e.preventDefault();zz.signOut().catch(console.warn);};
 $('ulater').onclick=()=>$('modal').classList.remove('show');
 $('uform').onsubmit=async e=>{e.preventDefault();const n=$('uname').value.trim();

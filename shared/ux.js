@@ -15,6 +15,67 @@ export async function shareText(text) {
     return ok ? 'copied' : 'failed';
   } catch (e) { return 'failed'; }
 }
+// ---- share card: one PNG (brand header + result card + footer) drawn on a <canvas>, no libraries, nothing stored ----
+// spec: { game:'match'|'gap', title, right, tiles:[{label,value}], file }  (brand header, glyph and tagline come from BRANDS)
+const BRANDS = {
+  match: { name: 'Connection', glyph: 'ബ', sub: 'connection', tagline: 'Group 16 Malayalam words into 4 groups' },
+  gap: { name: 'Filling', glyph: 'പൂ', sub: 'filling', tagline: 'Fill the missing Malayalam letters' },
+};
+const FONT = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',Arial,'Noto Sans Malayalam','Kartika','Nirmala UI',sans-serif";
+const MLFONT = "'Noto Sans Malayalam','Kartika','Nirmala UI','Noto Sans','Segoe UI',sans-serif";
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function wrap(c, text, maxW) { const out = []; let line = ''; for (const w of text.split(' ')) { const t = line ? line + ' ' + w : w; if (line && c.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; } if (line) out.push(line); return out; }
+function drawCard(spec) {
+  const B = BRANDS[spec.game], W = 1080, PAD = 48, tiles = spec.tiles || [], n = Math.max(1, tiles.length), brandH = 450, panelY = brandH + 20, tileH = n === 1 ? 170 : 150, panelH = 118 + tileH + 36, H = panelY + panelH + 36 + 84;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+  c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+  // soft blue glow at the top drawn as flat concentric bands (keeps the PNG small; a smooth gradient is ~5x larger)
+  for (let i = 0; i < 36; i++) { const t = i / 35, r = 640 * (1 - t); c.fillStyle = `rgb(${Math.round(22 * t * t)},${Math.round(46 * t * t)},${Math.round(92 * t * t)})`; c.beginPath(); c.ellipse(W * .5, 0, r * 1.15, r, 0, 0, Math.PI); c.fill(); }
+  c.textBaseline = 'alphabetic';
+  // wordmark zelo/zuno
+  c.font = '700 54px ' + FONT; c.textAlign = 'left'; const x0 = 64, wy = 92; c.fillStyle = '#f5f5f7'; c.fillText('zelo', x0, wy); let ww = c.measureText('zelo').width; c.fillStyle = '#6e6e73'; c.fillText('/', x0 + ww, wy); ww += c.measureText('/').width; c.fillStyle = '#f5f5f7'; c.fillText('zuno', x0 + ww, wy);
+  // tile with the game glyph + sub label
+  const tx = 64, ty = 140, ts = 280; rr(c, tx, ty, ts, ts, 62); c.fillStyle = '#111113'; c.fill(); c.lineWidth = 2; c.strokeStyle = '#2a2a2d'; c.stroke();
+  c.textAlign = 'center'; c.fillStyle = '#f5f5f7'; c.font = '700 124px ' + MLFONT; c.fillText(B.glyph, tx + ts / 2, ty + 160);
+  c.fillStyle = '#86868b'; c.font = '500 34px ' + FONT; try { c.letterSpacing = '3px'; } catch (e) { /* optional */ } c.fillText(B.sub, tx + ts / 2 + 1, ty + 240); try { c.letterSpacing = '0px'; } catch (e) { /* optional */ }
+  // title + tagline
+  const bx = 448, bw = W - bx - 56; let fs = 130; c.textAlign = 'left'; do { c.font = '700 ' + fs + 'px ' + FONT; fs -= 2; } while (c.measureText(B.name).width > bw && fs > 50);
+  const tg = c.createLinearGradient(0, 160, 0, 300); tg.addColorStop(0, '#ffffff'); tg.addColorStop(1, '#9d9da3'); c.fillStyle = tg; c.fillText(B.name, bx, 284);
+  c.fillStyle = '#d1d1d6'; c.font = '500 40px ' + FONT; wrap(c, B.tagline, bw).forEach((l, i) => c.fillText(l, bx, 374 + i * 52));
+  // result panel
+  const px = PAD, pw = W - PAD * 2; rr(c, px, panelY, pw, panelH, 38); c.fillStyle = '#0d0d0f'; c.fill(); c.strokeStyle = '#222225'; c.lineWidth = 2; c.stroke();
+  c.textAlign = 'left'; c.fillStyle = '#f5f5f7'; c.font = '600 54px ' + FONT; c.fillText(spec.title || '', px + 36, panelY + 76);
+  c.textAlign = 'right'; c.fillStyle = '#86868b'; c.font = '400 38px ' + FONT; if (spec.right) c.fillText(spec.right, px + pw - 36, panelY + 74);
+  const gap = 20, tw = (pw - 72 - gap * (n - 1)) / n, tyy = panelY + 108;
+  tiles.forEach((t, i) => { const x = px + 36 + i * (tw + gap); rr(c, x, tyy, tw, tileH, 28); c.fillStyle = '#111113'; c.fill(); c.strokeStyle = '#222225'; c.lineWidth = 2; c.stroke();
+    const miss = t.value == null || t.value === ''; c.textAlign = 'center'; c.fillStyle = '#6e6e73'; c.font = '500 34px ' + FONT; c.fillText(t.label, x + tw / 2, tyy + (n === 1 ? 58 : 52));
+    c.fillStyle = miss ? '#48484a' : '#f5f5f7'; c.font = '700 ' + (n === 1 ? 92 : 68) + 'px ' + FONT; c.fillText(miss ? '–' : String(t.value), x + tw / 2, tyy + (n === 1 ? 152 : 120)); });
+  // footer
+  c.textAlign = 'center'; c.fillStyle = '#6e6e73'; c.font = '500 32px ' + FONT; try { c.letterSpacing = '1px'; } catch (e) { /* optional */ } c.fillText('zelozuno.com · ' + B.name, W / 2, H - 38);
+  return cv;
+}
+let cardKey = '', cardP = null, lastSpec = null;
+// Starts (or reuses) the render so the blob is ready before the user taps Share. Resolves to a PNG Blob, or null when canvas is unavailable.
+export function cardBlob(spec) {
+  const key = JSON.stringify(spec); lastSpec = spec;
+  if (key === cardKey && cardP) return cardP;
+  cardKey = key;
+  cardP = new Promise(res => { try { const cv = drawCard(spec); if (cv.toBlob) cv.toBlob(b => res(b || null), 'image/png'); else res(null); } catch (e) { res(null); } });
+  return cardP;
+}
+export const lastCardSpec = () => lastSpec;
+// Share the image + text where the browser can attach files (navigator.canShare({files})); otherwise (or if that fails) the text share/clipboard. Cancel is silent.
+export async function shareCard(text, spec) {
+  let blob = null; try { blob = await cardBlob(spec); } catch (e) { /* text only */ }
+  if (blob && typeof navigator.share === 'function' && typeof navigator.canShare === 'function') {
+    try {
+      const file = new File([blob], spec.file || 'zelozuno.png', { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text, title: 'zelozuno' }); return 'shared'; }
+    } catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* file share refused: fall back to the text */ }
+  }
+  return shareText(text);
+}
+
 export const SHARE_MSG = { shared: '', copied: 'Copied ✓', failed: 'Could not copy. Select the text instead.', cancelled: '' };
 
 // ---- feedback sheet ----

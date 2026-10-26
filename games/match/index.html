@@ -327,7 +327,7 @@ body.daily .actions{grid-template-columns:1fr 1fr}
 </form></div>
 <script type="module">
 import * as zz from '../../shared/zz.js?v=12';
-import {shareText,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=1';
+import {shareText,shareCard,cardBlob,SHARE_MSG,mountFeedback} from '../../shared/ux.js?v=2';
 import {ROUNDS,DAILY_START,DAILY_END} from './daily.js?v=10';
 const LIVES=4,PER_GROUP=4,MAX_LEVEL=5;
 const G='match',$=id=>document.getElementById(id);
@@ -415,7 +415,7 @@ function renderBox(){
   $('dlabel').textContent=fmtDay(selDate)+(selDate===today?' · Today':'');
   $('dsub').textContent=locked?'Opens '+fmtDay(selDate):done?(signed?'Best ':'This visit ')+sumRes(r)+' / 400':c?(signed?'Best so far ':'')+sumRes(r)+' · '+c+'/4 rounds':'4 rounds · up to 400';
   $('rchips').innerHTML=[0,1,2,3].map(i=>`<span class="rc${r&&r[i]!=null?' on':''}">R${i+1}<b>${locked?'·':r&&r[i]!=null?r[i]:'–'}</b></span>`).join('');
-  const sb=$('shareCal'),st=!locked&&calShareText(selDate);sb.disabled=!st;sb.setAttribute('aria-label',st?'Share result for '+fmtDay(selDate):'Share (no result for '+fmtDay(selDate)+')');
+  const sb=$('shareCal'),st=!locked&&calShareText(selDate);if(st)cardBlob(calCard(selDate));sb.disabled=!st;sb.setAttribute('aria-label',st?'Share result for '+fmtDay(selDate):'Share (no result for '+fmtDay(selDate)+')');
   const b=$('playBtn');b.disabled=locked||busy;b.innerHTML=locked?LOCK+' Locked':done?'Replay':c?'Play':'Play';
   $('stnote').className='stnote';$('stnote').innerHTML='Scores saved';}
 async function loadBests(ym){const uid=curUid;if(!uid)return;
@@ -535,7 +535,7 @@ async function finish(r){const my=seq,S0=S;S.done=true;S.won=!!r.won;renderSteps
     {const pa=played.get(D.date)||[null,null,null,null],o=pa[D.round-1];if(!o||score>=o.score)pa[D.round-1]={score,log:[...(S.log||[])],won:!!r.won};played.set(D.date,pa);}
     if(r.day&&S.uid===curUid){D.day=r.day;const ym=ymOf(D.date),b=bests.get(ym);if(b&&b.uid===curUid)b.days[D.date]=r.day.rounds;else bests.set(ym,{uid:curUid,days:{[D.date]:r.day.rounds}});}
     $('next').textContent=D.round<ROUNDS?'Next round':'Results';
-  }else{$('next').textContent=r.won?'Next':'Retry';S.share=practiceShare(score,S.log||[],!!r.won,S.level||level);$('shareR').hidden=false;$('res').classList.add('wsh');if(r.won&&level<MAX_LEVEL)level++;}
+  }else{$('next').textContent=r.won?'Next':'Retry';S.share=practiceShare(score,S.log||[],!!r.won,S.level||level);S.card=practiceCard(score,S.level||level);cardBlob(S.card);$('shareR').hidden=false;$('res').classList.add('wsh');if(r.won&&level<MAX_LEVEL)level++;}
   buzz(r.won?[15,50,15,50,30]:120);
   countUp(score);
   if(S.uid===curUid){loadMine();loadLb();}
@@ -549,22 +549,30 @@ const rowOf=(log,won)=>log.map(k=>k<0?'⬛':SQ[k%4]).join('')+(won?'':'❌');   
 function dayShareText(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0);
   return [`zelozuno Connection ${shareDate(D.date)} · ${run}/400`,...res.map((x,i)=>x?`R${i+1} ${rowOf(x.log||[],x.won)} ${x.score}`:`R${i+1} –`),SHARE_URL].join('\n');}
 // Calendar share: any day with a saved result. Scores come from the saved bests (users/<uid>/games/match/days); a round also gets its guess squares when this visit's best play of it is that same score. Otherwise the line is just "R<n> <score>". No answers involved.
-function calShareText(date){const r=dayRes(date),pa=played.get(date)||[],sc=i=>r?(r[i]!=null?r[i]:null):(pa[i]?pa[i].score:null),sc4=[0,1,2,3].map(sc);
-  if(sc4.every(x=>x==null))return null;
+function calScores(date){const r=dayRes(date),pa=played.get(date)||[],sc=i=>r?(r[i]!=null?r[i]:null):(pa[i]?pa[i].score:null),sc4=[0,1,2,3].map(sc);return sc4.every(x=>x==null)?null:sc4;}
+function calShareText(date){const r=dayRes(date),pa=played.get(date)||[],sc4=calScores(date);
+  if(!sc4)return null;
   return [`zelozuno Connection ${shareDate(date)} · ${sc4.reduce((a,x)=>a+(x||0),0)}/400`,...sc4.map((x,i)=>x==null?`R${i+1} –`:pa[i]&&pa[i].score===x?`R${i+1} ${rowOf(pa[i].log,pa[i].won)} ${x}`:`R${i+1} ${x}`),SHARE_URL].join('\n');}
+// Share image: the same data as the text (selected day / just-finished day / practice round). A missing round shows –.
+const dayTitle=d=>fmtDay(d)+(d===zz.localISO()?' · Today':'');
+function calCard(date){const sc4=calScores(date);if(!sc4)return null;const tot=sc4.reduce((a,x)=>a+(x||0),0),all=sc4.every(x=>x!=null);
+  return{game:'match',file:`zelozuno-connection-${date}.png`,title:dayTitle(date),right:(all?'Best ':'Best so far ')+tot+' / 400',tiles:sc4.map((x,i)=>({label:'R'+(i+1),value:x}))};}
+function dayCard(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0);
+  return{game:'match',file:`zelozuno-connection-${D.date}.png`,title:dayTitle(D.date),right:'Score '+run+' / 400',tiles:res.map((x,i)=>({label:'R'+(i+1),value:x?x.score:null}))};}
+function practiceCard(score,lvl){return{game:'match',file:`zelozuno-connection-practice.png`,title:'Practice · level '+lvl,right:fmtDay(zz.localISO()),tiles:[{label:'Score',value:score}]};}
 function practiceShare(score,log,won,lvl){return [`zelozuno Connection ${shareDate(zz.localISO())} · practice level ${lvl} · ${score} pts`,rowOf(log,won),SHARE_URL].join('\n');}
-async function doShare(text){const r=await shareText(text);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);return r;}
+async function doShare(text,card){const r=card?await shareCard(text,card):await shareText(text);if(SHARE_MSG[r])toast(SHARE_MSG[r],1800);return r;}
 function showSummary(){const res=D.res,run=res.reduce((a,x)=>a+(x?x.score:0),0),saved=res.some(x=>x&&x.saved);
   $('sdate').textContent=fmtDay(D.date)+(D.date===zz.localISO()?' · Today':'');$('stotal').textContent=run;
   $('srows').innerHTML=res.map((x,i)=>`<div class="row"><span>Round ${i+1}<span class="m"> · ${x?(x.won?'solved':'lost'):'skipped'}</span></span><span class="m">${x?(x.timeMs/1000).toFixed(1)+'s · '+(x.mistakes?x.mistakes+' ✕':'clean'):''}</span><b>${x?x.score:'–'}</b></div>`).join('');
   $('snote').textContent=saved&&D.day?`Saved · your best for this day: ${D.day.total} / 400`:'Not saved';
-  $('replay').textContent='Replay day';setView('sum');buzz([15,40,15]);}
+  cardBlob(dayCard());$('replay').textContent='Replay day';setView('sum');buzz([15,40,15]);}
 $('playBtn').onclick=()=>startDay(selDate);
 $('practice').onclick=startPractice;
 $('calScores').onclick=()=>$('scoresBtn').click();
-$('shareCal').onclick=()=>{const t=timeReady&&selDate<=zz.localISO()&&calShareText(selDate);if(t)doShare(t);};
-$('shareD').onclick=()=>{if(D)doShare(dayShareText());};
-$('shareR').onclick=()=>{if(S&&S.share)doShare(S.share);};
+$('shareCal').onclick=()=>{const t=timeReady&&selDate<=zz.localISO()&&calShareText(selDate);if(t)doShare(t,calCard(selDate));};
+$('shareD').onclick=()=>{if(D)doShare(dayShareText(),dayCard());};
+$('shareR').onclick=()=>{if(S&&S.share)doShare(S.share,S.card);};
 $('replay').onclick=()=>{if(D)startDay(D.date);};
 $('toCal').onclick=()=>{const d=D&&D.date;D=null;showCal(d||selDate);};
 $('next').onclick=()=>{if(busy)return;
