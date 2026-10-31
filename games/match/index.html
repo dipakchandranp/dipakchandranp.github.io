@@ -42,13 +42,33 @@
       crossorigin
       fetchpriority="low"
     />
-    <!-- analytics:start Cloudflare Web Analytics: cookieless, no storage -->
+    <!-- analytics:start Cloudflare Web Analytics (cookieless) + Google Analytics 4 with Consent Mode v2: in the
+         EEA, UK and CH analytics_storage is denied (cookieless pings); elsewhere it is granted (Google's _ga cookies);
+         ads are denied everywhere. gtag.js loads after the load event. Copied verbatim into 404.html. Our own code writes no storage. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'] });
+      gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', false);
+      gtag('js', new Date());
+      gtag('config', 'G-8H7ZG780Y9');
+      // gtag.js (async) is added to the head only after the load event, so it never competes with the hero,
+      // the fonts or the app bundle on slow networks (LCP / INP); the commands above wait in dataLayer.
+      addEventListener('load', function () {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8H7ZG780Y9';
+        document.head.appendChild(s);
+      });
+    </script>
     <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6f0a63e25cab4b2b9c3797b8781024cf"}'></script>
     <!-- analytics:end -->
-    <script type="module" crossorigin src="/app-assets/index-BFY_CBBj.js"></script>
-    <link rel="stylesheet" crossorigin href="/app-assets/index-BRbN5kjH.css">
-  <link rel="modulepreload" crossorigin href="/app-assets/index-CYKSXHLw.js">
-<link rel="modulepreload" crossorigin href="/app-assets/GameIntro-KMlTFCri.js">
+    <script type="module" crossorigin src="/app-assets/index-B6GHDum9.js"></script>
+    <link rel="stylesheet" crossorigin href="/app-assets/index-1Ykp8EzD.css">
+  <link rel="modulepreload" crossorigin href="/app-assets/index-DysWL7Ei.js">
+<link rel="modulepreload" crossorigin href="/app-assets/GameIntro-L3MzfgVb.js">
 <link rel="modulepreload" crossorigin href="/app-assets/format-D_1b84Wr.js">
 <link rel="modulepreload" crossorigin href="/app-assets/random-GjrJhAFo.js">
 </head>
