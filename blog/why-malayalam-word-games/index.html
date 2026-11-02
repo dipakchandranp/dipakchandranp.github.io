@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="dledex-verification" content="dledex-site-9999d42ddfac21becb16a0b6" />
+    <meta name="dledex-verification" content="dledex-ffb41fc177e5d5cf1e7316f9" />
+    <!-- seo:start -->
+<title>Why I built Malayalam word games · zelo/zuno</title>
+<meta name="description" content="Building daily word games for Malayalam, where one letter is several Unicode code points: the games, the script problem, where the words come from and how the site is put together.">
+<link rel="canonical" href="https://zelozuno.com/blog/why-malayalam-word-games/">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="zelo/zuno">
+<meta property="og:title" content="Why I built Malayalam word games · zelo/zuno">
+<meta property="og:description" content="Building daily word games for Malayalam, where one letter is several Unicode code points: the games, the script problem, where the words come from and how the site is put together.">
+<meta property="og:url" content="https://zelozuno.com/blog/why-malayalam-word-games/">
+<meta property="og:image" content="https://zelozuno.com/assets/og-home.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="zelo/zuno, free Malayalam word games">
+<meta property="og:locale" content="en_IE">
+<meta property="og:locale:alternate" content="ml_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why I built Malayalam word games · zelo/zuno">
+<meta name="twitter:description" content="Building daily word games for Malayalam, where one letter is several Unicode code points: the games, the script problem, where the words come from and how the site is put together.">
+<meta name="twitter:image" content="https://zelozuno.com/assets/og-home.png?v=2">
+<meta name="twitter:image:alt" content="zelo/zuno, free Malayalam word games">
+<link rel="icon" sizes="any" href="https://zelozuno.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="https://zelozuno.com/assets/zz-favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://zelozuno.com/assets/zz-favicon-16.png">
+<link rel="apple-touch-icon" href="https://zelozuno.com/assets/zz-apple-touch-icon.png">
+<link rel="manifest" href="https://zelozuno.com/zelozuno.webmanifest">
+<!-- seo:end -->
+    <!-- self-hosted fonts (src/styles/fonts.css): fetched with the CSS instead of after it; Malayalam at low priority
+         so it never holds up the app script -->
+    <link rel="preload" href="/app-assets/inter-wght-Bf_qS5ss.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/app-assets/noto-sans-malayalam-wght-WN1kgFHt.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      fetchpriority="low"
+    />
+    <!-- analytics:start Cloudflare Web Analytics (cookieless) + Google Analytics 4 with Consent Mode v2: in the
+         EEA, UK and CH analytics_storage is denied (cookieless pings); elsewhere it is granted (Google's _ga cookies);
+         ads are denied everywhere. gtag.js loads after the load event. Copied verbatim into 404.html. Our own code writes no storage. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH'] });
+      gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', false);
+      gtag('js', new Date());
+      gtag('config', 'G-8H7ZG780Y9');
+      // gtag.js (async) is added to the head only after the load event, so it never competes with the hero,
+      // the fonts or the app bundle on slow networks (LCP / INP); the commands above wait in dataLayer.
+      addEventListener('load', function () {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8H7ZG780Y9';
+        document.head.appendChild(s);
+      });
+    </script>
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6f0a63e25cab4b2b9c3797b8781024cf"}'></script>
+    <!-- analytics:end -->
+    <script type="module" crossorigin src="/app-assets/index-DdiKuzat.js"></script>
+    <link rel="stylesheet" crossorigin href="/app-assets/index-DJ-xVkzd.css">
+  <link rel="modulepreload" crossorigin href="/app-assets/index-wySioT72.js">
+</head>
+  <body>
+    <div id="root"><!-- fallback:start --><div class="sr-only"><h1>Why I built Malayalam word games</h1><p>Building daily word games for Malayalam, where one letter is several Unicode code points: the games, the script problem, where the words come from and how the site is put together.</p><ul><li><a href="/apps/">zelo/zuno</a></li><li><a href="/games/match/">Connection</a></li><li><a href="/games/gap/">Filling</a></li><li><a href="/games/grid/">Letter Grid</a></li><li><a href="/games/trail/">Word Trail</a></li><li><a href="/blog/">Blog</a></li></ul></div><div class="sr-only"><article><p>Malayalam is the language of Kerala in South India. It has its own script and tens of millions of speakers, but very few word games. There is a Malayalam Wordle, and not much else. I wanted the daily word-game habit that English speakers have (group the words, find the hidden words, fill in the blanks) for people who read Malayalam, so over the last few weeks I built zelozuno.com.</p><p>It has four daily games:</p><ul><li>Connection: 16 words, find the 4 hidden groups. You have 4 lives and no time limit; the clock just counts up.</li><li>Filling: rebuild a word from letter tiles. Each tile is a letter with its vowel sign, and some tiles are decoys. Once a word is done, its English meaning shows underneath when we have a checked one.</li><li>Letter Grid (അക്ഷര വല): find 10 hidden words in a grid of letter boxes. Every word starts with its first letter shown, and a Reveal button helps when you are stuck.</li><li>Word Trail (അക്ഷര പാത): trace 10 words through touching letters. Your score is your time.</li></ul><p>It is free and has no ads. Every game has a guest sample that needs no login; the daily boards use Google sign-in so your scores can be saved.</p><h3>The interesting problem: what is a &quot;letter&quot;?</h3><p>In English, a tile is a character. In Malayalam, what a reader sees as one letter (an akshara) is often a consonant plus a vowel sign, or two consonants joined by a virama plus a vowel sign. That is several Unicode code points for one visual unit. Split a word by code point and you get dangling vowel signs that render as dotted circles.</p><p>So every game works on aksharas, not characters:</p><ul><li>A Filling tile is one akshara (consonant plus vowel sign), and the decoys are plausible aksharas, not random code points.</li><li>Letter Grid and Word Trail cells hold one akshara each. A Word Trail word is 3 to 6 aksharas long.</li><li>Word lengths, difficulty and the free first-letter hints are all counted in aksharas.</li></ul><h3>Where the words come from</h3><p>The word data starts from the Olam English–Malayalam dictionary (ODbL) and is then filtered and checked by hand. Word Trail uses its own pool of 1,050 checked words, none shared with Letter Grid. It still will not be perfect, so the site has a feedback link and every report gets read.</p><h3>How it is put together</h3><ul><li>Front end: React, Vite and TypeScript with Tailwind, built as static files on GitHub Pages behind Cloudflare. A build step writes a real HTML page per route, with its own title, description and share image.</li><li>Back end: one Cloudflare Worker with a few Durable Objects (game rounds, the daily board generator, rate limiting and anonymous visit counts), storing data in Firestore over its REST API.</li><li>Daily boards are generated on the server one day at a time, from words not used recently, and written once, so two racing requests cannot create two different boards for the same day. A scheduled job prepares tomorrow ahead of time.</li><li>The browser never gets the answers. Connection guesses are judged by the Worker, and the word-search games send back what you found so the server can check it and time it, so scores cannot simply be posted.</li></ul><h3>What I would like from you</h3><p>If you read Malayalam, play a board and tell me which words or groups feel wrong, too obscure or too easy. If you do not, I would still like to hear what you think of the mechanics and how it feels on a phone. There is a &quot;suggest a game&quot; link at the bottom of every page too: what game should come next?</p><p>A note on how this was made: I built the site and wrote this post with help from AI tools.</p><p><a href="/apps/">Play the games on zelozuno.com</a></p></article></div><!-- fallback:end --></div>
+  </body>
+</html>
