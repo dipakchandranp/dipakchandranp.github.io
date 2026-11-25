@@ -1,0 +1,1 @@
+import{r as n}from"./index-BPqFT7xR.js";function c(e,a=()=>performance.now()){const[,o]=n.useReducer(t=>t+1,0),r=e.view==="play";return n.useEffect(()=>{if(!r)return;const t=setInterval(o,250);return()=>clearInterval(t)},[r,e.startedAt]),e.view!=="play"&&e.view!=="done"?0:Math.max(0,(e.endedAt??a())-e.startedAt)}export{c as u};
